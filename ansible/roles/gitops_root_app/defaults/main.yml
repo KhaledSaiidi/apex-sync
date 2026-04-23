@@ -1,0 +1,5 @@
+---
+gitops_root_app_name: app-of-apps
+gitops_root_app_namespace: "{{ argocd_namespace | default('argocd') }}"
+gitops_root_app_manifest_local_path: "{{ artifacts.gitops_root_app_manifest_local_path | default('') }}"
+gitops_root_app_manifest_remote_path: /tmp/app-of-apps.yaml

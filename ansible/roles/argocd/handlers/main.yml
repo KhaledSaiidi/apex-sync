@@ -1,0 +1,15 @@
+- name: Wait for repo-server rollout
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    name: argocd-repo-server
+    namespace: "{{ argocd_namespace }}"
+    kubeconfig: "{{ argocd_kubeconfig }}"
+  register: argocd_repo_dep
+  until: >
+    (argocd_repo_dep.resources | length) > 0 and
+    (argocd_repo_dep.resources[0].status.readyReplicas | default(0)) >=
+    (argocd_repo_dep.resources[0].spec.replicas | default(1))
+  retries: "{{ ((argocd_wait_timeout | int) + (argocd_wait_interval | int) - 1) // (argocd_wait_interval | int) }}"
+  delay: "{{ argocd_wait_interval }}"
+  listen: Wait for repo-server rollout

@@ -1,0 +1,89 @@
+- name: Validate rendered Argo CD values path
+  ansible.builtin.assert:
+    that:
+      - argocd_values_local_path | default('') | string | length > 0
+    fail_msg: "argocd_values_local_path must point to the Terraform-rendered Argo CD values file."
+
+- name: Check rendered Argo CD values on controller
+  ansible.builtin.stat:
+    path: "{{ argocd_values_local_path }}"
+  delegate_to: localhost
+  become: false
+  register: argocd_values_local_stat
+
+- name: Ensure rendered Argo CD values exist
+  ansible.builtin.assert:
+    that:
+      - argocd_values_local_stat.stat.exists
+      - argocd_values_local_stat.stat.isreg
+    fail_msg: "Rendered Argo CD values file not found at {{ argocd_values_local_path }}."
+
+- name: Copy rendered Argo CD values to bastion
+  ansible.builtin.copy:
+    src: "{{ argocd_values_local_path }}"
+    dest: "{{ argocd_values_remote_path }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+
+- name: Install/Upgrade Argo CD via Helm (CLI, idempotent)
+  ansible.builtin.command:
+    cmd: >
+      helm upgrade --install {{ argocd_release_name }} {{ argocd_chart_name }}
+      --namespace {{ argocd_namespace }}
+      --kubeconfig {{ argocd_kubeconfig }}
+      --wait
+      -f {{ argocd_values_remote_path }}
+      {% if argocd_chart_version | default('', true) %}--version {{ argocd_chart_version }}{% endif %}
+  register: argocd_helm_apply
+  changed_when: >
+    ('has been upgraded' in argocd_helm_apply.stdout) or
+    ('has been installed' in argocd_helm_apply.stdout) or
+    ('STATUS: deployed' in argocd_helm_apply.stdout) or
+    ('STATUS: superseded' in argocd_helm_apply.stdout)
+  failed_when: argocd_helm_apply.rc != 0
+
+- name: Wait for argocd-server rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ argocd_kubeconfig }}"
+      -n "{{ argocd_namespace }}"
+      get deploy argocd-server
+      -o jsonpath='{.status.readyReplicas}/{.spec.replicas}'
+  register: argocd_server_rr
+  changed_when: false
+  retries: "{{ ((argocd_wait_timeout | int) + (argocd_wait_interval | int) - 1) // (argocd_wait_interval | int) }}"
+  delay: "{{ argocd_wait_interval }}"
+  until: >
+    (argocd_server_rr.stdout is match('^[0-9]+/[0-9]+$')) and
+    ((argocd_server_rr.stdout.split('/')[0] | int) >= (argocd_server_rr.stdout.split('/')[1] | int))
+
+- name: Wait for argocd-repo-server rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ argocd_kubeconfig }}"
+      -n "{{ argocd_namespace }}"
+      get deploy argocd-repo-server
+      -o jsonpath='{.status.readyReplicas}/{.spec.replicas}'
+  register: argocd_repo_rr
+  changed_when: false
+  retries: "{{ ((argocd_wait_timeout | int) + (argocd_wait_interval | int) - 1) // (argocd_wait_interval | int) }}"
+  delay: "{{ argocd_wait_interval }}"
+  until: >
+    (argocd_repo_rr.stdout is match('^[0-9]+/[0-9]+$')) and
+    ((argocd_repo_rr.stdout.split('/')[0] | int) >= (argocd_repo_rr.stdout.split('/')[1] | int))
+
+- name: Wait for argocd-application-controller rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ argocd_kubeconfig }}"
+      -n "{{ argocd_namespace }}"
+      get deploy argocd-application-controller
+      -o jsonpath='{.status.readyReplicas}/{.spec.replicas}'
+  register: argocd_controller_rr
+  changed_when: false
+  retries: "{{ ((argocd_wait_timeout | int) + (argocd_wait_interval | int) - 1) // (argocd_wait_interval | int) }}"
+  delay: "{{ argocd_wait_interval }}"
+  until: >
+    (argocd_controller_rr.stdout is match('^[0-9]+/[0-9]+$')) and
+    ((argocd_controller_rr.stdout.split('/')[0] | int) >= (argocd_controller_rr.stdout.split('/')[1] | int))

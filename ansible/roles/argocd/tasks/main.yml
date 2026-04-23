@@ -1,0 +1,7 @@
+- name: Pre-reqs
+  ansible.builtin.import_tasks: prereqs.yml
+  tags: [argocd, prereqs]
+
+- name: Install/Upgrade Argo CD
+  ansible.builtin.import_tasks: install.yml
+  tags: [argocd, install]

@@ -3,7 +3,7 @@ variable "artifacts_dir" {
   type        = string
 }
 variable "project_name" {
-  type = string
+  type    = string
   default = "platform"
 }
 
@@ -19,19 +19,19 @@ variable "argocd_repo_server_timeout_secs" {
   type = string
 }
 variable "argocd_plugin_version" {
-  type = string
+  type    = string
   default = "v0.18.0"
 }
 
 variable "gitops_root_app_repo_url" {
-  type = string
+  type    = string
   default = "https://github.com/KhaledSaiidi/kube-signal.git"
 }
 variable "gitops_root_app_target_revision" {
-  type = string
+  type    = string
   default = "HEAD"
 }
 variable "gitops_root_app_path" {
-  type = string
+  type    = string
   default = "gitops/argo-apps/overlays/default/root"
 }

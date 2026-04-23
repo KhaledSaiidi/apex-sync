@@ -1,0 +1,53 @@
+---
+- name: One-time bootstrap from localhost
+  hosts: localhost
+  gather_facts: true
+  become: true
+
+  pre_tasks:
+    - name: Assert required keys exist (from -e @vars)
+      ansible.builtin.assert:
+        that:
+          - cluster is defined
+          - cluster.kubeconfig is defined
+          - cluster.kubeconfig.local_path is defined
+          - cluster.ssh_private_key is defined
+          - cluster.ssh_private_key.local_path is defined
+          - cluster.name is defined
+          - cluster.endpoint is defined
+          - tooling is defined
+          - tooling.kubectl_version is defined
+          - tooling.helm_version is defined
+        fail_msg: >
+          Missing required keys in vars (-e @ansible-vars.yaml).
+          Required:
+            cluster.kubeconfig.local_path,
+            cluster.ssh_private_key.local_path,
+            cluster.name, cluster.endpoint,
+            tooling.kubectl_version, tooling.helm_version.
+
+    - name: Normalize commonly used vars
+      ansible.builtin.set_fact:
+        kubeconfig_local_path: "{{ cluster.kubeconfig.local_path }}"
+        kubeconfig_remote_path: "/home/{{ ansible_user }}/.kube/config"
+        ssh_key_local_path: "{{ cluster.ssh_private_key.local_path | default('') }}"
+        kubectl_version: "{{ tooling.kubectl_version | regex_replace('^v', '') }}"
+        helm_version: "{{ tooling.helm_version | regex_replace('^v', '') }}"
+
+    - name: Ensure kubectl_version provided (e.g., v1.34.1 or 1.34.1)
+      ansible.builtin.fail:
+        msg: "tooling.kubectl_version is required in the vars file."
+      when: (tooling.kubectl_version | default('') | string | length) == 0
+
+    - name: Ensure helm_version provided (e.g., v3.19.0 or 3.19.0)
+      ansible.builtin.fail:
+        msg: "tooling.helm_version is required in the vars file."
+      when: (tooling.helm_version | default('') | string | length) == 0
+
+  tasks:
+    - name: Install Argocd
+      ansible.builtin.import_role:
+        name: argocd
+    - name: Bootstrap Argo CD root application
+      ansible.builtin.import_role:
+        name: gitops_root_app

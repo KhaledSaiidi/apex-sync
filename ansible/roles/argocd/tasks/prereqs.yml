@@ -1,0 +1,43 @@
+- name: Ensure Argo Helm repo is added (idempotent)
+  ansible.builtin.command:
+    cmd: >
+      helm repo add {{ argocd_helm_repo_name }} {{ argocd_helm_repo_url }}
+  args:
+    creates: "/tmp/.helm_repo_added_{{ argocd_helm_repo_name }}"
+  register: argocd_repo_add
+  changed_when: argocd_repo_add.rc == 0
+  failed_when: argocd_repo_add.rc not in [0]
+
+- name: Mark repo as added (idempotence marker)
+  ansible.builtin.file:
+    path: "/tmp/.helm_repo_added_{{ argocd_helm_repo_name }}"
+    state: touch
+    mode: "0600"
+
+- name: Helm repo update
+  ansible.builtin.command:
+    cmd: helm repo update
+  register: argocd_repo_update
+  changed_when: false
+  failed_when: argocd_repo_update.rc not in [0]
+
+- name: Check if namespace exists (idempotent, kubectl)
+  ansible.builtin.command:
+    cmd: kubectl --kubeconfig "{{ argocd_kubeconfig }}" get ns "{{ argocd_namespace }}"
+  register: argocd_ns_check
+  changed_when: false
+  failed_when: argocd_ns_check.rc not in [0, 1]
+  when: argocd_create_namespace | bool
+
+- name: Create namespace if missing
+  ansible.builtin.command:
+    cmd: kubectl --kubeconfig "{{ argocd_kubeconfig }}" create ns "{{ argocd_namespace }}"
+  register: argocd_ns_create
+  changed_when: >
+    ('created' in (argocd_ns_create.stdout | lower)) or
+    ('created' in (argocd_ns_create.stderr | lower)) or
+    (argocd_ns_check.rc != 0)
+  failed_when: argocd_ns_create.rc not in [0]
+  when:
+    - argocd_create_namespace | bool
+    - argocd_ns_check.rc != 0
