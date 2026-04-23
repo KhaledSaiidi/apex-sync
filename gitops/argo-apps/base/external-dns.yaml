@@ -2,19 +2,18 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "10"
-  name: istio-gateways-app
+    argocd.argoproj.io/sync-wave: "15"
+  name: external-dns
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   source:
-    path: gitops/apps/istio/istio-gateways
-    repoURL: "https://github.com/KhaledSaiidi/kube-signal.git"
+    path: gitops/argo-apps/base/external-dns
+    repoURL: https://github.com/KhaledSaiidi/kube-signal.git
     targetRevision: HEAD
-
   destination:
-    namespace: istio-system
+    namespace: external-dns
     server: https://kubernetes.default.svc
   project: platform
   syncPolicy:

@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: metallb
+helmCharts:
+  - name: metallb
+    repo: https://metallb.github.io/metallb
+    releaseName: metallb
+    namespace: metallb
+resources:
+  - metallb-pool.yaml

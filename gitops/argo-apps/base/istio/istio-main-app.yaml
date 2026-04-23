@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "-14"
+    argocd.argoproj.io/sync-wave: "0"
   name: istio-main-app
   namespace: argocd
   finalizers:
@@ -17,11 +17,6 @@ spec:
     namespace: istio-system
     server: https://kubernetes.default.svc
   project: platform
-  ignoreDifferences:
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-      jqPathExpressions:
-        - .webhooks[]?.failurePolicy
   syncPolicy:
     automated:
       prune: true

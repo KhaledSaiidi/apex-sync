@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "-10"
+    argocd.argoproj.io/sync-wave: "20"
   name: kiali
   namespace: argocd
   finalizers:
@@ -22,10 +22,10 @@ spec:
       prune: true
       selfHeal: true
     retry:
-      limit: 12
+      limit: 5
       backoff:
-        duration: 3s
-        maxDuration: 7m0s
+        duration: 5s
+        maxDuration: 3m0s
         factor: 2
     syncOptions:
       - CreateNamespace=true

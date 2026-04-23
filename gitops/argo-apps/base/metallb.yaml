@@ -4,7 +4,7 @@ metadata:
   name: metallb
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: '-4'
+    argocd.argoproj.io/sync-wave: '-10'
   labels:
     app.kubernetes.io/name: metallb
     app.kubernetes.io/part-of: platform-baseline
@@ -12,7 +12,7 @@ spec:
   project: platform
   source:
     repoURL: https://github.com/KhaledSaiidi/kube-signal.git
-    targetRevision: main
+    targetRevision: HEAD
     path: gitops/apps/metallb
   destination:
     server: https://kubernetes.default.svc
@@ -21,7 +21,13 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
     syncOptions:
-    - CreateNamespace=true
-    - ApplyOutOfSyncOnly=true
-    - SkipDryRunOnMissingResource=true
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true
