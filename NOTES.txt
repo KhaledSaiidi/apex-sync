@@ -1,0 +1,213 @@
+export KUBECONFIG=$PWD/kind-kubeconfig.yaml
+
+# 1) Create kind cluster
+kind create cluster \
+  --config kind-crossplane-cilium.yaml \
+  --kubeconfig kind-kubeconfig.yaml
+
+kubectl cluster-info
+kubectl get nodes
+
+# 2) Install Cilium
+helm repo add cilium https://helm.cilium.io/
+helm repo update
+
+export API_SERVER_IP=$(kubectl get node meshara-control-plane -o jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}')
+
+helm install cilium cilium/cilium \
+  --version 1.19.2 \
+  --namespace kube-system \
+  --create-namespace \
+  --set image.pullPolicy=IfNotPresent \
+  --set ipam.mode=kubernetes \
+  --set k8sServiceHost=$API_SERVER_IP \
+  --set k8sServicePort=6443 \
+  --set kubeProxyReplacement=true \
+  --set socketLB.hostNamespaceOnly=true \
+  --set cni.exclusive=false \
+  --set hubble.enabled=true \
+  --set hubble.relay.enabled=true \
+  --set hubble.ui.enabled=true
+
+kubectl rollout status ds/cilium -n kube-system --timeout=300s
+kubectl rollout status deploy/cilium-operator -n kube-system --timeout=300s
+kubectl rollout status deploy/hubble-relay -n kube-system --timeout=300s
+kubectl rollout status deploy/hubble-ui -n kube-system --timeout=300s
+kubectl get pods -n kube-system
+kubectl get nodes
+
+kubectl -n kube-system exec ds/cilium -- cilium-dbg service list
+kubectl -n kube-system exec ds/cilium -- cilium-dbg status | grep KubeProxyReplacement
+hubble status -P
+
+# 3) Install Gateway API CRDs
+kubectl apply --server-side -f \
+  https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml
+
+kubectl get crd | grep gateway.networking.k8s.io
+
+# 4) Install Istio
+helm repo add istio https://istio-release.storage.googleapis.com/charts
+helm repo update
+
+helm install istio-base istio/base \
+  -n istio-system \
+  --create-namespace \
+  --set defaultRevision=default
+
+helm install istiod istio/istiod \
+  -n istio-system \
+  --wait
+
+kubectl get pods -n istio-system
+kubectl get gatewayclass
+
+# 5) Install Kyverno
+helm repo add kyverno https://kyverno.github.io/kyverno/
+helm repo update
+
+helm install kyverno kyverno/kyverno \
+  -n kyverno \
+  --create-namespace
+
+kubectl wait --for=condition=Available deployment --all -n kyverno --timeout=300s
+kubectl get pods -n kyverno
+
+# 6) Apply Kyverno RBAC + policies
+kubectl apply -f kyverno-background-rbac.yaml
+kubectl apply -f kyverno-istio-default-policies.yaml
+
+kubectl auth can-i patch namespace \
+  --as system:serviceaccount:kyverno:kyverno-background-controller
+
+kubectl auth can-i patch deployments.apps \
+  -n default \
+  --as system:serviceaccount:kyverno:kyverno-background-controller
+
+kubectl get ns default --show-labels
+kubectl get cpol
+kubectl get ur -n kyverno
+
+# 7) Install MetalLB
+helm repo add metallb https://metallb.github.io/metallb
+helm repo update
+
+kubectl create namespace metallb-system --dry-run=client -o yaml | kubectl apply -f -
+helm install metallb metallb/metallb -n metallb-system
+
+kubectl wait --for=condition=Ready pod --all -n metallb-system --timeout=300s
+kubectl get pods -n metallb-system
+
+# 8) Check the kind Docker network and confirm the range used in metallb-pool.yaml
+docker network inspect kind -f '{{range .IPAM.Config}}{{println .Subnet}}{{end}}'
+
+# Expect an IPv4 subnet like 172.18.0.0/16.
+# Make sure the range inside metallb-pool.yaml (for example 172.18.255.200-172.18.255.230)
+# belongs to that subnet and is unused, then apply it.
+
+kubectl apply -f metallb-pool.yaml
+kubectl get ipaddresspools,l2advertisements -n metallb-system
+
+# 9) Deploy the app UI (ConfigMap + Deployment + Service)
+kubectl apply -f demo-app-ui.yaml
+kubectl rollout status deployment/demo-app -n default --timeout=300s
+kubectl get svc,pods -n default
+kubectl get pod -n default -l app=demo-app -o jsonpath='{.items[0].spec.containers[*].name}'; echo
+
+# 10) Create namespace for Gateway and apply Gateway + HTTPRoute
+kubectl create namespace istio-ingress --dry-run=client -o yaml | kubectl apply -f -
+kubectl apply -f gateway-http.yaml
+
+kubectl get gateway -n istio-ingress
+kubectl get httproute -n default
+kubectl describe httproute demo-route -n default
+
+# 11) Wait for Gateway programming and read the MetalLB IP
+kubectl get svc -n istio-ingress
+
+kubectl wait -n istio-ingress \
+  --for=condition=programmed \
+  gateways.gateway.networking.k8s.io/main-gateway \
+  --timeout=300s
+
+kubectl get gateway main-gateway -n istio-ingress \
+  -o jsonpath='{.status.addresses[0].value}'; echo
+
+# 12) Validate HTTP locally after your Route53 A record points app.kube-forge.com
+dig +short app.kube-forge.com
+curl -v --resolve app.kube-forge.com:80:$(kubectl get gateway main-gateway -n istio-ingress -o jsonpath='{.status.addresses[0].value}') \
+  http://app.kube-forge.com/
+
+# 13) Install cert-manager
+helm install cert-manager oci://quay.io/jetstack/charts/cert-manager \
+  --version v1.20.0 \
+  --namespace cert-manager \
+  --create-namespace \
+  --set crds.enabled=true
+
+kubectl rollout status deployment/cert-manager -n cert-manager --timeout=300s
+kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=300s
+kubectl rollout status deployment/cert-manager-cainjector -n cert-manager --timeout=300s
+kubectl get pods -n cert-manager
+
+# 14) Create the Route53 credentials secret if not already created
+# kubectl -n cert-manager create secret generic route53-credentials-secret \
+#   --from-literal=access-key-id='AKIA...' \
+#   --from-literal=secret-access-key='YOUR_SECRET_ACCESS_KEY'
+
+# 15) Apply ClusterIssuer, then Certificate
+kubectl apply -f clusterissuer-route53.yaml
+kubectl get clusterissuer
+kubectl describe clusterissuer letsencrypt-prod-route53
+
+kubectl -n cert-manager create secret generic route53-credentials-secret \
+  --from-literal=access-key-id='XXXX' \
+  --from-literal=secret-access-key='XXXXX'
+
+
+kubectl apply -f certificate.yaml
+kubectl get certificate -n istio-ingress -w
+
+# In another terminal if needed:
+kubectl get challenge,order -A -w
+
+# 16) Setup checks
+kubectl get pods -A
+kubectl get svc -n default
+kubectl get endpoints demo-app -n default
+kubectl get gateway -n istio-ingress
+kubectl get httproute -n default
+kubectl get certificate -n istio-ingress
+kubectl get secret -n istio-ingress
+
+hubble observe -P --verdict DROPPED
+hubble observe -P --protocol http
+hubble observe -P -o json
+hubble observe -P --pod <pod-name>
+hubble observe -P --namespace <ns>
+hubble observe -P --from-pod ...
+hubble observe -P --to-pod ...
+cilium hubble ui
+
+
+196.179.202.151
+172.18.255.200
+
+
+Certificate
+  ↓
+CertificateRequest
+  ↓
+Order
+  ↓
+Challenge
+  ↓
+ACME validation
+  ↓
+Order becomes valid
+  ↓
+Signed certificate returned
+  ↓
+TLS Secret created
+  ↓
+Certificate becomes Ready=True

@@ -1,0 +1,60 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: label-default-namespace-for-istio
+spec:
+  mutateExistingOnPolicyUpdate: true
+  rules:
+    - name: add-istio-injection-label-to-default
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - default
+      mutate:
+        targets:
+          - apiVersion: v1
+            kind: Namespace
+            name: default
+        patchStrategicMerge:
+          metadata:
+            labels:
+              istio-injection: enabled
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restart-default-deployments-after-istio-label
+spec:
+  rules:
+    - name: restart-deployments-when-default-namespace-is-labeled
+      skipBackgroundRequests: false
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - default
+              operations:
+                - CREATE
+                - UPDATE
+      preconditions:
+        all:
+          - key: "{{ request.object.metadata.labels.\"istio-injection\" || '' }}"
+            operator: Equals
+            value: enabled
+      mutate:
+        mutateExistingOnPolicyUpdate: false
+        targets:
+          - apiVersion: apps/v1
+            kind: Deployment
+            namespace: default
+        patchStrategicMerge:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  ops.corp.com/triggerrestart: "{{ request.object.metadata.resourceVersion }}"

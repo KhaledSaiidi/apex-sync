@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app-kube-forge-com
+  namespace: istio-ingress
+spec:
+  secretName: wildcard-kube-forge-com-tls
+  issuerRef:
+    name: letsencrypt-prod-route53
+    kind: ClusterIssuer
+  dnsNames:
+    - "*.kube-forge.com"
+    - kube-forge.com

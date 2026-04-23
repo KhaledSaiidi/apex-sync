@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-4'
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/part-of: platform-baseline
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/KhaledSaiidi/kube-signal.git
+    targetRevision: main
+    path: gitops/apps/cert-manager
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ApplyOutOfSyncOnly=true
+    - SkipDryRunOnMissingResource=true
