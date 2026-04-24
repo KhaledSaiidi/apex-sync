@@ -41,22 +41,14 @@ variable "gitops_root_app_path" {
   default = "gitops/argo-apps/overlays/default/root"
 }
 
-variable "public_ip" {
-  type    = string
-  default = ""
-}
 variable "ansible_user" {
   description = "SSH user for bastion mode and local user name for local mode."
   type        = string
 }
-variable "ssh_path" {
-  type    = string
-  default = ""
-}
 
 variable "kubeconfig_path" {
   type    = string
-  default = "~/.kube/config"
+  default = "../../../kind-kubeconfig.yaml"
 }
 
 variable "cluster_endpoint" {

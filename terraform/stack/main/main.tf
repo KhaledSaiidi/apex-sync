@@ -68,6 +68,7 @@ module "bootstrap_ansible" {
 
   inventory_file_path = local_file.ansible_inventory.filename
   inventory_content   = local_file.ansible_inventory.content
+  requirements_path   = local_file.requirements_path.filename
   vars_file_path      = local_file.ansible_vars.filename
   vars_content        = local_file.ansible_vars.content
   playbook_path       = "${local.repo_root}/ansible/playbooks/bootstrap.yml"

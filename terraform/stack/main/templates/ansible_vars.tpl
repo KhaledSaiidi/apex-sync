@@ -3,8 +3,6 @@ cluster:
   endpoint: ${cluster_endpoint}
   kubeconfig:
     local_path: ${kubeconfig_local_path}
-  ssh_private_key:
-    local_path: ${ssh_private_key_path}
 
 tooling:
   kubectl_version: ${kubectl_version}

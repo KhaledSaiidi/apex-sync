@@ -18,6 +18,10 @@ variable "playbook_path" {
   type = string
 }
 
+variable "requirements_path" {
+  type = string
+}
+
 variable "working_directory" {
   type = string
 }

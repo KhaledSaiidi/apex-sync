@@ -1,5 +1,5 @@
 # Kubernetes access
-argocd_kubeconfig: "{{ kubeconfig_remote_path | default('~/.kube/config') }}"
+argocd_kubeconfig: "{{ kubeconfig_local_path | default('~/.kube/config') }}"
 argocd_values_local_path: "{{ artifacts.argocd_values_local_path | default('') }}"
 argocd_values_remote_path: "/tmp/argocd-values.yaml"
 
@@ -10,7 +10,7 @@ argocd_helm_repo_name: argo
 argocd_helm_repo_url: https://argoproj.github.io/argo-helm
 argocd_chart_name: argo/argo-cd
 argocd_chart_version: "7.6.12"   # pin like "6.9.4" if you want deterministic installs
-
+argocd_release_name: argocd
 # Readiness wait
 argocd_wait_timeout: 600   # seconds
 argocd_wait_interval: 10   # seconds

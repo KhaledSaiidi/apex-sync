@@ -19,19 +19,11 @@
       - gitops_root_app_manifest_local_stat.stat.isreg
     fail_msg: "Rendered root app manifest not found at {{ gitops_root_app_manifest_local_path }}."
 
-- name: Copy rendered root app manifest to bastion
-  ansible.builtin.copy:
-    src: "{{ gitops_root_app_manifest_local_path }}"
-    dest: "{{ gitops_root_app_manifest_remote_path }}"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: "0600"
-
 - name: Apply Argo CD root application
   ansible.builtin.command:
     cmd: >
       kubectl --kubeconfig "{{ argocd_kubeconfig }}"
-      apply -f "{{ gitops_root_app_manifest_remote_path }}"
+      apply -f "{{ gitops_root_app_manifest_local_path }}"
   register: gitops_root_app_apply
   changed_when: "'created' in (gitops_root_app_apply.stdout | lower) or 'configured' in (gitops_root_app_apply.stdout | lower)"
   failed_when: gitops_root_app_apply.rc != 0
