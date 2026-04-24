@@ -1,25 +1,25 @@
-cilium_kubeconfig: "{{ kubeconfig_local_path | default('~/.kube/config') }}"
-cilium_release_name: cilium
-cilium_helm_repo_name: cilium
-cilium_helm_repo_url: https://helm.cilium.io
-cilium_chart_name: cilium/cilium
-cilium_namespace: kube-system
-cilium_chart_version: 1.19.2
-cilium_daemonset_name: cilium
-cilium_operator_deployment_name: cilium-operator
-cilium_hubble_relay_deployment_name: hubble-relay
-cilium_hubble_ui_deployment_name: hubble-ui
+cilium_install_kubeconfig: "{{ kubeconfig_local_path | default('~/.kube/config') }}"
+cilium_install_release_name: cilium
+cilium_install_helm_repo_name: cilium
+cilium_install_helm_repo_url: https://helm.cilium.io
+cilium_install_chart_name: cilium/cilium
+cilium_install_namespace: kube-system
+cilium_install_chart_version: 1.19.2
+cilium_install_daemonset_name: cilium
+cilium_install_operator_deployment_name: cilium-operator
+cilium_install_hubble_relay_deployment_name: hubble-relay
+cilium_install_hubble_ui_deployment_name: hubble-ui
 
-cilium_image_pull_policy: IfNotPresent
-cilium_ipam_mode: kubernetes
-cilium_k8s_service_host: ""
-cilium_k8s_service_port: 6443
-cilium_kube_proxy_replacement: true
-cilium_socket_lb_host_namespace_only: true
-cilium_cni_exclusive: false
-cilium_hubble_enabled: true
-cilium_hubble_relay_enabled: true
-cilium_hubble_ui_enabled: true
+cilium_install_image_pull_policy: IfNotPresent
+cilium_install_ipam_mode: kubernetes
+cilium_install_k8s_service_host: ""
+cilium_install_k8s_service_port: 6443
+cilium_install_kube_proxy_replacement: true
+cilium_install_socket_lb_host_namespace_only: true
+cilium_install_cni_exclusive: false
+cilium_install_hubble_enabled: true
+cilium_install_hubble_relay_enabled: true
+cilium_install_hubble_ui_enabled: true
 
 # Readiness wait
-cilium_wait_timeout: 600   # seconds
+cilium_install_wait_timeout: 600   # seconds

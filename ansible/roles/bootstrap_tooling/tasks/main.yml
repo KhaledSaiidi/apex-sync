@@ -33,7 +33,7 @@
 
 - name: Derive kubectl package repository stream
   ansible.builtin.set_fact:
-    bootstrap_tooling_kubectl_repo_minor: "{{ bootstrap_tooling_kubectl_version | regex_replace('^v([0-9]+\\.[0-9]+).*$','\\1') }}"
+    bootstrap_tooling_kubectl_minor: "{{ bootstrap_tooling_kubectl_version | regex_replace('^v([0-9]+\\.[0-9]+).*$','\\1') }}"
   when: bootstrap_tooling_kubectl_check.rc != 0
 
 - name: Install kubectl on Debian-based hosts
@@ -59,7 +59,7 @@
 
     - name: Download Kubernetes apt signing key
       ansible.builtin.get_url:
-        url: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_repo_minor }}/deb/Release.key"
+        url: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_minor }}/deb/Release.key"
         dest: /tmp/kubernetes-apt-keyring.asc
         mode: "0644"
 
@@ -76,7 +76,7 @@
 
     - name: Configure Kubernetes apt repository
       ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_repo_minor }}/deb/ /"
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_minor }}/deb/ /"
         filename: kubernetes
         state: present
 
@@ -96,10 +96,10 @@
       ansible.builtin.yum_repository:
         name: kubernetes
         description: Kubernetes
-        baseurl: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_repo_minor }}/rpm/"
+        baseurl: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_minor }}/rpm/"
         enabled: true
         gpgcheck: true
-        gpgkey: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_repo_minor }}/rpm/repodata/repomd.xml.key"
+        gpgkey: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_minor }}/rpm/repodata/repomd.xml.key"
 
     - name: Install kubectl package
       ansible.builtin.package:
@@ -108,7 +108,7 @@
 
 - name: Fail when kubectl auto-install is unsupported on this OS family
   ansible.builtin.fail:
-    msg: "Automatic kubectl installation is only implemented for Debian and RedHat families. Install kubectl manually or extend bootstrap_tooling for {{ ansible_facts['os_family'] }}."
+    msg: "Automatic kubectl installation is only implemented for Debian and RedHat families. Install manually for {{ ansible_facts['os_family'] }}."
   when:
     - bootstrap_tooling_kubectl_check.rc != 0
     - ansible_facts['os_family'] not in ['Debian', 'RedHat']
@@ -135,6 +135,7 @@
   environment:
     DESIRED_VERSION: "{{ bootstrap_tooling_helm_version }}"
   become: true
+  changed_when: true
   when: bootstrap_tooling_helm_installer_dir is defined and bootstrap_tooling_helm_installer_dir.path is defined
 
 - name: Remove temporary Helm installer directory

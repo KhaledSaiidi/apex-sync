@@ -21,14 +21,14 @@
 - name: Install/Upgrade Argo CD via Helm (CLI, idempotent)
   ansible.builtin.command:
     cmd: >
-      helm upgrade --install {{ argocd_release_name }} {{ argocd_chart_name }}
-      --namespace {{ argocd_namespace }}
-      {% if argocd_create_namespace | bool %}--create-namespace{% endif %}
-      --kubeconfig {{ argocd_kubeconfig }}
+      helm upgrade --install {{ argocd_install_release_name }} {{ argocd_install_chart_name }}
+      --namespace {{ argocd_install_namespace }}
+      {% if argocd_install_create_namespace | bool %}--create-namespace{% endif %}
+      --kubeconfig {{ argocd_install_kubeconfig }}
       --wait
-      --timeout {{ argocd_wait_timeout }}s
+      --timeout {{ argocd_install_wait_timeout }}s
       -f {{ argocd_values_local_path }}
-      {% if argocd_chart_version | default('', true) %}--version {{ argocd_chart_version }}{% endif %}
+      {% if argocd_install_chart_version | default('', true) %}--version {{ argocd_install_chart_version }}{% endif %}
   register: argocd_helm_apply
   changed_when: >
     ('has been upgraded' in argocd_helm_apply.stdout) or

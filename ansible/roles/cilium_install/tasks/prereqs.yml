@@ -1,14 +1,14 @@
 - name: Ensure Cilium Helm repo is added
   ansible.builtin.command:
     cmd: >
-      helm repo add {{ cilium_helm_repo_name }} {{ cilium_helm_repo_url }} --force-update
-  register: cilium_repo_add
-  changed_when: "'has been added' in (cilium_repo_add.stdout | lower) or 'has been updated' in (cilium_repo_add.stdout | lower)"
-  failed_when: cilium_repo_add.rc != 0
+      helm repo add {{ cilium_install_helm_repo_name }} {{ cilium_install_helm_repo_url }} --force-update
+  register: cilium_install_repo_add
+  changed_when: "'has been added' in (cilium_install_repo_add.stdout | lower) or 'has been updated' in (cilium_install_repo_add.stdout | lower)"
+  failed_when: cilium_install_repo_add.rc != 0
 
 - name: Update Helm repos
   ansible.builtin.command:
     cmd: helm repo update
-  register: cilium_repo_update
+  register: cilium_install_repo_update
   changed_when: false
-  failed_when: cilium_repo_update.rc != 0
+  failed_when: cilium_install_repo_update.rc != 0

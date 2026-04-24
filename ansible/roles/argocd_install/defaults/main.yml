@@ -1,17 +1,17 @@
 # Kubernetes access
-argocd_kubeconfig: "{{ kubeconfig_local_path | default('~/.kube/config') }}"
-argocd_values_local_path: "{{ artifacts.argocd_values_local_path | default('') }}"
+argocd_install_kubeconfig: "{{ kubeconfig_local_path | default('~/.kube/config') }}"
+argocd_install_values_local_path: "{{ artifacts.argocd_values_local_path | default('') }}"
 
 # Chart settings
-argocd_namespace: argocd
-argocd_create_namespace: true
-argocd_helm_repo_name: argo
-argocd_helm_repo_url: https://argoproj.github.io/argo-helm
-argocd_chart_name: argo/argo-cd
-argocd_chart_version: "7.6.12"   # pin like "6.9.4" if you want deterministic installs
-argocd_release_name: argocd
-argocd_server_deployment_name: argocd-server
-argocd_repo_server_deployment_name: argocd-repo-server
-argocd_application_controller_statefulset_name: argocd-application-controller
+argocd_install_namespace: argocd
+argocd_install_create_namespace: true
+argocd_install_helm_repo_name: argo
+argocd_install_helm_repo_url: https://argoproj.github.io/argo-helm
+argocd_install_chart_name: argo/argo-cd
+argocd_install_chart_version: "7.6.12"   # pin like "6.9.4" if you want deterministic installs
+argocd_install_release_name: argocd
+argocd_install_server_deployment_name: argocd-server
+argocd_install_repo_server_deployment_name: argocd-repo-server
+argocd_install_application_controller_statefulset_name: argocd-application-controller
 # Readiness wait
-argocd_wait_timeout: 600   # seconds
+argocd_install_wait_timeout: 600   # seconds
