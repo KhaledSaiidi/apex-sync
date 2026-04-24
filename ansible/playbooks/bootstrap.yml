@@ -2,7 +2,6 @@
 - name: One-time bootstrap from localhost
   hosts: localhost
   gather_facts: true
-  become: true
 
   vars:
     kubeconfig_local_path: "{{ cluster.kubeconfig.local_path }}"

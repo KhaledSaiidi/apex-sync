@@ -14,7 +14,8 @@ resource "local_file" "argocd_values" {
     argocd_exec_timeout             = var.argocd_exec_timeout
     argocd_repo_server_timeout_secs = var.argocd_repo_server_timeout_secs
     argocd_lovely_plugin_name       = "argocd-lovely-plugin-v1.0"
-    argocd_lovely_plugin_image      = "ghcr.io/akuity/argocd-lovely-plugin:${var.argocd_plugin_version}"
+    argocd_lovely_plugin_k8s_name   = "argocd-lovely-plugin-v1-0"
+    argocd_lovely_plugin_image      = "ghcr.io/crumbhole/argocd-lovely-plugin-cmp:${var.argocd_plugin_version}"
   })
 
 }

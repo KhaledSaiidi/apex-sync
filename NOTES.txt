@@ -2,7 +2,7 @@ export KUBECONFIG=$PWD/kind-kubeconfig.yaml
 
 # 1) Create kind cluster
 kind create cluster \
-  --config kind-crossplane-cilium.yaml \
+  --config kind-kube-signal.yaml \
   --kubeconfig kind-kubeconfig.yaml
 
 kubectl cluster-info

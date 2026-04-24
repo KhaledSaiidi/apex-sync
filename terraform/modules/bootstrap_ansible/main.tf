@@ -26,10 +26,12 @@ resource "null_resource" "requirements" {
 
 resource "null_resource" "bootstrap" {
   triggers = {
-    inventory_sha256    = sha256(var.inventory_content)
-    vars_sha256         = sha256(var.vars_content)
-    playbook_sha256     = filesha256(var.playbook_path)
-    requirements_sha256 = filesha256(var.requirements_path)
+    inventory_sha256           = sha256(var.inventory_content)
+    vars_sha256                = sha256(var.vars_content)
+    playbook_sha256            = filesha256(var.playbook_path)
+    requirements_sha256        = filesha256(var.requirements_path)
+    bootstrap_sources_sha256   = var.bootstrap_sources_sha256
+    bootstrap_artifacts_sha256 = var.bootstrap_artifacts_sha256
   }
 
   provisioner "local-exec" {

@@ -12,74 +12,133 @@
 
 - name: Check installed kubectl version
   ansible.builtin.command:
-    cmd: command -v kubectl
+    argv:
+      - kubectl
+      - version
+      - --client
+      - --output=yaml
   register: bootstrap_tooling_kubectl_check
   changed_when: false
   failed_when: false
 
 - name: Check installed helm version
   ansible.builtin.command:
-    cmd: command -v helm
+    argv:
+      - helm
+      - version
+      - --short
   register: bootstrap_tooling_helm_check
   changed_when: false
   failed_when: false
 
-- name: Normalize bootstrap tooling platform values
+- name: Derive kubectl package repository stream
   ansible.builtin.set_fact:
-    bootstrap_tooling_os: "{{ ansible_system | lower }}"
-    bootstrap_tooling_arch: "{{ bootstrap_tooling_arch_map[ansible_architecture] | default('') }}"
-    bootstrap_tooling_arch_map:
-      x86_64: amd64
-      amd64: amd64
-      aarch64: arm64
-      arm64: arm64
-  when: bootstrap_tooling_kubectl_check.rc != 0 or bootstrap_tooling_helm_check.rc != 0
-
-- name: Assert bootstrap architecture is supported
-  ansible.builtin.assert:
-    that:
-      - bootstrap_tooling_arch | length > 0
-    fail_msg: "Unsupported bootstrap architecture {{ ansible_architecture }} for kubectl/helm downloads."
-  when: bootstrap_tooling_kubectl_check.rc != 0 or bootstrap_tooling_helm_check.rc != 0
-
-- name: Install kubectl
-  ansible.builtin.get_url:
-    url: "https://dl.k8s.io/release/{{ bootstrap_tooling_kubectl_version }}/bin/{{ bootstrap_tooling_os }}/{{ bootstrap_tooling_arch }}/kubectl"
-    dest: /usr/local/bin/kubectl
-    mode: "0755"
+    bootstrap_tooling_kubectl_repo_minor: "{{ bootstrap_tooling_kubectl_version | regex_replace('^v([0-9]+\\.[0-9]+).*$','\\1') }}"
   when: bootstrap_tooling_kubectl_check.rc != 0
 
-- name: Create temporary directory for Helm download
+- name: Install kubectl on Debian-based hosts
+  become: true
+  when:
+    - bootstrap_tooling_kubectl_check.rc != 0
+    - ansible_facts['os_family'] == 'Debian'
+  block:
+    - name: Install kubectl repo prerequisites
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+        update_cache: true
+
+    - name: Ensure apt keyrings directory exists
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Download Kubernetes apt signing key
+      ansible.builtin.get_url:
+        url: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_repo_minor }}/deb/Release.key"
+        dest: /tmp/kubernetes-apt-keyring.asc
+        mode: "0644"
+
+    - name: Convert Kubernetes apt signing key
+      ansible.builtin.command:
+        argv:
+          - gpg
+          - --dearmor
+          - --yes
+          - --output
+          - /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+          - /tmp/kubernetes-apt-keyring.asc
+      changed_when: true
+
+    - name: Configure Kubernetes apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_repo_minor }}/deb/ /"
+        filename: kubernetes
+        state: present
+
+    - name: Install kubectl package
+      ansible.builtin.apt:
+        name: kubectl
+        state: present
+        update_cache: true
+
+- name: Install kubectl on RedHat-based hosts
+  become: true
+  when:
+    - bootstrap_tooling_kubectl_check.rc != 0
+    - ansible_facts['os_family'] == 'RedHat'
+  block:
+    - name: Configure Kubernetes yum repository
+      ansible.builtin.yum_repository:
+        name: kubernetes
+        description: Kubernetes
+        baseurl: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_repo_minor }}/rpm/"
+        enabled: true
+        gpgcheck: true
+        gpgkey: "https://pkgs.k8s.io/core:/stable:/v{{ bootstrap_tooling_kubectl_repo_minor }}/rpm/repodata/repomd.xml.key"
+
+    - name: Install kubectl package
+      ansible.builtin.package:
+        name: kubectl
+        state: present
+
+- name: Fail when kubectl auto-install is unsupported on this OS family
+  ansible.builtin.fail:
+    msg: "Automatic kubectl installation is only implemented for Debian and RedHat families. Install kubectl manually or extend bootstrap_tooling for {{ ansible_facts['os_family'] }}."
+  when:
+    - bootstrap_tooling_kubectl_check.rc != 0
+    - ansible_facts['os_family'] not in ['Debian', 'RedHat']
+
+- name: Create temporary directory for Helm installer
   ansible.builtin.tempfile:
     state: directory
-    suffix: helm-download
-  register: bootstrap_tooling_helm_download_dir
+    suffix: helm-installer
+  register: bootstrap_tooling_helm_installer_dir
   when: bootstrap_tooling_helm_check.rc != 0
 
-- name: Download Helm archive
+- name: Download Helm installer script
   ansible.builtin.get_url:
-    url: "https://get.helm.sh/helm-{{ bootstrap_tooling_helm_version }}-{{ bootstrap_tooling_os }}-{{ bootstrap_tooling_arch }}.tar.gz"
-    dest: "{{ bootstrap_tooling_helm_download_dir.path }}/helm.tar.gz"
-    mode: "0644"
-  when: bootstrap_tooling_helm_download_dir is defined and bootstrap_tooling_helm_download_dir.path is defined
-
-- name: Extract Helm archive
-  ansible.builtin.unarchive:
-    src: "{{ bootstrap_tooling_helm_download_dir.path }}/helm.tar.gz"
-    dest: "{{ bootstrap_tooling_helm_download_dir.path }}"
-    remote_src: true
-  when: bootstrap_tooling_helm_download_dir is defined and bootstrap_tooling_helm_download_dir.path is defined
-
-- name: Install Helm
-  ansible.builtin.copy:
-    src: "{{ bootstrap_tooling_helm_download_dir.path }}/{{ bootstrap_tooling_os }}-{{ bootstrap_tooling_arch }}/helm"
-    dest: /usr/local/bin/helm
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: "{{ bootstrap_tooling_helm_installer_dir.path }}/get-helm-3"
     mode: "0755"
-    remote_src: true
-  when: bootstrap_tooling_helm_download_dir is defined and bootstrap_tooling_helm_download_dir.path is defined
+  when: bootstrap_tooling_helm_installer_dir is defined and bootstrap_tooling_helm_installer_dir.path is defined
 
-- name: Remove temporary Helm download directory
+- name: Install Helm via official installer
+  ansible.builtin.command:
+    argv:
+      - bash
+      - "{{ bootstrap_tooling_helm_installer_dir.path }}/get-helm-3"
+  environment:
+    DESIRED_VERSION: "{{ bootstrap_tooling_helm_version }}"
+  become: true
+  when: bootstrap_tooling_helm_installer_dir is defined and bootstrap_tooling_helm_installer_dir.path is defined
+
+- name: Remove temporary Helm installer directory
   ansible.builtin.file:
-    path: "{{ bootstrap_tooling_helm_download_dir.path }}"
+    path: "{{ bootstrap_tooling_helm_installer_dir.path }}"
     state: absent
-  when: bootstrap_tooling_helm_download_dir is defined and bootstrap_tooling_helm_download_dir.path is defined
+  when: bootstrap_tooling_helm_installer_dir is defined and bootstrap_tooling_helm_installer_dir.path is defined

@@ -34,7 +34,7 @@ extraObjects:
 
 repoServer:
   initContainers:
-    - name: install-${argocd_lovely_plugin_name}
+    - name: install-${argocd_lovely_plugin_k8s_name}
       image: "${argocd_lovely_plugin_image}"
       imagePullPolicy: IfNotPresent
       command:
@@ -50,8 +50,8 @@ repoServer:
 
   extraContainers:
     - name: lovely-plugin
-      image: "{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ default (default .Chart.AppVersion .Values.global.image.tag) .Values.repoServer.image.tag }}"
-      imagePullPolicy: "{{ default .Values.global.image.imagePullPolicy .Values.repoServer.image.imagePullPolicy }}"
+      image: "${argocd_lovely_plugin_image}"
+      imagePullPolicy: IfNotPresent
       command:
         - /var/run/argocd/argocd-cmp-server
       env:

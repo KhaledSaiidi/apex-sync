@@ -22,6 +22,14 @@ variable "requirements_path" {
   type = string
 }
 
+variable "bootstrap_sources_sha256" {
+  type = string
+}
+
+variable "bootstrap_artifacts_sha256" {
+  type = string
+}
+
 variable "working_directory" {
   type = string
 }

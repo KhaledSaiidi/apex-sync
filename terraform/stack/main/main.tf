@@ -1,11 +1,17 @@
 locals {
-  artifacts_dir   = "${path.root}/artifacts"
-  repo_root       = abspath("${path.root}/../../../")
-  kubeconfig_path = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
+  artifacts_dir            = abspath("${path.root}/artifacts")
+  repo_root                = abspath("${path.root}/../../../")
+  kubeconfig_path          = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
+  bootstrap_sources_files  = sort(concat(["ansible.cfg"], tolist(fileset(local.repo_root, "ansible/**/*.yml")), tolist(fileset(local.repo_root, "ansible/**/*.yaml"))))
+  bootstrap_sources_sha256 = sha256(join("", [for file in local.bootstrap_sources_files : filesha256("${local.repo_root}/${file}")]))
+  bootstrap_artifacts_sha256 = sha256(join("", [
+    module.argocd.argocd_values_sha256,
+    module.argocd.argocd_root_app_sha256
+  ]))
 }
 resource "null_resource" "artifacts_dir" {
   provisioner "local-exec" {
-    command = "mkdir -p ${local.artifacts_dir}"
+    command = "mkdir -p '${local.artifacts_dir}'"
   }
 }
 
@@ -28,7 +34,7 @@ module "argocd" {
 }
 
 resource "local_file" "ansible_inventory" {
-  filename        = "${path.root}/artifacts/${var.project_name}-inventory.ini"
+  filename        = "${local.artifacts_dir}/${var.project_name}-inventory.ini"
   file_permission = "0644"
 
   content = templatefile("${path.module}/templates/inventory.tpl", {
@@ -43,7 +49,7 @@ resource "local_file" "ansible_inventory" {
 }
 
 resource "local_file" "ansible_vars" {
-  filename        = "${path.root}/artifacts/${var.project_name}-ansible-vars.yaml"
+  filename        = "${local.artifacts_dir}/${var.project_name}-ansible-vars.yaml"
   file_permission = "0644"
 
   content = templatefile("${path.module}/templates/ansible_vars.tpl", {
@@ -63,13 +69,15 @@ resource "local_file" "ansible_vars" {
 module "bootstrap_ansible" {
   source = "../../modules/bootstrap_ansible"
 
-  inventory_file_path = local_file.ansible_inventory.filename
-  inventory_content   = local_file.ansible_inventory.content
-  requirements_path   = "${local.repo_root}/ansible/requirements.yml"
-  vars_file_path      = local_file.ansible_vars.filename
-  vars_content        = local_file.ansible_vars.content
-  playbook_path       = "${local.repo_root}/ansible/playbooks/bootstrap.yml"
-  working_directory   = local.repo_root
+  inventory_file_path        = abspath(local_file.ansible_inventory.filename)
+  inventory_content          = local_file.ansible_inventory.content
+  requirements_path          = "${local.repo_root}/ansible/requirements.yml"
+  vars_file_path             = abspath(local_file.ansible_vars.filename)
+  vars_content               = local_file.ansible_vars.content
+  playbook_path              = "${local.repo_root}/ansible/playbooks/bootstrap.yml"
+  bootstrap_sources_sha256   = local.bootstrap_sources_sha256
+  bootstrap_artifacts_sha256 = local.bootstrap_artifacts_sha256
+  working_directory          = local.repo_root
 
   depends_on = [
     local_file.ansible_inventory,
