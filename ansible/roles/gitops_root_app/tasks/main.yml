@@ -22,7 +22,7 @@
 - name: Apply Argo CD root application
   ansible.builtin.command:
     cmd: >
-      kubectl --kubeconfig "{{ argocd_kubeconfig }}"
+      kubectl --kubeconfig "{{ gitops_root_app_kubeconfig }}"
       apply -f "{{ gitops_root_app_manifest_local_path }}"
   register: gitops_root_app_apply
   changed_when: "'created' in (gitops_root_app_apply.stdout | lower) or 'configured' in (gitops_root_app_apply.stdout | lower)"
@@ -34,7 +34,7 @@
     kind: Application
     name: "{{ gitops_root_app_name }}"
     namespace: "{{ gitops_root_app_namespace }}"
-    kubeconfig: "{{ argocd_kubeconfig }}"
+    kubeconfig: "{{ gitops_root_app_kubeconfig }}"
   register: gitops_root_app_info
   changed_when: false
   failed_when: (gitops_root_app_info.resources | default([])) | length == 0

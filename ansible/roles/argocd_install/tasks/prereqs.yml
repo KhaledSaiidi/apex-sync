@@ -1,7 +1,7 @@
 - name: Ensure Argo Helm repo is added (idempotent)
   ansible.builtin.command:
     cmd: >
-      helm repo add {{ argocd_helm_repo_name }} {{ argocd_helm_repo_url }} --force-update
+      helm repo add {{ argocd_install_helm_repo_name }} {{ argocd_install_helm_repo_url }} --force-update
   register: argocd_repo_add
   changed_when: "'has been added' in (argocd_repo_add.stdout | lower) or 'has been updated' in (argocd_repo_add.stdout | lower)"
   failed_when: argocd_repo_add.rc not in [0]

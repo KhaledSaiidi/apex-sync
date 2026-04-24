@@ -1,12 +1,12 @@
 - name: Validate rendered Argo CD values path
   ansible.builtin.assert:
     that:
-      - argocd_values_local_path | default('') | string | length > 0
-    fail_msg: "argocd_values_local_path must point to the Terraform-rendered Argo CD values file."
+      - argocd_install_values_local_path | default('') | string | length > 0
+    fail_msg: "argocd_install_values_local_path must point to the Terraform-rendered Argo CD values file."
 
 - name: Check rendered Argo CD values on controller
   ansible.builtin.stat:
-    path: "{{ argocd_values_local_path }}"
+    path: "{{ argocd_install_values_local_path }}"
   delegate_to: localhost
   become: false
   register: argocd_values_local_stat
@@ -16,7 +16,7 @@
     that:
       - argocd_values_local_stat.stat.exists
       - argocd_values_local_stat.stat.isreg
-    fail_msg: "Rendered Argo CD values file not found at {{ argocd_values_local_path }}."
+    fail_msg: "Rendered Argo CD values file not found at {{ argocd_install_values_local_path }}."
 
 - name: Install/Upgrade Argo CD via Helm (CLI, idempotent)
   ansible.builtin.command:
@@ -25,9 +25,8 @@
       --namespace {{ argocd_install_namespace }}
       {% if argocd_install_create_namespace | bool %}--create-namespace{% endif %}
       --kubeconfig {{ argocd_install_kubeconfig }}
-      --wait
       --timeout {{ argocd_install_wait_timeout }}s
-      -f {{ argocd_values_local_path }}
+      -f {{ argocd_install_values_local_path }}
       {% if argocd_install_chart_version | default('', true) %}--version {{ argocd_install_chart_version }}{% endif %}
   register: argocd_helm_apply
   changed_when: >
