@@ -70,7 +70,7 @@
     cmd: >
       kubectl --kubeconfig "{{ argocd_kubeconfig }}"
       -n "{{ argocd_namespace }}"
-      get deploy argocd-application-controller
+      get statefulset argocd-application-controller
       -o jsonpath='{.status.readyReplicas}/{.spec.replicas}'
   register: argocd_controller_rr
   changed_when: false

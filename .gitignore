@@ -15,7 +15,8 @@ override.tf.json
 .terraform.tfstate.lock.info
 .terraformrc
 terraform.rc
-
+.terraform
+.terraform.*
 # Ansible
 *.retry
 ansible.log

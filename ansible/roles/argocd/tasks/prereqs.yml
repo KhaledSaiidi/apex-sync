@@ -1,18 +1,10 @@
 - name: Ensure Argo Helm repo is added (idempotent)
   ansible.builtin.command:
     cmd: >
-      helm repo add {{ argocd_helm_repo_name }} {{ argocd_helm_repo_url }}
-  args:
-    creates: "/tmp/.helm_repo_added_{{ argocd_helm_repo_name }}"
+      helm repo add {{ argocd_helm_repo_name }} {{ argocd_helm_repo_url }} --force-update
   register: argocd_repo_add
-  changed_when: argocd_repo_add.rc == 0
+  changed_when: "'has been added' in (argocd_repo_add.stdout | lower) or 'has been updated' in (argocd_repo_add.stdout | lower)"
   failed_when: argocd_repo_add.rc not in [0]
-
-- name: Mark repo as added (idempotence marker)
-  ansible.builtin.file:
-    path: "/tmp/.helm_repo_added_{{ argocd_helm_repo_name }}"
-    state: touch
-    mode: "0600"
 
 - name: Helm repo update
   ansible.builtin.command:

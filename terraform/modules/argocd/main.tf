@@ -25,7 +25,7 @@ resource "local_file" "argocd_root_app" {
   content = templatefile("${path.module}/templates/argocd_root_app.tpl", {
     argocd_namespace                      = "argocd"
     gitops_root_app_name                  = "app-of-apps"
-    gitops_root_app_project               = var.project_name
+    gitops_root_app_project               = "default"
     gitops_root_app_repo_url              = var.gitops_root_app_repo_url
     gitops_root_app_target_revision       = var.gitops_root_app_target_revision
     gitops_root_app_path                  = var.gitops_root_app_path

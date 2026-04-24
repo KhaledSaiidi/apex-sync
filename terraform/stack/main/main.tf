@@ -1,6 +1,7 @@
 locals {
-  artifacts_dir = "${path.root}/artifacts"
-  repo_root     = abspath("${path.root}/../../../")
+  artifacts_dir   = "${path.root}/artifacts"
+  repo_root       = abspath("${path.root}/../../../")
+  kubeconfig_path = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
 }
 resource "null_resource" "artifacts_dir" {
   provisioner "local-exec" {
@@ -31,7 +32,6 @@ resource "local_file" "ansible_inventory" {
   file_permission = "0644"
 
   content = templatefile("${path.module}/templates/inventory.tpl", {
-    ansible_user               = var.ansible_user
     argocd_values_local_path   = module.argocd.argocd_values_path
     gitops_root_app_local_path = module.argocd.argocd_root_app_path
   })
@@ -48,11 +48,8 @@ resource "local_file" "ansible_vars" {
 
   content = templatefile("${path.module}/templates/ansible_vars.tpl", {
     project_name                  = var.project_name
-    kubeconfig_local_path         = pathexpand(var.kubeconfig_path)
-    ssh_private_key_path          = ""
+    kubeconfig_local_path         = local.kubeconfig_path
     cluster_endpoint              = var.cluster_endpoint
-    kubectl_version               = var.kubectl_version
-    helm_version                  = var.helm_version
     argocd_values_local_path      = module.argocd.argocd_values_path
     gitops_root_app_manifest_path = module.argocd.argocd_root_app_path
   })
@@ -68,7 +65,7 @@ module "bootstrap_ansible" {
 
   inventory_file_path = local_file.ansible_inventory.filename
   inventory_content   = local_file.ansible_inventory.content
-  requirements_path   = local_file.requirements_path.filename
+  requirements_path   = "${local.repo_root}/ansible/requirements.yml"
   vars_file_path      = local_file.ansible_vars.filename
   vars_content        = local_file.ansible_vars.content
   playbook_path       = "${local.repo_root}/ansible/playbooks/bootstrap.yml"
