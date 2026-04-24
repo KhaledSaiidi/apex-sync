@@ -1,0 +1,66 @@
+- name: Read Kubernetes API server endpoint from kubeconfig
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ cilium_kubeconfig }}"
+      config view --minify -o jsonpath={.clusters[0].cluster.server}
+  register: cilium_kubeconfig_server
+  changed_when: false
+  failed_when: false
+
+- name: Derive Kubernetes API server host from kubeconfig
+  ansible.builtin.set_fact:
+    cilium_effective_k8s_service_host: >-
+      {{
+        cilium_k8s_service_host
+        if (cilium_k8s_service_host | default('') | trim | length) > 0
+        else (
+          cilium_kubeconfig_server.stdout
+          | default('')
+          | trim
+          | regex_replace('^https?://', '')
+          | regex_replace(':[0-9]+$', '')
+        )
+      }}
+
+- name: Assert Kubernetes API server host is available for Cilium
+  ansible.builtin.assert:
+    that:
+      - cilium_effective_k8s_service_host | length > 0
+    fail_msg: >-
+      Unable to determine the Kubernetes API server host for Cilium.
+      Set cilium_k8s_service_host explicitly or provide a kubeconfig with a server endpoint.
+
+- name: Install/Upgrade Cilium via Helm
+  ansible.builtin.command:
+    cmd: >
+      helm upgrade --install {{ cilium_release_name }} {{ cilium_chart_name }}
+      --namespace {{ cilium_namespace }}
+      --create-namespace
+      --version {{ cilium_chart_version }}
+      --kubeconfig {{ cilium_kubeconfig }}
+      --set image.pullPolicy={{ cilium_image_pull_policy }}
+      --set ipam.mode={{ cilium_ipam_mode }}
+      --set k8sServiceHost={{ cilium_effective_k8s_service_host }}
+      --set k8sServicePort={{ cilium_k8s_service_port }}
+      --set kubeProxyReplacement={{ cilium_kube_proxy_replacement }}
+      --set socketLB.hostNamespaceOnly={{ cilium_socket_lb_host_namespace_only }}
+      --set cni.exclusive={{ cilium_cni_exclusive }}
+      --set hubble.enabled={{ cilium_hubble_enabled }}
+      --set hubble.relay.enabled={{ cilium_hubble_relay_enabled }}
+      --set hubble.ui.enabled={{ cilium_hubble_ui_enabled }}
+      --wait
+      --timeout {{ cilium_wait_timeout }}s
+  register: cilium_helm_apply
+  changed_when: >
+    ('has been upgraded' in cilium_helm_apply.stdout) or
+    ('has been installed' in cilium_helm_apply.stdout) or
+    ('STATUS: deployed' in cilium_helm_apply.stdout) or
+    ('STATUS: superseded' in cilium_helm_apply.stdout)
+  failed_when: cilium_helm_apply.rc != 0
+  retries: 3
+  delay: 10
+  until: cilium_helm_apply is succeeded
+  notify: Wait for Cilium readiness
+
+- name: Flush Cilium readiness handlers
+  ansible.builtin.meta: flush_handlers

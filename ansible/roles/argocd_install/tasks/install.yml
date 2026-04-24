@@ -1,0 +1,42 @@
+- name: Validate rendered Argo CD values path
+  ansible.builtin.assert:
+    that:
+      - argocd_values_local_path | default('') | string | length > 0
+    fail_msg: "argocd_values_local_path must point to the Terraform-rendered Argo CD values file."
+
+- name: Check rendered Argo CD values on controller
+  ansible.builtin.stat:
+    path: "{{ argocd_values_local_path }}"
+  delegate_to: localhost
+  become: false
+  register: argocd_values_local_stat
+
+- name: Ensure rendered Argo CD values exist
+  ansible.builtin.assert:
+    that:
+      - argocd_values_local_stat.stat.exists
+      - argocd_values_local_stat.stat.isreg
+    fail_msg: "Rendered Argo CD values file not found at {{ argocd_values_local_path }}."
+
+- name: Install/Upgrade Argo CD via Helm (CLI, idempotent)
+  ansible.builtin.command:
+    cmd: >
+      helm upgrade --install {{ argocd_release_name }} {{ argocd_chart_name }}
+      --namespace {{ argocd_namespace }}
+      {% if argocd_create_namespace | bool %}--create-namespace{% endif %}
+      --kubeconfig {{ argocd_kubeconfig }}
+      --wait
+      --timeout {{ argocd_wait_timeout }}s
+      -f {{ argocd_values_local_path }}
+      {% if argocd_chart_version | default('', true) %}--version {{ argocd_chart_version }}{% endif %}
+  register: argocd_helm_apply
+  changed_when: >
+    ('has been upgraded' in argocd_helm_apply.stdout) or
+    ('has been installed' in argocd_helm_apply.stdout) or
+    ('STATUS: deployed' in argocd_helm_apply.stdout) or
+    ('STATUS: superseded' in argocd_helm_apply.stdout)
+  failed_when: argocd_helm_apply.rc != 0
+  notify: Wait for Argo CD readiness
+
+- name: Flush Argo CD readiness handlers
+  ansible.builtin.meta: flush_handlers

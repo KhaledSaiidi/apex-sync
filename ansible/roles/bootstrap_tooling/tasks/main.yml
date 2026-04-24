@@ -1,0 +1,85 @@
+- name: Check kubeconfig file exists on the bootstrap host
+  ansible.builtin.stat:
+    path: "{{ bootstrap_tooling_kubeconfig }}"
+  register: bootstrap_tooling_kubeconfig_stat
+
+- name: Assert kubeconfig file exists
+  ansible.builtin.assert:
+    that:
+      - bootstrap_tooling_kubeconfig_stat.stat.exists
+      - bootstrap_tooling_kubeconfig_stat.stat.isreg
+    fail_msg: "Kubeconfig file not found at {{ bootstrap_tooling_kubeconfig }}."
+
+- name: Check installed kubectl version
+  ansible.builtin.command:
+    cmd: command -v kubectl
+  register: bootstrap_tooling_kubectl_check
+  changed_when: false
+  failed_when: false
+
+- name: Check installed helm version
+  ansible.builtin.command:
+    cmd: command -v helm
+  register: bootstrap_tooling_helm_check
+  changed_when: false
+  failed_when: false
+
+- name: Normalize bootstrap tooling platform values
+  ansible.builtin.set_fact:
+    bootstrap_tooling_os: "{{ ansible_system | lower }}"
+    bootstrap_tooling_arch: "{{ bootstrap_tooling_arch_map[ansible_architecture] | default('') }}"
+    bootstrap_tooling_arch_map:
+      x86_64: amd64
+      amd64: amd64
+      aarch64: arm64
+      arm64: arm64
+  when: bootstrap_tooling_kubectl_check.rc != 0 or bootstrap_tooling_helm_check.rc != 0
+
+- name: Assert bootstrap architecture is supported
+  ansible.builtin.assert:
+    that:
+      - bootstrap_tooling_arch | length > 0
+    fail_msg: "Unsupported bootstrap architecture {{ ansible_architecture }} for kubectl/helm downloads."
+  when: bootstrap_tooling_kubectl_check.rc != 0 or bootstrap_tooling_helm_check.rc != 0
+
+- name: Install kubectl
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/{{ bootstrap_tooling_kubectl_version }}/bin/{{ bootstrap_tooling_os }}/{{ bootstrap_tooling_arch }}/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: "0755"
+  when: bootstrap_tooling_kubectl_check.rc != 0
+
+- name: Create temporary directory for Helm download
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: helm-download
+  register: bootstrap_tooling_helm_download_dir
+  when: bootstrap_tooling_helm_check.rc != 0
+
+- name: Download Helm archive
+  ansible.builtin.get_url:
+    url: "https://get.helm.sh/helm-{{ bootstrap_tooling_helm_version }}-{{ bootstrap_tooling_os }}-{{ bootstrap_tooling_arch }}.tar.gz"
+    dest: "{{ bootstrap_tooling_helm_download_dir.path }}/helm.tar.gz"
+    mode: "0644"
+  when: bootstrap_tooling_helm_download_dir is defined and bootstrap_tooling_helm_download_dir.path is defined
+
+- name: Extract Helm archive
+  ansible.builtin.unarchive:
+    src: "{{ bootstrap_tooling_helm_download_dir.path }}/helm.tar.gz"
+    dest: "{{ bootstrap_tooling_helm_download_dir.path }}"
+    remote_src: true
+  when: bootstrap_tooling_helm_download_dir is defined and bootstrap_tooling_helm_download_dir.path is defined
+
+- name: Install Helm
+  ansible.builtin.copy:
+    src: "{{ bootstrap_tooling_helm_download_dir.path }}/{{ bootstrap_tooling_os }}-{{ bootstrap_tooling_arch }}/helm"
+    dest: /usr/local/bin/helm
+    mode: "0755"
+    remote_src: true
+  when: bootstrap_tooling_helm_download_dir is defined and bootstrap_tooling_helm_download_dir.path is defined
+
+- name: Remove temporary Helm download directory
+  ansible.builtin.file:
+    path: "{{ bootstrap_tooling_helm_download_dir.path }}"
+    state: absent
+  when: bootstrap_tooling_helm_download_dir is defined and bootstrap_tooling_helm_download_dir.path is defined

@@ -1,0 +1,7 @@
+- name: Pre-reqs
+  ansible.builtin.import_tasks: prereqs.yml
+  tags: [cilium, prereqs]
+
+- name: Install/Upgrade Cilium
+  ansible.builtin.import_tasks: install.yml
+  tags: [cilium, install]

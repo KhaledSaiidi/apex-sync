@@ -1,0 +1,41 @@
+- name: Wait for Cilium daemonset rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ cilium_kubeconfig }}"
+      -n "{{ cilium_namespace }}"
+      rollout status daemonset/{{ cilium_daemonset_name }}
+      --timeout={{ cilium_wait_timeout }}s
+  changed_when: false
+  listen: Wait for Cilium readiness
+
+- name: Wait for Cilium operator rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ cilium_kubeconfig }}"
+      -n "{{ cilium_namespace }}"
+      rollout status deployment/{{ cilium_operator_deployment_name }}
+      --timeout={{ cilium_wait_timeout }}s
+  changed_when: false
+  listen: Wait for Cilium readiness
+
+- name: Wait for Hubble relay rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ cilium_kubeconfig }}"
+      -n "{{ cilium_namespace }}"
+      rollout status deployment/{{ cilium_hubble_relay_deployment_name }}
+      --timeout={{ cilium_wait_timeout }}s
+  changed_when: false
+  when: cilium_hubble_relay_enabled | bool
+  listen: Wait for Cilium readiness
+
+- name: Wait for Hubble UI rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ cilium_kubeconfig }}"
+      -n "{{ cilium_namespace }}"
+      rollout status deployment/{{ cilium_hubble_ui_deployment_name }}
+      --timeout={{ cilium_wait_timeout }}s
+  changed_when: false
+  when: cilium_hubble_ui_enabled | bool
+  listen: Wait for Cilium readiness

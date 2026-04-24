@@ -1,0 +1,29 @@
+- name: Wait for Argo CD server rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ argocd_kubeconfig }}"
+      -n "{{ argocd_namespace }}"
+      rollout status deployment/{{ argocd_server_deployment_name }}
+      --timeout={{ argocd_wait_timeout }}s
+  changed_when: false
+  listen: Wait for Argo CD readiness
+
+- name: Wait for Argo CD repo-server rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ argocd_kubeconfig }}"
+      -n "{{ argocd_namespace }}"
+      rollout status deployment/{{ argocd_repo_server_deployment_name }}
+      --timeout={{ argocd_wait_timeout }}s
+  changed_when: false
+  listen: Wait for Argo CD readiness
+
+- name: Wait for Argo CD application-controller rollout
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ argocd_kubeconfig }}"
+      -n "{{ argocd_namespace }}"
+      rollout status statefulset/{{ argocd_application_controller_statefulset_name }}
+      --timeout={{ argocd_wait_timeout }}s
+  changed_when: false
+  listen: Wait for Argo CD readiness
