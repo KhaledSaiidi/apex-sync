@@ -51,17 +51,17 @@ variable "cluster_endpoint" {
 }
 
 variable "github_url" {
-  type    = string
+  type = string
 }
 
 variable "github_app_id" {
-  type    = string
+  type = string
 }
 
 variable "github_app_installation_id" {
-  type    = string
+  type = string
 }
 
 variable "github_app_private_key" {
-  type    = string
+  type = string
 }

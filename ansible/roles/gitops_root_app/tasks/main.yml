@@ -16,7 +16,8 @@
         type: git
         githubAppID: "{{ gitops_root_app_github_app_id }}"
         githubAppInstallationID: "{{ gitops_root_app_github_app_installation_id }}"
-        githubAppPrivateKey: "{{ gitops_root_app_github_app_private_key }}"
+        githubAppPrivateKey: |-
+          {{ gitops_root_app_github_app_private_key }}
   no_log: true
 
 - name: Validate rendered root app manifest path
