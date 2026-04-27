@@ -4,7 +4,6 @@ namespace: kyverno
 helmCharts:
   - name: kyverno
     repo: https://kyverno.github.io/kyverno
-    version: v1.20.0
     releaseName: kyverno
     namespace: kyverno
 resources:

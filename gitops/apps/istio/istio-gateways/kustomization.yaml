@@ -7,6 +7,5 @@ resources:
 helmCharts:
   - name: istio-gateways
     repo: https://kubernetes-sigs.github.io/istio-gateways
-    version: v1.20.0
     releaseName: istio-gateways
     namespace: istio-gateways

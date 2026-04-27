@@ -4,6 +4,5 @@ namespace: kiali
 helmCharts:
   - name: kiali
     repo: https://kubernetes-sigs.github.io/kiali
-    version: v1.20.0
     releaseName: kiali
     namespace: kiali

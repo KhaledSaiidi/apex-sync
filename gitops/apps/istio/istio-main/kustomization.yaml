@@ -4,7 +4,6 @@ namespace: istio-main
 helmCharts:
   - name: istio-main
     repo: https://kubernetes-sigs.github.io/istio-main
-    version: v1.20.0
     releaseName: istio-main
     namespace: istio-main
 
