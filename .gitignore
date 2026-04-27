@@ -58,7 +58,7 @@ vault-pass.txt
 *~
 tmp/
 .tmp/
-
+artifacts/
 # Editor / OS noise
 .DS_Store
 Thumbs.db

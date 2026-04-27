@@ -40,6 +40,11 @@ variable "gitops_root_app_path" {
   default = "gitops/argo-apps"
 }
 
+variable "ansible_python_interpreter" {
+  type    = string
+  default = "/usr/bin/python3"
+}
+
 variable "kubeconfig_path" {
   type    = string
   default = "../../../kind-kubeconfig.yaml"

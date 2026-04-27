@@ -38,6 +38,7 @@ resource "local_file" "ansible_inventory" {
   file_permission = "0644"
 
   content = templatefile("${path.module}/templates/inventory.tpl", {
+    ansible_python_interpreter = var.ansible_python_interpreter
     argocd_values_local_path   = module.argocd.argocd_values_path
     gitops_root_app_local_path = module.argocd.argocd_root_app_path
   })
