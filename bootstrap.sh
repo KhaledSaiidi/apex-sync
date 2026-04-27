@@ -31,6 +31,8 @@ if ! (set -o noclobber; echo "$$" >"$LOCKFILE") 2>/dev/null; then
     exit 1
 fi
 
+source .env.bootstrap
+
 mkdir -p "$LOG_DIR"
 
 echo "Running terraform apply in $TERRAFORM_DIR"
