@@ -50,6 +50,7 @@ mkdir -p "$LOG_DIR"
 
 echo "Running terraform destroy in $TERRAFORM_DIR"
 echo "Logging to $LOG_FILE"
+source .env.bootstrap
 
 cd "$TERRAFORM_DIR"
 terraform init 2>&1 | tee "$LOG_FILE"

@@ -13,7 +13,7 @@ resource "null_resource" "requirements" {
   }
 
   provisioner "local-exec" {
-    command = "mkdir -p '${local.ansible_tmp_dir}' '${local.ansible_collections_dir}' && ansible-galaxy collection install -r '${var.requirements_path}' -p '${local.ansible_collections_dir}'"
+    command = "mkdir -p '${local.ansible_tmp_dir}' '${local.ansible_collections_dir}' && ansible-galaxy collection install -U -r '${var.requirements_path}' -p '${local.ansible_collections_dir}'"
     environment = {
       ANSIBLE_HOST_KEY_CHECKING = "False"
       ANSIBLE_LOCAL_TEMP        = local.ansible_tmp_dir

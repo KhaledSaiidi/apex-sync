@@ -8,5 +8,5 @@ helmCharts:
     releaseName: kyverno
     namespace: kyverno
 resources:
-  - kyverno-background-controllers.yaml
+  - kyverno-background-rbac.yaml
   - kyverno-istio-default-policies.yaml

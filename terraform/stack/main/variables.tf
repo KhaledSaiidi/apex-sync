@@ -37,7 +37,7 @@ variable "gitops_root_app_target_revision" {
 }
 variable "gitops_root_app_path" {
   type    = string
-  default = "gitops/argo-apps/overlays/default/root"
+  default = "gitops/argo-apps"
 }
 
 variable "kubeconfig_path" {
@@ -50,9 +50,6 @@ variable "cluster_endpoint" {
   default = ""
 }
 
-variable "github_url" {
-  type = string
-}
 
 variable "github_app_id" {
   type = string

@@ -33,5 +33,5 @@ variable "gitops_root_app_target_revision" {
 }
 variable "gitops_root_app_path" {
   type    = string
-  default = "gitops/argo-apps/overlays/default/root"
+  default = "gitops/argo-apps"
 }

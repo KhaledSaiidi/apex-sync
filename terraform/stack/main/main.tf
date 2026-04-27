@@ -58,6 +58,10 @@ resource "local_file" "ansible_vars" {
     cluster_endpoint              = var.cluster_endpoint
     argocd_values_local_path      = module.argocd.argocd_values_path
     gitops_root_app_manifest_path = module.argocd.argocd_root_app_path
+    gitops_root_app_repo_url      = var.gitops_root_app_repo_url
+    github_app_id                 = var.github_app_id
+    github_app_installation_id    = var.github_app_installation_id
+    github_app_private_key        = var.github_app_private_key
   })
 
   depends_on = [

@@ -4,7 +4,7 @@ gitops_root_app_namespace: "{{ argocd_install_namespace | default('argocd') }}"
 gitops_root_app_kubeconfig: "{{ kubeconfig_local_path | default('~/.kube/config') }}"
 gitops_root_app_manifest_local_path: "{{ artifacts.gitops_root_app_manifest_local_path | default('') }}"
 gitops_root_app_manifest_remote_path: /tmp/app-of-apps.yaml
-gitops_root_app_github_url: "{{ github.github_url }}"
+gitops_root_app_github_url: "{{ github.gitops_root_app_repo_url }}"
 gitops_root_app_github_app_id: "{{ github.github_app_id }}"
 gitops_root_app_github_app_installation_id: "{{ github.github_app_installation_id }}"
 gitops_root_app_github_app_private_key: "{{ github.github_app_private_key }}"

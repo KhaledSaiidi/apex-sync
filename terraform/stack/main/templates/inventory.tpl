@@ -1,1 +1,1 @@
-localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3 argocd_values_local_path=${argocd_values_local_path} gitops_root_app_manifest_local_path=${gitops_root_app_local_path}
+localhost ansible_connection=local argocd_values_local_path=${argocd_values_local_path} gitops_root_app_manifest_local_path=${gitops_root_app_local_path}

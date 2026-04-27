@@ -4,6 +4,7 @@
   gather_facts: true
 
   vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
     kubeconfig_local_path: "{{ cluster.kubeconfig.local_path }}"
 
   pre_tasks:
@@ -17,7 +18,7 @@
           - artifacts.argocd_values_local_path is defined
           - artifacts.gitops_root_app_manifest_local_path is defined
           - github is defined
-          - github.github_url is defined
+          - github.gitops_root_app_repo_url is defined
           - github.github_app_id is defined
           - github.github_app_installation_id is defined
           - github.github_app_private_key is defined
@@ -27,7 +28,7 @@
             cluster.kubeconfig.local_path.
             artifacts.argocd_values_local_path.
             artifacts.gitops_root_app_manifest_local_path.
-            github.github_url.
+            github.gitops_root_app_repo_url.
             github.github_app_id.
             github.github_app_installation_id.
             github.github_app_private_key.

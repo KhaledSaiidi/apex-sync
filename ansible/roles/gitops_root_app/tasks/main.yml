@@ -1,6 +1,7 @@
 ---
 - name: Create Argo CD GitHub App repository secret
   kubernetes.core.k8s:
+    kubeconfig: "{{ gitops_root_app_kubeconfig }}"
     state: present
     definition:
       apiVersion: v1
