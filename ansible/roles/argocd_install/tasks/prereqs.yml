@@ -2,13 +2,13 @@
   ansible.builtin.command:
     cmd: >
       helm repo add {{ argocd_install_helm_repo_name }} {{ argocd_install_helm_repo_url }} --force-update
-  register: argocd_repo_add
-  changed_when: "'has been added' in (argocd_repo_add.stdout | lower) or 'has been updated' in (argocd_repo_add.stdout | lower)"
-  failed_when: argocd_repo_add.rc not in [0]
+  register: argocd_install_repo_add
+  changed_when: "'has been added' in (argocd_install_repo_add.stdout | lower) or 'has been updated' in (argocd_install_repo_add.stdout | lower)"
+  failed_when: argocd_install_repo_add.rc not in [0]
 
 - name: Helm repo update
   ansible.builtin.command:
     cmd: helm repo update
-  register: argocd_repo_update
+  register: argocd_install_repo_update
   changed_when: false
-  failed_when: argocd_repo_update.rc not in [0]
+  failed_when: argocd_install_repo_update.rc not in [0]

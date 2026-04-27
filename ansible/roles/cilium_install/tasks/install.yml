@@ -28,7 +28,12 @@
 
 - name: Derive Kubernetes API server host from control-plane InternalIP
   ansible.builtin.set_fact:
-    cilium_install_effective_k8s_service_host: "{{ cilium_install_k8s_service_host | default('') | trim or (cilium_install_control_plane_internal_ip.stdout | default('') | trim) }}"
+    cilium_install_effective_k8s_service_host: >-
+      {{
+        cilium_install_k8s_service_host | default('') | trim
+        or
+        (cilium_install_control_plane_internal_ip.stdout | default('') | trim)
+      }}
 
 - name: Assert Kubernetes API server host is available for Cilium
   ansible.builtin.assert:

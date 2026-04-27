@@ -33,7 +33,11 @@
 
 - name: Derive kubectl package repository stream
   ansible.builtin.set_fact:
-    bootstrap_tooling_kubectl_minor: "{{ bootstrap_tooling_kubectl_version | regex_replace('^v([0-9]+\\.[0-9]+).*$','\\1') }}"
+    bootstrap_tooling_kubectl_minor: >-
+      {{
+        bootstrap_tooling_kubectl_version
+        | regex_replace('^v([0-9]+\\.[0-9]+).*$', '\\1')
+      }}
   when: bootstrap_tooling_kubectl_check.rc != 0
 
 - name: Install kubectl on Debian-based hosts

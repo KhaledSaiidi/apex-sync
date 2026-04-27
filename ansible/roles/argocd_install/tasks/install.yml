@@ -9,16 +9,16 @@
     path: "{{ argocd_install_values_local_path }}"
   delegate_to: localhost
   become: false
-  register: argocd_values_local_stat
+  register: argocd_install_local_stat
 
 - name: Ensure rendered Argo CD values exist
   ansible.builtin.assert:
     that:
-      - argocd_values_local_stat.stat.exists
-      - argocd_values_local_stat.stat.isreg
+      - argocd_install_local_stat.stat.exists
+      - argocd_install_local_stat.stat.isreg
     fail_msg: "Rendered Argo CD values file not found at {{ argocd_install_values_local_path }}."
 
-- name: Install/Upgrade Argo CD via Helm (CLI, idempotent)
+- name: Install Upgrade Argo CD via Helm (idempotent)
   ansible.builtin.command:
     cmd: >
       helm upgrade --install {{ argocd_install_release_name }} {{ argocd_install_chart_name }}
@@ -28,13 +28,13 @@
       --timeout {{ argocd_install_wait_timeout }}s
       -f {{ argocd_install_values_local_path }}
       {% if argocd_install_chart_version | default('', true) %}--version {{ argocd_install_chart_version }}{% endif %}
-  register: argocd_helm_apply
+  register: argocd_install_helm_apply
   changed_when: >
-    ('has been upgraded' in argocd_helm_apply.stdout) or
-    ('has been installed' in argocd_helm_apply.stdout) or
-    ('STATUS: deployed' in argocd_helm_apply.stdout) or
-    ('STATUS: superseded' in argocd_helm_apply.stdout)
-  failed_when: argocd_helm_apply.rc != 0
+    ('has been upgraded' in argocd_install_helm_apply.stdout) or
+    ('has been installed' in argocd_install_helm_apply.stdout) or
+    ('STATUS: deployed' in argocd_install_helm_apply.stdout) or
+    ('STATUS: superseded' in argocd_install_helm_apply.stdout)
+  failed_when: argocd_install_helm_apply.rc != 0
   notify: Wait for Argo CD readiness
 
 - name: Flush Argo CD readiness handlers

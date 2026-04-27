@@ -50,6 +50,10 @@ variable "cluster_endpoint" {
   default = ""
 }
 
+variable "github_url" {
+  type    = string
+}
+
 variable "github_app_id" {
   type    = string
 }

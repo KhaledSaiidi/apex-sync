@@ -1,4 +1,24 @@
 ---
+- name: Create Argo CD GitHub App repository secret
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: github-app-repository
+        namespace: argocd
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      type: Opaque
+      stringData:
+        url: "{{ gitops_root_app_github_url }}"
+        type: git
+        githubAppID: "{{ gitops_root_app_github_app_id }}"
+        githubAppInstallationID: "{{ gitops_root_app_github_app_installation_id }}"
+        githubAppPrivateKey: "{{ gitops_root_app_github_app_private_key }}"
+  no_log: true
+
 - name: Validate rendered root app manifest path
   ansible.builtin.assert:
     that:

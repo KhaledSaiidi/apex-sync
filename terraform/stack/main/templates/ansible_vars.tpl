@@ -9,6 +9,7 @@ artifacts:
   gitops_root_app_manifest_local_path: "${gitops_root_app_manifest_path}"
 
 github:
+  github_url="${github_url}"
   github_app_id="${github_app_id}"
   github_app_installation_id="${github_app_installation_id}"
   github_app_private_key="${github_app_private_key}"
