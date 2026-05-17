@@ -8,6 +8,8 @@ metadata:
   labels:
     app.kubernetes.io/name: openebs
     app.kubernetes.io/part-of: platform-baseline
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: platform
   source:

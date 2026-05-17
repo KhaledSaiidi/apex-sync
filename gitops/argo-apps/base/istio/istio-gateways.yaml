@@ -16,7 +16,7 @@ spec:
       name: argocd-lovely-plugin-v1.0
 
   destination:
-    namespace: istio-system
+    namespace: istio-gateways
     server: https://kubernetes.default.svc
   project: platform
   syncPolicy:

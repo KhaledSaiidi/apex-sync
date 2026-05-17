@@ -8,6 +8,8 @@ metadata:
   labels:
     app.kubernetes.io/name: metallb
     app.kubernetes.io/part-of: platform-baseline
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: platform
   source:
@@ -18,7 +20,7 @@ spec:
       name: argocd-lovely-plugin-v1.0
   destination:
     server: https://kubernetes.default.svc
-    namespace: metallb
+    namespace: metallb-system
   syncPolicy:
     automated:
       prune: true

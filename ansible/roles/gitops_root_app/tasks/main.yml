@@ -29,11 +29,11 @@
       apiVersion: v1
       kind: Secret
       metadata:
-        name: cloud-secret
-        namespace: kube-system
+        name: route53-credentials-secret
+        namespace: cert-manager
       type: Opaque
       stringData:
-        aws_access_key_id: "{{ gitops_root_app_aws_access_key_id}}"
+        aws_access_key_id: "{{ gitops_root_app_aws_access_key_id }}"
         aws_secret_access_key: "{{ gitops_root_app_aws_secret_access_key }}"
   no_log: true
 

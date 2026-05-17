@@ -15,7 +15,7 @@ spec:
             hostedZoneID: Z032863786J0OF6PKT1D
             accessKeyIDSecretRef:
               name: route53-credentials-secret
-              key: access-key-id
+              key: aws_access_key_id
             secretAccessKeySecretRef:
               name: route53-credentials-secret
-              key: secret-access-key
+              key: aws_secret_access_key

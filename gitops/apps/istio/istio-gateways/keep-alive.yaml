@@ -2,7 +2,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
   name: istio-internal-ingress-gw-keep-alive
-  namespace: istio-ingress-int
+  namespace: istio-gateways
 spec:
   workloadSelector:
     labels:
@@ -30,7 +30,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
   name: istio-external-ingress-gw-keep-alive
-  namespace: istio-ingress-ext
+  namespace: istio-gateways
 spec:
   workloadSelector:
     labels:
