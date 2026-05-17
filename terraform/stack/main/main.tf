@@ -63,6 +63,8 @@ resource "local_file" "ansible_vars" {
     github_app_id                 = var.github_app_id
     github_app_installation_id    = var.github_app_installation_id
     github_app_private_key        = var.github_app_private_key
+    aws_access_key_id = var.aws_access_key_id
+    aws_secret_access_key = var.aws_secret_access_key
   })
 
   depends_on = [

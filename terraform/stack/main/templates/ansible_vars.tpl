@@ -14,3 +14,8 @@ github:
   github_app_installation_id: "${github_app_installation_id}"
   github_app_private_key: |-
     ${indent(4, github_app_private_key)}
+
+aws:
+  access_key_id: "${aws_access_key_id}"
+  secret_access_key: "${aws_secret_access_key}"
+

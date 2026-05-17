@@ -21,6 +21,22 @@
           {{ gitops_root_app_github_app_private_key }}
   no_log: true
 
+- name: Create Cloud API secret
+  kubernetes.core.k8s:
+    kubeconfig: "{{ gitops_root_app_kubeconfig }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cloud-secret
+        namespace: kube-system
+      type: Opaque
+      stringData:
+        aws_access_key_id: "{{ gitops_root_app_aws_access_key_id}}"
+        aws_secret_access_key: "{{ gitops_root_app_aws_secret_access_key }}"
+  no_log: true
+
 - name: Validate rendered root app manifest path
   ansible.builtin.assert:
     that:

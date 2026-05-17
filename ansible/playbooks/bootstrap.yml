@@ -21,6 +21,8 @@
           - github.github_app_id is defined
           - github.github_app_installation_id is defined
           - github.github_app_private_key is defined
+          - aws.access_key_id
+          - aws.secret_access_key
         fail_msg: >
           Missing required keys in vars (-e @ansible-vars.yaml).
           Required:
@@ -31,6 +33,8 @@
             github.github_app_id.
             github.github_app_installation_id.
             github.github_app_private_key.
+            aws.access_key_id.
+            aws.secret_access_key.
 
   tasks:
     - name: Prepare local bootstrap tooling
