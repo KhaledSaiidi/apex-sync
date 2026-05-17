@@ -3,20 +3,20 @@ kind: Application
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "10"
-  name: istio-gateways-app
+  name: istio-ingress-gateway-app
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   source:
-    path: gitops/apps/istio/istio-gateways
+    path: gitops/apps/istio/istio-ingress-gateway
     repoURL: "https://github.com/KhaledSaiidi/kube-signal.git"
     targetRevision: HEAD
     plugin:
       name: argocd-lovely-plugin-v1.0
 
   destination:
-    namespace: istio-gateways
+    namespace: istio-ingress-gateway
     server: https://kubernetes.default.svc
   project: platform
   syncPolicy:

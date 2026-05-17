@@ -1,0 +1,42 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: istio-ingress-gateway-proxy-security-headers
+  namespace: istio-ingress-gateway
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: NETWORK_FILTER
+      match:
+        context: GATEWAY
+        listener:
+          filterChain:
+            filter:
+              name: envoy.filters.network.http_connection_manager
+      patch:
+        operation: MERGE
+        value:
+          name: envoy.filters.network.http_connection_manager
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+            response_headers_to_add:
+              - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                header:
+                  key: X-Content-Type-Options
+                  value: nosniff
+              - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                header:
+                  key: X-Frame-Options
+                  value: DENY
+              - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                header:
+                  key: Referrer-Policy
+                  value: strict-origin-when-cross-origin
+              - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                header:
+                  key: Strict-Transport-Security
+                  value: max-age=31536000; includeSubDomains
+            response_headers_to_remove:
+              - x-powered-by

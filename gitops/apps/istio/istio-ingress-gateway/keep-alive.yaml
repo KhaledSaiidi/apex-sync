@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: istio-ingress-gateway-keep-alive
+  namespace: istio-ingress-gateway
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: LISTENER
+      match:
+        context: GATEWAY
+      patch:
+        operation: MERGE
+        value:
+          socket_options:
+            - description: enable TCP keepalive
+              int_value: 1
+              level: 1
+              name: 9
+              state: STATE_PREBIND
+            - description: start keepalive probes after 5 minutes of idle time
+              int_value: 300
+              level: 6
+              name: 4
+              state: STATE_PREBIND
