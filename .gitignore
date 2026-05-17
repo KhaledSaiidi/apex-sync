@@ -25,6 +25,8 @@ ansible.log
 __pycache__/
 .pytest_cache/
 .codex
+.codex/
+.agents/
 
 # Kubernetes / GitOps / Talos local credentials and generated configs
 kubeconfig

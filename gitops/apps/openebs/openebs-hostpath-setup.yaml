@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: openebs-hostpath-setup-hook
+  namespace: openebs
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-10"
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      serviceAccountName: openebs-hostpath-setup
+      restartPolicy: OnFailure
+      containers:
+        - name: setup
+          image: bitnami/kubectl:latest
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+
+              for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+                cat <<EOF | kubectl apply -f -
+              apiVersion: batch/v1
+              kind: Job
+              metadata:
+                name: openebs-hostpath-setup-${node}
+                namespace: openebs
+                labels:
+                  app: openebs-hostpath-setup
+              spec:
+                template:
+                  spec:
+                    restartPolicy: OnFailure
+                    nodeName: ${node}
+                    tolerations:
+                      - operator: Exists
+                    containers:
+                      - name: hostpath-setup
+                        image: docker.io/library/busybox:1.36.1
+                        command:
+                          - sh
+                          - -c
+                          - |
+                            mkdir -p /host/var/openebs/kube-signal
+                            chmod 0777 /host/var/openebs/kube-signal
+                        securityContext:
+                          runAsUser: 0
+                        volumeMounts:
+                          - name: host-root
+                            mountPath: /host
+                    volumes:
+                      - name: host-root
+                        hostPath:
+                          path: /
+                          type: Directory
+              EOF
+              done
+
+              kubectl wait --for=condition=complete job -l app=openebs-hostpath-setup -n openebs --timeout=1200s
+
+              kubectl delete job -n openebs -l app=openebs-hostpath-setup --ignore-not-found=true
