@@ -2,7 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: kiali
 helmCharts:
-  - name: kiali
-    repo: https://kubernetes-sigs.github.io/kiali
+  - name: kiali-server
+    repo: https://kiali.org/helm-charts
+    version: 2.26.0
     releaseName: kiali
     namespace: kiali

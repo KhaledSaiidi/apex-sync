@@ -5,7 +5,8 @@ resources:
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml
   - keep-alive.yaml
 helmCharts:
-  - name: istio-gateways
-    repo: https://kubernetes-sigs.github.io/istio-gateways
+  - name: gateway
+    repo: https://istio-release.storage.googleapis.com/charts
+    version: 1.29.2
     releaseName: istio-gateways
     namespace: istio-gateways

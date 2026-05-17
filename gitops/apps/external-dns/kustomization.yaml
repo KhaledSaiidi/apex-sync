@@ -4,6 +4,6 @@ namespace: external-dns
 helmCharts:
   - name: external-dns
     repo: https://kubernetes-sigs.github.io/external-dns
-    version: v1.20.0
+    version: 1.21.1
     releaseName: external-dns
     namespace: external-dns

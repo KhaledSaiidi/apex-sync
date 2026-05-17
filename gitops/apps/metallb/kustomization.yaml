@@ -4,6 +4,7 @@ namespace: metallb
 helmCharts:
   - name: metallb
     repo: https://metallb.github.io/metallb
+    version: 0.15.3
     releaseName: metallb
     namespace: metallb
 resources:
