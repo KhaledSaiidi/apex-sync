@@ -8,33 +8,23 @@ spec:
     labels:
       istio: istio-internal-ingress-gw
   configPatches:
-  - applyTo: LISTENER
-    match:
-      context: GATEWAY
-    patch:
-      operation: MERGE
-      value:
-        socket_options:
-        - description: enable keep-alive
-          int_value: 1
-          level: 1
-          name: 9
-          state: STATE_PREBIND
-        - description: idle time before first keep-alive probe is sent
-          int_value: 7
-          level: 6
-          name: 4
-          state: STATE_PREBIND
-        - description: keep-alive interval
-          int_value: 5
-          level: 6
-          name: 5
-          state: STATE_PREBIND
-        - description: keep-alive probes count
-          int_value: 2
-          level: 6
-          name: 6
-          state: STATE_PREBIND
+    - applyTo: LISTENER
+      match:
+        context: GATEWAY
+      patch:
+        operation: MERGE
+        value:
+          socket_options:
+            - description: enable TCP keepalive
+              int_value: 1
+              level: 1
+              name: 9
+              state: STATE_PREBIND
+            - description: start keepalive probes after 5 minutes of idle time
+              int_value: 300
+              level: 6
+              name: 4
+              state: STATE_PREBIND
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
@@ -46,30 +36,20 @@ spec:
     labels:
       istio: istio-external-ingress-gw
   configPatches:
-  - applyTo: LISTENER
-    match:
-      context: GATEWAY
-    patch:
-      operation: MERGE
-      value:
-        socket_options:
-        - description: enable keep-alive
-          int_value: 1
-          level: 1
-          name: 9
-          state: STATE_PREBIND
-        - description: idle time before first keep-alive probe is sent
-          int_value: 7
-          level: 6
-          name: 4
-          state: STATE_PREBIND
-        - description: keep-alive interval
-          int_value: 5
-          level: 6
-          name: 5
-          state: STATE_PREBIND
-        - description: keep-alive probes count
-          int_value: 2
-          level: 6
-          name: 6
-          state: STATE_PREBIND
+    - applyTo: LISTENER
+      match:
+        context: GATEWAY
+      patch:
+        operation: MERGE
+        value:
+          socket_options:
+            - description: enable TCP keepalive
+              int_value: 1
+              level: 1
+              name: 9
+              state: STATE_PREBIND
+            - description: start keepalive probes after 5 minutes of idle time
+              int_value: 300
+              level: 6
+              name: 4
+              state: STATE_PREBIND

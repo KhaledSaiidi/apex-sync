@@ -4,6 +4,7 @@ namespace: istio-gateways
 resources:
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml
   - keep-alive.yaml
+  - proxy-security-headers.yaml
 helmCharts:
   - name: gateway
     repo: https://istio-release.storage.googleapis.com/charts
