@@ -2,6 +2,8 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: label-default-namespace-for-istio
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   mutateExistingOnPolicyUpdate: true
   rules:
@@ -27,6 +29,8 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: restart-default-deployments-after-istio-label
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   rules:
     - name: restart-deployments-when-default-namespace-is-labeled

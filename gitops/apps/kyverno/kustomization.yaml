@@ -5,6 +5,7 @@ helmCharts:
   - name: kyverno
     repo: https://kyverno.github.io/kyverno
     version: 3.8.0
+    includeCRDs: true
     releaseName: kyverno
     namespace: kyverno
 resources:
