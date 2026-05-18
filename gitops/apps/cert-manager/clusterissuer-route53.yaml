@@ -2,6 +2,8 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod-route53
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   acme:
     email: khaled.saiidi@outlook.com

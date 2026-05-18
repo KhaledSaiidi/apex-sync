@@ -21,8 +21,8 @@
           - github.github_app_id is defined
           - github.github_app_installation_id is defined
           - github.github_app_private_key is defined
-          - aws.access_key_id
-          - aws.secret_access_key
+          - aws.access_key_id is defined
+          - aws.secret_access_key is defined
         fail_msg: >
           Missing required keys in vars (-e @ansible-vars.yaml).
           Required:

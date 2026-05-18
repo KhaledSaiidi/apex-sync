@@ -3,6 +3,8 @@ kind: Certificate
 metadata:
   name: app-kube-forge-com
   namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
 spec:
   secretName: wildcard-kube-forge-com-tls
   issuerRef:
