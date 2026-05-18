@@ -74,3 +74,12 @@ variable "aws_access_key_id" {
 variable "aws_secret_access_key" {
   type = string
 }
+
+variable "metallb_mode" {
+  type = string
+}
+
+variable "metallb_addresses" {
+  type = string
+  default = ["172.18.255.200-172.18.255.230"]
+}

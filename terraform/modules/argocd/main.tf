@@ -34,5 +34,7 @@ resource "local_file" "argocd_root_app" {
     gitops_root_app_destination_namespace = "argocd"
     argocd_lovely_plugin_name             = "argocd-lovely-plugin-v1.0"
     project_name                          = var.project_name
+    metallb_mode                          = var.metallb_mode
+    metallb_addresses                     = var.metallb_addresses
   })
 }

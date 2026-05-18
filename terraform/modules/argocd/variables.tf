@@ -35,3 +35,11 @@ variable "gitops_root_app_path" {
   type    = string
   default = "gitops/argo-apps"
 }
+
+variable "metallb_mode" {
+  type = string
+}
+
+variable "metallb_addresses" {
+  type = string
+}
