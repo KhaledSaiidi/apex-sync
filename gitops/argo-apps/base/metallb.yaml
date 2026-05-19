@@ -16,13 +16,6 @@ spec:
     repoURL: https://github.com/KhaledSaiidi/kube-signal.git
     targetRevision: HEAD
     path: gitops/apps/metallb
-    plugin:
-      name: argocd-lovely-plugin-v1.0
-      env:
-        - name: metallb_mode
-          value: "$ARGOCD_ENV_METALLB_MODE"
-        - name: ARGOCD_ENV_METALLB_ADDRESSES
-          value: '$ARGO_ENV_metallb_addresses'
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system

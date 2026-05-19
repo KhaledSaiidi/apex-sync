@@ -16,8 +16,6 @@ spec:
     repoURL: https://github.com/KhaledSaiidi/kube-signal.git
     targetRevision: HEAD
     path: gitops/apps/kyverno
-    plugin:
-      name: argocd-lovely-plugin-v1.0
   destination:
     server: https://kubernetes.default.svc
     namespace: kyverno

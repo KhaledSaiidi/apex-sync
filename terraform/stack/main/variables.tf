@@ -22,10 +22,6 @@ variable "argocd_repo_server_timeout_secs" {
   type    = string
   default = "300"
 }
-variable "argocd_plugin_version" {
-  type    = string
-  default = "0.18.0"
-}
 
 variable "gitops_root_app_repo_url" {
   type    = string
@@ -80,6 +76,6 @@ variable "metallb_mode" {
 }
 
 variable "metallb_addresses" {
-  type = string
+  type    = string
   default = ["172.18.255.200-172.18.255.230"]
 }

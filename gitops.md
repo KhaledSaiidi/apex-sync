@@ -35,13 +35,13 @@ Move the environment-specific MetalLB configuration to a pure GitOps CMP flow, u
 - Argo CD prefixes user-supplied `spec.source.plugin.env` variables with `ARGOCD_ENV_` before they reach the plugin command.
 - Plugin env values are visible only to the CMP process; plain YAML files do not interpolate arbitrary variables by themselves.
 - The old project pattern works because the CMP command itself runs `envsubst` at the correct layer.
-- The current repo does not have those envsubst CMPs yet; it only installs the Lovely CMP sidecar and uses it for root and child apps.
+- The current repo does not have those envsubst CMPs yet.
 
 ### Current Repo Reality
 
 - The root bootstrap app is rendered from Terraform in `terraform/modules/argocd/templates/argocd_root_app.tpl`.
-- The root app currently points to `gitops/argo-apps` and uses the Lovely CMP.
-- Child apps under `gitops/argo-apps/base/*.yaml` also use the Lovely CMP.
+- The root app currently points to `gitops/argo-apps`.
+- Child apps under `gitops/argo-apps/base/*.yaml` currently rely on a plugin-based render path.
 - MetalLB currently keeps its environment-specific pool directly in `gitops/apps/metallb/metallb-pool.yaml`.
 - That hardcoded pool is the problem we are solving.
 
@@ -106,8 +106,6 @@ Implementation note:
   - `envsubst`
   - `kustomize`
   - `helm`
-
-We may keep the Lovely sidecar installed if other apps still need it, but the root app and the MetalLB child app should stop depending on Lovely for this flow.
 
 #### 2. Switch the root bootstrap app to the root envsubst CMP
 
@@ -281,7 +279,7 @@ The implementation is correct only when all of the following are true:
 
 The correct adaptation for this repo is not:
 
-- plain YAML placeholders with the Lovely CMP
+- plain YAML placeholders without the envsubst render step
 - Kustomize overlays for runtime cluster values
 - host-dependent autodiscovery inside repo-server
 
@@ -295,7 +293,6 @@ The correct adaptation is:
 
 
 ## To Do Part 2:
-
 
 
 

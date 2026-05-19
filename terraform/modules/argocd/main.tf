@@ -13,9 +13,6 @@ resource "local_file" "argocd_values" {
     argocd_reconciliation_timeout   = var.argocd_reconciliation_timeout
     argocd_exec_timeout             = var.argocd_exec_timeout
     argocd_repo_server_timeout_secs = var.argocd_repo_server_timeout_secs
-    argocd_lovely_plugin_name       = "argocd-lovely-plugin-v1.0"
-    argocd_lovely_plugin_k8s_name   = "argocd-lovely-plugin-v1-0"
-    argocd_lovely_plugin_image      = "ghcr.io/crumbhole/argocd-lovely-plugin-cmp:${var.argocd_plugin_version}"
   })
 
 }
@@ -32,9 +29,5 @@ resource "local_file" "argocd_root_app" {
     gitops_root_app_path                  = var.gitops_root_app_path
     gitops_root_app_destination_server    = "https://kubernetes.default.svc"
     gitops_root_app_destination_namespace = "argocd"
-    argocd_lovely_plugin_name             = "argocd-lovely-plugin-v1.0"
-    project_name                          = var.project_name
-    metallb_mode                          = var.metallb_mode
-    metallb_addresses                     = var.metallb_addresses
   })
 }

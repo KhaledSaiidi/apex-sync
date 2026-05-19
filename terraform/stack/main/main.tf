@@ -23,7 +23,6 @@ module "argocd" {
   argocd_reconciliation_timeout   = var.argocd_reconciliation_timeout
   argocd_exec_timeout             = var.argocd_exec_timeout
   argocd_repo_server_timeout_secs = var.argocd_repo_server_timeout_secs
-  argocd_plugin_version           = var.argocd_plugin_version
   gitops_root_app_repo_url        = var.gitops_root_app_repo_url
   gitops_root_app_target_revision = var.gitops_root_app_target_revision
   gitops_root_app_path            = var.gitops_root_app_path
@@ -38,20 +37,20 @@ module "argocd" {
 
 
 module "bootstrap_ansible" {
-  source                          = "../../modules/bootstrap_ansible"
-  artifacts_dir                   = local.artifacts_dir
-  argocd_root_app_path            = module.argocd.argocd_root_app_path
-  argocd_values_path              = module.argocd.argocd_values_path
-  kubeconfig_path                 = local.kubeconfig_path
-  ansible_python_interpreter      = var.ansible_python_interpreter
-  project_name                    = var.project_name
-  cluster_endpoint                = var.cluster_endpoint
-  gitops_root_app_repo_url        = var.gitops_root_app_repo_url
-  github_app_id                   = var.github_app_id
-  github_app_installation_id      = var.github_app_installation_id
-  github_app_private_key          = var.github_app_private_key
-  aws_access_key_id               = var.aws_access_key_id
-  aws_secret_access_key           = var.aws_secret_access_key
+  source                     = "../../modules/bootstrap_ansible"
+  artifacts_dir              = local.artifacts_dir
+  argocd_root_app_path       = module.argocd.argocd_root_app_path
+  argocd_values_path         = module.argocd.argocd_values_path
+  kubeconfig_path            = local.kubeconfig_path
+  ansible_python_interpreter = var.ansible_python_interpreter
+  project_name               = var.project_name
+  cluster_endpoint           = var.cluster_endpoint
+  gitops_root_app_repo_url   = var.gitops_root_app_repo_url
+  github_app_id              = var.github_app_id
+  github_app_installation_id = var.github_app_installation_id
+  github_app_private_key     = var.github_app_private_key
+  aws_access_key_id          = var.aws_access_key_id
+  aws_secret_access_key      = var.aws_secret_access_key
 
   requirements_path          = "${local.repo_root}/ansible/requirements.yml"
   playbook_path              = "${local.repo_root}/ansible/playbooks/bootstrap.yml"

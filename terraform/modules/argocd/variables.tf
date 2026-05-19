@@ -18,10 +18,6 @@ variable "argocd_exec_timeout" {
 variable "argocd_repo_server_timeout_secs" {
   type = string
 }
-variable "argocd_plugin_version" {
-  type    = string
-  default = "0.18.0"
-}
 
 variable "gitops_root_app_repo_url" {
   type    = string

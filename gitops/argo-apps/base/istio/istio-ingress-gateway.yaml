@@ -12,8 +12,6 @@ spec:
     path: gitops/apps/istio/istio-ingress-gateway
     repoURL: "https://github.com/KhaledSaiidi/kube-signal.git"
     targetRevision: HEAD
-    plugin:
-      name: argocd-lovely-plugin-v1.0
 
   destination:
     namespace: istio-ingress-gateway
