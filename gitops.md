@@ -1,4 +1,4 @@
-## To Do Part 1:
+## ~~To Do~~ Done Part 1:
 1. ~~`resources-finalizer.argocd.argoproj.io` is used inconsistently: some apps have it (`external-dns`, Istio child apps), while others do not (`cert-manager`, `metallb`, `kyverno`, `openebs`). Deleting an app without the finalizer can leave orphaned live resources behind even though the `Application` object is gone. Fix by choosing one deletion model and applying finalizers consistently across all managed apps.~~
 
 2. ~~Several apps have namespace drift between the Argo `Application`, the chart output, and extra manifests: `Certificate` is in `istio-ingress`, MetalLB CRs are in `metallb-system`, and Kiali is rendered into `kiali`, while app destinations use `cert-manager`, `metallb`, and `istio-system`. This can leave namespaces missing or place secrets/resources where workloads never read them. Fix by aligning namespaces end to end or adding explicit `Namespace` manifests for every hard-coded target namespace.~~
