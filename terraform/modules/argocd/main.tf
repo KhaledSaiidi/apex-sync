@@ -29,7 +29,8 @@ resource "local_file" "argocd_root_app" {
     gitops_root_app_path                  = var.gitops_root_app_path
     gitops_root_app_destination_server    = "https://kubernetes.default.svc"
     gitops_root_app_destination_namespace = "argocd"
-    metallb_addresses_start = var.metallb_addresses_start
-    metallb_addresses_end = var.metallb_addresses_end
+    metallb_mode                          = var.metallb_mode
+    metallb_addresses_start               = var.metallb_addresses_start
+    metallb_addresses_end                 = var.metallb_addresses_end
   })
 }

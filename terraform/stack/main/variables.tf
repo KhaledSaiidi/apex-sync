@@ -76,12 +76,12 @@ variable "metallb_mode" {
 }
 
 variable "metallb_addresses_start" {
-  type = string
+  type    = string
   default = "172.18.255.200"
 }
 
 variable "metallb_addresses_end" {
-  type = string
-    default = "172.18.255.230"
+  type    = string
+  default = "172.18.255.230"
 
 }

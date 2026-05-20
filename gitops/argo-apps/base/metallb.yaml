@@ -16,6 +16,15 @@ spec:
     repoURL: https://github.com/KhaledSaiidi/kube-signal.git
     targetRevision: HEAD
     path: gitops/apps/metallb
+    plugin:
+      name: envsubst
+      env:
+        - name: mode
+          value: "${ARGOCD_ENV_metallb_config_mode}"
+        - name: addresses_start
+          value: "${ARGOCD_ENV_metallb_config_addresses_start}"
+        - name: addresses_end
+          value: "${ARGOCD_ENV_metallb_config_addresses_end}"
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system
