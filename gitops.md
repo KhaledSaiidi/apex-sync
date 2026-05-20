@@ -20,243 +20,42 @@
 
 ## To Do Part 2:
 
-### Goal
-
-Move the environment-specific MetalLB configuration to a pure GitOps CMP flow, using the same two-hop envsubst pattern that worked in the older project:
-
-1. Terraform renders high-level config into the root bootstrap `Application`.
-2. The root app uses a CMP dedicated to the app-of-apps layer.
-3. That root CMP resolves child `Application` YAMLs and passes a smaller env contract to each child app.
-4. The child app uses a second CMP dedicated to the application layer.
-5. The final application manifests consume `${ARGOCD_ENV_*}` variables at render time inside the repo-server sidecar.
-
-### Verified Behavior We Must Preserve
-
-- Argo CD prefixes user-supplied `spec.source.plugin.env` variables with `ARGOCD_ENV_` before they reach the plugin command.
-- Plugin env values are visible only to the CMP process; plain YAML files do not interpolate arbitrary variables by themselves.
-- The old project pattern works because the CMP command itself runs `envsubst` at the correct layer.
-- The current repo does not have those envsubst CMPs yet.
-
-### Current Repo Reality
-
-- The root bootstrap app is rendered from Terraform in `terraform/modules/argocd/templates/argocd_root_app.tpl`.
-- The root app currently points to `gitops/argo-apps`.
-- Child apps under `gitops/argo-apps/base/*.yaml` currently rely on a plugin-based render path.
-- MetalLB currently keeps its environment-specific pool directly in `gitops/apps/metallb/metallb-pool.yaml`.
-- That hardcoded pool is the problem we are solving.
-
-### Constraint We Must Accept
-
-`metallb_auto_discover_kind_pool` cannot be implemented inside the Argo repo-server CMP path in the current architecture.
-
-Reason:
-
-- CMP sidecars run inside the cluster, in the Argo CD repo-server pod.
-- They do not run on the bootstrap host that created the kind cluster.
-- They do not have safe, built-in access to the host Docker network where kind IP ranges live.
-
-Therefore:
-
-- Phase 1 of this plan will require explicit `metallb_addresses`.
-- If we want `metallb_auto_discover_kind_pool` later, it must be resolved before Argo render time, for example in Terraform, and then passed into the root app as concrete addresses.
-
-### Target Flow In This Repo
-
-The target flow should be:
-
-1. Terraform accepts `metallb_addresses` as `list(string)`.
-2. Terraform derives a YAML-safe multiline fragment, for example `metallb_addresses_yaml`.
-3. Terraform renders the root app with plugin `envsubstappofapp`.
-4. The root app exposes flattened env names such as `metallb_config_addresses_yaml`.
-5. The root CMP runs `kustomize build` on `gitops/argo-apps`, then runs `envsubst`.
-6. The MetalLB child `Application` YAML receives concrete values from `${ARGOCD_ENV_metallb_config_addresses_yaml}`.
-7. The MetalLB child app uses plugin `envsubst`.
-8. The child app re-emits a smaller env contract such as `addresses_yaml`.
-9. The child CMP runs `envsubst` on the MetalLB app source, then runs `kustomize build --enable-helm`.
-10. `gitops/apps/metallb/metallb-pool.yaml` consumes `${ARGOCD_ENV_addresses_yaml}` and renders the final `IPAddressPool`.
-
-That is the exact two-hop contract we want:
-
-- root layer:
-  `Terraform -> child Application YAML`
-- application layer:
-  `child Application env -> final Kubernetes manifests`
-
-### Required Changes
-
-#### 1. Introduce dedicated envsubst CMPs in Argo CD
-
-Add two CMP sidecars and their plugin definitions through `terraform/modules/argocd/templates/argocd_values.tpl`:
-
-- `envsubstappofapp`
-- `envsubst`
-
-Expected behavior:
-
-- `envsubstappofapp`:
-  run `kustomize build` first, then `envsubst`
-- `envsubst`:
-  run `envsubst` over the app source first, then `kustomize build --enable-helm`
-
-Implementation note:
-
-- Prefer shipping the commands as small scripts in a dedicated image or mounted script files, instead of embedding long shell one-liners directly in `plugin.yaml`.
-- The sidecar image must contain the tools it uses:
-  - shell
-  - `envsubst`
-  - `kustomize`
-  - `helm`
-
-#### 2. Switch the root bootstrap app to the root envsubst CMP
-
-Change `terraform/modules/argocd/templates/argocd_root_app.tpl` so the root bootstrap app uses:
-
-- `plugin.name: envsubstappofapp`
-
-Add root env values for the MetalLB contract, but use flattened names, not nested object names. Example:
-
-- `metallb_config_mode`
-- `metallb_config_addresses_yaml`
-
-Do not pass raw Terraform lists directly into plugin env.
-
-Instead, Terraform should render a YAML-safe multiline string. Example shape:
-
-```text
-    - "172.18.255.200-172.18.255.230"
-```
-
-The rendered string must already contain the correct indentation for insertion under:
-
-```yaml
-spec:
-  addresses:
-```
-
-#### 3. Keep `metallb_addresses` typed as a list
-
-The source of truth type must be:
-
-- `terraform/stack/main/variables.tf`: `list(string)`
-- `terraform/modules/argocd/variables.tf`: `list(string)`
-
-Do not downgrade it to `string`.
-
-Terraform should derive helper strings from the list, not replace the canonical type.
-
-Recommended helper locals or template inputs:
-
-- `metallb_addresses_yaml`
-- optionally `metallb_addresses_csv` if later needed for a shell consumer
-
-#### 4. Rework the MetalLB child `Application` to be a second-hop env bridge
-
-Change `gitops/argo-apps/base/metallb.yaml` so it uses:
-
-- `plugin.name: envsubst`
-
-Inside that child app, define the smaller app-scoped env contract. Example:
-
-- `name: addresses_yaml`
-- `value: |`
-  `${ARGOCD_ENV_metallb_config_addresses_yaml}`
-
-Optional additional values:
-
-- `mode`
-- future chart values if needed
-
-Important rule:
-
-- The child app should reference the root contract using `${ARGOCD_ENV_<flattened_root_name>}`.
-- The child app should expose a simpler contract to the application layer using short app-specific names.
-
-#### 5. Rework the MetalLB application manifests to consume child-layer env vars
-
-Change `gitops/apps/metallb/metallb-pool.yaml` so it does not contain a hardcoded range and does not attempt to rely on plain YAML interpolation without envsubst.
-
-Use the final application-layer env name directly. Example structure:
-
-```yaml
-apiVersion: metallb.io/v1beta1
-kind: IPAddressPool
-metadata:
-  name: metallb-pool
-  namespace: metallb-system
-spec:
-  addresses:
-${ARGOCD_ENV_addresses_yaml}
-```
-
-This file only works after step 1 and step 4 are in place, because the `envsubst` child CMP is what performs the substitution before Kustomize renders the app.
-
-#### 6. Keep `gitops/apps/metallb/kustomization.yaml` simple
-
-For this envsubst pattern, we do not need Kustomize overlays or Kustomize patches just to set the pool addresses.
-
-The MetalLB app can remain a simple Kustomization that:
-
-- installs the Helm chart
-- includes `metallb-pool.yaml`
-
-The dynamic part comes from `envsubst`, not from Kustomize overlays.
-
-#### 7. Decide how to handle `metallb_mode`
-
-For phase 1, keep the repo explicitly `l2` only unless we also introduce the BGP resources and contract.
-
-Recommended phase 1 approach:
-
-- keep `metallb_mode` in Terraform and root env for forward compatibility
-- do not branch behavior on it yet unless we add separate manifest templates for BGP
-
-This avoids pretending mode is dynamic when only the L2 resource set exists today.
-
-#### 8. Postpone `metallb_auto_discover_kind_pool`
-
-Do not wire `metallb_auto_discover_kind_pool` through the CMP chain yet.
-
-Phase 1 rule:
-
-- require `metallb_addresses`
-
-Phase 2 option:
-
-- Terraform may derive `effective_metallb_addresses` for kind and pass only the resolved addresses into Argo
-
-That keeps the GitOps layer deterministic while still allowing a convenience path later.
-
-### File-Level Implementation Order
-
-1. `terraform/stack/main/variables.tf`
-   Keep `metallb_addresses` as `list(string)` and document that it is required for phase 1.
-
-2. `terraform/modules/argocd/variables.tf`
-   Keep `metallb_addresses` as `list(string)`.
-
-3. `terraform/modules/argocd/main.tf`
-   Derive template inputs for:
-   - `metallb_addresses_yaml`
-   - optional `metallb_mode`
-
-4. `terraform/modules/argocd/templates/argocd_values.tpl`
-   Install the two new CMP sidecars and plugin definitions:
-   - `envsubstappofapp`
-   - `envsubst`
-
-5. `terraform/modules/argocd/templates/argocd_root_app.tpl`
-   Switch root plugin to `envsubstappofapp` and emit flattened env names.
-
-6. `gitops/argo-apps/base/metallb.yaml`
-   Switch child plugin to `envsubst` and re-emit child-scoped env names.
-
-7. `gitops/apps/metallb/metallb-pool.yaml`
-   Replace the hardcoded address block with `${ARGOCD_ENV_addresses_yaml}`.
-
-8. `README.md` and `example.env.bootstrap`
-   Document the phase 1 contract:
-   - explicit `metallb_addresses`
-   - no automatic kind discovery yet in the GitOps path
+Goal: finish the two-hop CMP flow for MetalLB so Terraform passes values to the root app, the root app passes them to the MetalLB child app, and the child app renders the final manifests with `envsubst`.
+
+Current status:
+- `envsubstappofapp` and `envsubst` CMPs are already installed in Argo CD.
+
+Next steps:
+1. Root app wiring
+- Update `terraform/modules/argocd/templates/argocd_root_app.tpl` to use `plugin.name: envsubstappofapp`.
+- Pass flattened root env values:
+  - `metallb_config_mode`
+  - `metallb_config_addresses_start`
+  - `metallb_config_addresses_end`
+
+2. Terraform contract
+- Keep Terraform as the source of truth for:
+  - `metallb_mode`
+  - `metallb_addresses_start`
+  - `metallb_addresses_end`
+- Do not build the final MetalLB range in Terraform. Pass start and end separately to Argo.
+
+3. MetalLB child app wiring
+- Update `gitops/argo-apps/base/metallb.yaml` to use `plugin.name: envsubst`.
+- Re-expose a smaller child contract:
+  - `mode`
+  - `addresses_start`
+  - `addresses_end`
+
+4. Final MetalLB manifest
+- Update `gitops/apps/metallb/metallb-pool.yaml` to build the final range at render time:
+  - `"${ARGOCD_ENV_addresses_start}-${ARGOCD_ENV_addresses_end}"`
+- Keep `gitops/apps/metallb/kustomization.yaml` simple. The dynamic part should come from `envsubst`, not from Kustomize overlays.
+
+5. Scope for this phase
+- Keep MetalLB in `l2` mode only for now.
+- Do not wire `metallb_auto_discover_kind_pool` into the CMP flow yet.
+- Update `README.md` and bootstrap docs after the flow is working.
 
 ### Validation Criteria
 
@@ -293,7 +92,6 @@ The correct adaptation is:
 
 
 ## To Do Part 2:
-
 
 
 

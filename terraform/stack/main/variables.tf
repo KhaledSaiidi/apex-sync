@@ -75,7 +75,13 @@ variable "metallb_mode" {
   type = string
 }
 
-variable "metallb_addresses" {
-  type    = string
-  default = ["172.18.255.200-172.18.255.230"]
+variable "metallb_addresses_start" {
+  type = string
+  default = "172.18.255.200"
+}
+
+variable "metallb_addresses_end" {
+  type = string
+    default = "172.18.255.230"
+
 }

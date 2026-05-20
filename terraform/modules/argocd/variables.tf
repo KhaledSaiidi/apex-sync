@@ -36,6 +36,9 @@ variable "metallb_mode" {
   type = string
 }
 
-variable "metallb_addresses" {
+variable "metallb_addresses_start" {
+  type = string
+}
+variable "metallb_addresses_end" {
   type = string
 }

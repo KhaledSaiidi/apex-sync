@@ -27,7 +27,8 @@ module "argocd" {
   gitops_root_app_target_revision = var.gitops_root_app_target_revision
   gitops_root_app_path            = var.gitops_root_app_path
   metallb_mode                    = var.metallb_mode
-  metallb_addresses               = var.metallb_addresses
+  metallb_addresses_start = var.metallb_addresses_start
+  metallb_addresses_end = var.metallb_addresses_end
 
   depends_on = [
     null_resource.artifacts_dir
