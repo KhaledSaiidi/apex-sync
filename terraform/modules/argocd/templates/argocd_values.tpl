@@ -79,7 +79,14 @@ extraObjects:
         #!/bin/sh
         set -eu
 
-        kustomize build . | envsubst
+        rendered="$(mktemp)"
+        cleanup() {
+          rm -f "$rendered"
+        }
+        trap cleanup EXIT
+
+        kustomize build . >"$rendered"
+        envsubst <"$rendered"
       envsubst.sh: |
         #!/bin/sh
         set -eu
