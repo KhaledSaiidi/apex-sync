@@ -84,5 +84,5 @@ variable "metallb_addresses_end" {
 
 variable "argocd_cmp_image" {
   type    = string
-  default = "ghcr.io/khaledsaiidi/kube-signal/argocd-cmp-envsubst:1.1.0"
+  default = "ghcr.io/khaledsaiidi/kube-signal/argocd-cmp-envsubst:1.2.0"
 }
