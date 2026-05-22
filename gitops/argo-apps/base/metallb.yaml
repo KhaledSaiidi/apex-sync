@@ -19,8 +19,6 @@ spec:
     plugin:
       name: envsubst
       env:
-        - name: mode
-          value: "${ARGOCD_ENV_metallb_config_mode}"
         - name: addresses_start
           value: "${ARGOCD_ENV_metallb_config_addresses_start}"
         - name: addresses_end

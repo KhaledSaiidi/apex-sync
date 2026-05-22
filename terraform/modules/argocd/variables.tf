@@ -32,10 +32,6 @@ variable "gitops_root_app_path" {
   default = "gitops/argo-apps"
 }
 
-variable "metallb_mode" {
-  type = string
-}
-
 variable "metallb_addresses_start" {
   type = string
 }

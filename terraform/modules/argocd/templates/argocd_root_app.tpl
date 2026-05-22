@@ -15,8 +15,6 @@ spec:
     plugin:
       name: envsubstappofapp
       env:
-        - name: metallb_config_mode
-          value: "${metallb_mode}"
         - name: metallb_config_addresses_start
           value: "${metallb_addresses_start}"
         - name: metallb_config_addresses_end

@@ -32,10 +32,7 @@ Goal: finish the two-hop CMP flow for MetalLB so Terraform passes values to the 
 
 5. ~~ Final MetalLB manifest - Update `gitops/apps/metallb/metallb-pool.yaml` to build the final range at render time: - `"${ARGOCD_ENV_addresses_start}-${ARGOCD_ENV_addresses_end}"` - Keep `gitops/apps/metallb/kustomization.yaml` simple. The dynamic part should come from `envsubst`, not from Kustomize overlays. ~~
 
-6. Scope for this phase
-- Keep MetalLB in `l2` mode only for now.
-- Do not wire `metallb_auto_discover_kind_pool` into the CMP flow yet.
-- Update `README.md` and bootstrap docs after the flow is working.
+6. ~~Scope for this phase Keep MetalLB in `l2` mode only for now, do not use the mode variable at all as we need to hardcode it L2 now Do not wire `metallb_auto_discover_kind_pool` into the CMP flow yet.Update `README.md` and bootstrap docs after the flow is working.~~
 
 
 ### Source References
@@ -44,24 +41,3 @@ Goal: finish the two-hop CMP flow for MetalLB so Terraform passes values to the 
   https://argo-cd.readthedocs.io/en/stable/operator-manual/config-management-plugins/
 - Argo CD note about user env vars being prefixed with `ARGOCD_ENV_`:
   https://argo-cd.readthedocs.io/en/stable/operator-manual/upgrading/2.3-2.4/
-
-### Final Decision
-
-The correct adaptation for this repo is not:
-
-- plain YAML placeholders without the envsubst render step
-- Kustomize overlays for runtime cluster values
-- host-dependent autodiscovery inside repo-server
-
-The correct adaptation is:
-
-- root app uses a dedicated app-of-apps envsubst CMP
-- child app uses a dedicated application-layer envsubst CMP
-- Terraform flattens and renders env contracts
-- MetalLB final manifests consume child-layer `${ARGOCD_ENV_*}` values at runtime
-
-
-
-## To Do Part 2:
-
-
