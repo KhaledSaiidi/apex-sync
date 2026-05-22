@@ -18,15 +18,29 @@ resource "null_resource" "artifacts_dir" {
 module "argocd" {
   source = "../../modules/argocd"
 
-  artifacts_dir                   = local.artifacts_dir
-  project_name                    = var.project_name
-  argocd_reconciliation_timeout   = var.argocd_reconciliation_timeout
-  argocd_exec_timeout             = var.argocd_exec_timeout
-  argocd_repo_server_timeout_secs = var.argocd_repo_server_timeout_secs
-  argocd_plugin_version           = var.argocd_plugin_version
-  gitops_root_app_repo_url        = var.gitops_root_app_repo_url
-  gitops_root_app_target_revision = var.gitops_root_app_target_revision
-  gitops_root_app_path            = var.gitops_root_app_path
+  artifacts_dir                       = local.artifacts_dir
+  project_name                        = var.project_name
+  argocd_reconciliation_timeout       = var.argocd_reconciliation_timeout
+  argocd_exec_timeout                 = var.argocd_exec_timeout
+  argocd_repo_server_timeout_secs     = var.argocd_repo_server_timeout_secs
+  gitops_root_app_repo_url            = var.gitops_root_app_repo_url
+  gitops_root_app_target_revision     = var.gitops_root_app_target_revision
+  gitops_root_app_path                = var.gitops_root_app_path
+  metallb_addresses_start             = var.metallb_addresses_start
+  metallb_addresses_end               = var.metallb_addresses_end
+  argocd_cmp_image                    = var.argocd_cmp_image
+  cert_manager_acme_email             = var.cert_manager_acme_email
+  cert_manager_route53_region         = var.cert_manager_route53_region
+  cert_manager_route53_hosted_zone_id = var.cert_manager_route53_hosted_zone_id
+  base_domain                         = var.base_domain
+  cert_manager_version                = var.cert_manager_version
+  external_dns_version                = var.external_dns_version
+  istio_main_version                  = var.istio_main_version
+  istio_ingress_gateway_version       = var.istio_ingress_gateway_version
+  kiali_version                       = var.kiali_version
+  kyverno_version                     = var.kyverno_version
+  metallb_version                     = var.metallb_version
+  openebs_version                     = var.openebs_version
 
   depends_on = [
     null_resource.artifacts_dir
@@ -43,14 +57,13 @@ module "bootstrap_ansible" {
   kubeconfig_path            = local.kubeconfig_path
   ansible_python_interpreter = var.ansible_python_interpreter
   project_name               = var.project_name
-  cluster_endpoint           = var.cluster_endpoint
   gitops_root_app_repo_url   = var.gitops_root_app_repo_url
   github_app_id              = var.github_app_id
   github_app_installation_id = var.github_app_installation_id
   github_app_private_key     = var.github_app_private_key
   aws_access_key_id          = var.aws_access_key_id
   aws_secret_access_key      = var.aws_secret_access_key
-
+  argocd_chart_version       = var.argocd_chart_version
   requirements_path          = "${local.repo_root}/ansible/requirements.yml"
   playbook_path              = "${local.repo_root}/ansible/playbooks/bootstrap.yml"
   bootstrap_sources_sha256   = local.bootstrap_sources_sha256

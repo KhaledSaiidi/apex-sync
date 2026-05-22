@@ -4,6 +4,6 @@ namespace: istio-system
 helmCharts:
   - name: kiali-server
     repo: https://kiali.org/helm-charts
-    version: 2.26.0
+    version: ${ARGOCD_ENV_kiali_version}
     releaseName: kiali
     namespace: istio-system

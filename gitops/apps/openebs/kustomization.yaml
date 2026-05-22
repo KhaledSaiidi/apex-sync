@@ -7,7 +7,7 @@ helmCharts:
     releaseName: openebs
     namespace: openebs
     valuesFile: openebs-values.yaml
-    version: 4.4.0
+    version: ${ARGOCD_ENV_openebs_version}
 resources:
   - openebs-hostpath-setup-rbac.yaml
   - openebs-hostpath-setup.yaml

@@ -44,49 +44,42 @@ configs:
     controller.repo.server.timeout.seconds: "${argocd_repo_server_timeout_secs}"
     server.repo.server.timeout.seconds: "${argocd_repo_server_timeout_secs}"
 
-extraObjects:
-  - apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: argocd-lovely-plugin-config
-      namespace: ${argocd_namespace}
-    data:
-      plugin.yaml: |
+  cmp:
+    create: true
+    plugins:
+      envsubstappofapp.yaml: |
         apiVersion: argoproj.io/v1alpha1
         kind: ConfigManagementPlugin
         metadata:
-          name: ${argocd_lovely_plugin_name}
+          name: envsubstappofapp
         spec:
+          allowConcurrency: true
           generate:
             command:
-              - /home/argocd/cmp-server/plugins/${argocd_lovely_plugin_name}
-              - generate
+              - /home/argocd/cmp-server/scripts/envsubstappofapp.sh
+      envsubst.yaml: |
+        apiVersion: argoproj.io/v1alpha1
+        kind: ConfigManagementPlugin
+        metadata:
+          name: envsubst
+        spec:
+          allowConcurrency: true
+          generate:
+            command:
+              - /home/argocd/cmp-server/scripts/envsubst.sh
 
 repoServer:
-  initContainers:
-    - name: install-${argocd_lovely_plugin_k8s_name}
-      image: "${argocd_lovely_plugin_image}"
-      imagePullPolicy: IfNotPresent
-      command:
-        - /bin/sh
-        - -c
-      args:
-        - |
-          cp /usr/local/bin/argocd-lovely-plugin /home/argocd/cmp-server/plugins/${argocd_lovely_plugin_name}
-          chmod 0555 /home/argocd/cmp-server/plugins/${argocd_lovely_plugin_name}
-      volumeMounts:
-        - name: plugins
-          mountPath: /home/argocd/cmp-server/plugins
-
   extraContainers:
-    - name: lovely-plugin
-      image: "${argocd_lovely_plugin_image}"
+    - name: cmp-envsubstappofapp
+      image: ${argocd_cmp_image}
       imagePullPolicy: IfNotPresent
       command:
         - /var/run/argocd/argocd-cmp-server
       env:
         - name: ARGOCD_EXEC_TIMEOUT
           value: "${argocd_exec_timeout}"
+        - name: HOME
+          value: /tmp
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -100,15 +93,49 @@ repoServer:
           mountPath: /var/run/argocd
         - name: plugins
           mountPath: /home/argocd/cmp-server/plugins
-        - name: lovely-plugin-config
+        - name: cmp-plugin-config
           mountPath: /home/argocd/cmp-server/config/plugin.yaml
-          subPath: plugin.yaml
+          subPath: envsubstappofapp.yaml
+        - name: cmp-tmp
+          mountPath: /tmp
+    - name: cmp-envsubst
+      image: ${argocd_cmp_image}
+      imagePullPolicy: IfNotPresent
+      command:
+        - /var/run/argocd/argocd-cmp-server
+      env:
+        - name: ARGOCD_EXEC_TIMEOUT
+          value: "${argocd_exec_timeout}"
+        - name: HOME
+          value: /tmp
+        - name: HELM_CACHE_HOME
+          value: /tmp/helm/cache
+        - name: HELM_CONFIG_HOME
+          value: /tmp/helm/config
+        - name: HELM_DATA_HOME
+          value: /tmp/helm/data
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      volumeMounts:
+        - name: var-files
+          mountPath: /var/run/argocd
+        - name: plugins
+          mountPath: /home/argocd/cmp-server/plugins
+        - name: cmp-plugin-config
+          mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: envsubst.yaml
         - name: cmp-tmp
           mountPath: /tmp
 
   volumes:
-    - name: lovely-plugin-config
+    - name: cmp-plugin-config
       configMap:
-        name: argocd-lovely-plugin-config
+        name: argocd-cmp-cm
     - name: cmp-tmp
       emptyDir: {}

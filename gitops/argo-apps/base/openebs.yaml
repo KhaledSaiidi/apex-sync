@@ -13,11 +13,14 @@ metadata:
 spec:
   project: platform
   source:
-    repoURL: https://github.com/KhaledSaiidi/kube-signal.git
-    targetRevision: HEAD
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
     path: gitops/apps/openebs
     plugin:
-      name: argocd-lovely-plugin-v1.0
+      name: envsubst
+      env:
+        - name: openebs_version
+          value: "${ARGOCD_ENV_openebs_version}"
   destination:
     server: https://kubernetes.default.svc
     namespace: openebs

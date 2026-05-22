@@ -13,9 +13,7 @@ resource "local_file" "argocd_values" {
     argocd_reconciliation_timeout   = var.argocd_reconciliation_timeout
     argocd_exec_timeout             = var.argocd_exec_timeout
     argocd_repo_server_timeout_secs = var.argocd_repo_server_timeout_secs
-    argocd_lovely_plugin_name       = "argocd-lovely-plugin-v1.0"
-    argocd_lovely_plugin_k8s_name   = "argocd-lovely-plugin-v1-0"
-    argocd_lovely_plugin_image      = "ghcr.io/crumbhole/argocd-lovely-plugin-cmp:${var.argocd_plugin_version}"
+    argocd_cmp_image                = var.argocd_cmp_image
   })
 
 }
@@ -32,7 +30,19 @@ resource "local_file" "argocd_root_app" {
     gitops_root_app_path                  = var.gitops_root_app_path
     gitops_root_app_destination_server    = "https://kubernetes.default.svc"
     gitops_root_app_destination_namespace = "argocd"
-    argocd_lovely_plugin_name             = "argocd-lovely-plugin-v1.0"
-    project_name                          = var.project_name
+    metallb_addresses_start               = var.metallb_addresses_start
+    metallb_addresses_end                 = var.metallb_addresses_end
+    cert_manager_acme_email               = var.cert_manager_acme_email
+    cert_manager_route53_region           = var.cert_manager_route53_region
+    cert_manager_route53_hosted_zone_id   = var.cert_manager_route53_hosted_zone_id
+    base_domain                           = var.base_domain
+    cert_manager_version                  = var.cert_manager_version
+    external_dns_version                  = var.external_dns_version
+    istio_main_version                    = var.istio_main_version
+    istio_ingress_gateway_version         = var.istio_ingress_gateway_version
+    kiali_version                         = var.kiali_version
+    kyverno_version                       = var.kyverno_version
+    metallb_version                       = var.metallb_version
+    openebs_version                       = var.openebs_version
   })
 }

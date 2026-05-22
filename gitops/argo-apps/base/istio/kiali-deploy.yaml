@@ -10,10 +10,13 @@ metadata:
 spec:
   source:
     path: gitops/apps/istio/kiali
-    repoURL: "https://github.com/KhaledSaiidi/kube-signal.git"
-    targetRevision: HEAD
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
     plugin:
-      name: argocd-lovely-plugin-v1.0
+      name: envsubst
+      env:
+        - name: kiali_version
+          value: "${ARGOCD_ENV_kiali_version}"
 
   destination:
     namespace: istio-system

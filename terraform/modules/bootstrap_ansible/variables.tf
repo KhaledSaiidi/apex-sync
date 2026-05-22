@@ -32,9 +32,6 @@ variable "ansible_python_interpreter" {
 variable "kubeconfig_path" {
   type = string
 }
-variable "cluster_endpoint" {
-  type = string
-}
 variable "gitops_root_app_repo_url" {
   type = string
 }
@@ -58,5 +55,9 @@ variable "argocd_values_path" {
   type = string
 }
 variable "argocd_root_app_path" {
+  type = string
+}
+
+variable "argocd_chart_version" {
   type = string
 }

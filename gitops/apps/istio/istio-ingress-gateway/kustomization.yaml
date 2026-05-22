@@ -8,7 +8,7 @@ resources:
 helmCharts:
   - name: gateway
     repo: https://istio-release.storage.googleapis.com/charts
-    version: 1.29.2
+    version: ${ARGOCD_ENV_istio_ingress_gateway_version}
     releaseName: istio-ingress-gateway
     namespace: istio-ingress-gateway
     valuesInline:

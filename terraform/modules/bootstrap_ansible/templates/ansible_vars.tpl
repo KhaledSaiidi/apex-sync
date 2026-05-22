@@ -1,6 +1,4 @@
 cluster:
-  name: "${project_name}"
-  endpoint: "${cluster_endpoint}"
   kubeconfig:
     local_path: "${kubeconfig_local_path}"
 
@@ -19,3 +17,5 @@ aws:
   access_key_id: "${aws_access_key_id}"
   secret_access_key: "${aws_secret_access_key}"
 
+argocd:
+  argocd_chart_version: "${argocd_chart_version}"

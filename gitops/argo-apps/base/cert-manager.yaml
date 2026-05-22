@@ -13,11 +13,22 @@ metadata:
 spec:
   project: platform
   source:
-    repoURL: https://github.com/KhaledSaiidi/kube-signal.git
-    targetRevision: HEAD
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
     path: gitops/apps/cert-manager
     plugin:
-      name: argocd-lovely-plugin-v1.0
+      name: envsubst
+      env:
+        - name: cert_manager_acme_email
+          value: "${ARGOCD_ENV_cert_manager_acme_email}"
+        - name: cert_manager_route53_region
+          value: "${ARGOCD_ENV_cert_manager_route53_region}"
+        - name: cert_manager_route53_hosted_zone_id
+          value: "${ARGOCD_ENV_cert_manager_route53_hosted_zone_id}"
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
+        - name: cert_manager_version
+          value: "${ARGOCD_ENV_cert_manager_version}"
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager

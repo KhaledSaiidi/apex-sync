@@ -18,10 +18,6 @@ variable "argocd_exec_timeout" {
 variable "argocd_repo_server_timeout_secs" {
   type = string
 }
-variable "argocd_plugin_version" {
-  type    = string
-  default = "0.18.0"
-}
 
 variable "gitops_root_app_repo_url" {
   type    = string
@@ -34,4 +30,63 @@ variable "gitops_root_app_target_revision" {
 variable "gitops_root_app_path" {
   type    = string
   default = "gitops/argo-apps"
+}
+
+variable "metallb_addresses_start" {
+  type = string
+}
+variable "metallb_addresses_end" {
+  type = string
+}
+
+variable "argocd_cmp_image" {
+  type = string
+}
+
+variable "cert_manager_acme_email" {
+  type = string
+}
+
+variable "cert_manager_route53_region" {
+  type = string
+}
+
+variable "cert_manager_route53_hosted_zone_id" {
+  type = string
+}
+
+variable "base_domain" {
+  type = string
+}
+
+variable "cert_manager_version" {
+  type = string
+}
+
+variable "external_dns_version" {
+  type = string
+}
+
+variable "istio_main_version" {
+  type = string
+}
+
+variable "istio_ingress_gateway_version" {
+  type = string
+}
+
+variable "kiali_version" {
+  type = string
+}
+
+variable "kyverno_version" {
+  type = string
+}
+
+variable "metallb_version" {
+  type = string
+}
+
+variable "openebs_version" {
+  type = string
 }

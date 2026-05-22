@@ -1,40 +1,62 @@
 # kube-signal
 
-`kube-signal` bootstraps a production-like Kubernetes platform on a local `kind` cluster.
+`kube-signal` bootstraps a production-like Kubernetes platform on a local `kind` cluster, then hands steady-state management to Argo CD.
 
-The current repo flow is:
+The current automated flow is:
 
 1. Create a local `kind` cluster with the provided config.
 2. Run `bootstrap.sh`.
-3. `bootstrap.sh` runs `terraform` in `terraform/stack/main`.
-4. Terraform renders bootstrap artifacts and runs `ansible-playbook` locally.
-5. Ansible installs `Cilium`, installs `Argo CD`, creates the Argo CD GitHub App repository secret, and applies the root Argo CD application.
-6. Argo CD syncs the platform applications from `gitops/`.
+3. Terraform renders Argo CD bootstrap artifacts.
+4. Terraform runs the local Ansible bootstrap.
+5. Ansible installs `Cilium`, installs `Argo CD`, creates the required bootstrap secrets, and applies the root Argo CD application.
+6. Argo CD reconciles the platform from `gitops/`.
+7. Argo CD Config Management Plugins render environment-specific values and chart versions during sync.
 
-This is the current automated path in the codebase. The older step-by-step manual flow in `NOTES.txt` is historical reference, not the main entrypoint anymore.
+This is the main path in the codebase. Older manual notes are historical reference only.
 
 ## What The Repo Manages
 
-The repo is structured to bootstrap and GitOps-manage:
+The repo bootstraps and GitOps-manages:
 
-- `Cilium` as the cluster CNI and kube-proxy replacement
+- `Cilium` as CNI and kube-proxy replacement
 - `Argo CD` as the GitOps control plane
-- `MetalLB` for `LoadBalancer` IPs on local `kind`
-- `cert-manager` for certificate management
-- `Istio` and Gateway API resources
-- `Kyverno` policies
+- `MetalLB` for local `LoadBalancer` IPs
+- `cert-manager`
+- `Istio`
+- `Gateway API` resources used by the ingress gateway layer
+- `Kiali`
+- `Kyverno`
 - `external-dns`
+- `OpenEBS`
 
-The `kind` cluster config in [`kind-kube-signal.yaml`](./kind-kube-signal.yaml) disables the default CNI and kube-proxy because `Cilium` is expected to replace both.
+The `kind` config in [`kind-kube-signal.yaml`](./kind-kube-signal.yaml) disables the default CNI and kube-proxy because `Cilium` replaces both.
+
+## Big Improvements In The Current Design
+
+Compared to the older bootstrap shape, the current system now has a cleaner separation between bootstrap and steady-state GitOps.
+
+- Terraform owns the bootstrap inputs and renders the exact Argo CD artifacts that Ansible applies.
+- Ansible creates both the Argo CD GitHub App repository secret and the Route53 secret needed by `cert-manager`.
+- Argo CD uses dedicated CMP sidecars for `envsubst` rendering instead of downloading tools and mounting scripts at runtime.
+- The CMP runtime is packaged as a versioned image, built from [`cmp-build/`](./cmp-build/) and published by [`.github/workflows/build-cmp-envsubst.yml`](./.github/workflows/build-cmp-envsubst.yml).
+- The root Argo CD application injects environment-specific values into child applications through CMP env vars.
+- GitOps child applications now consume variables for:
+  - Git source repo URL and revision
+  - MetalLB address pool
+  - cert-manager DNS / ACME settings
+  - per-application Helm chart versions
+
+This means most environment changes now happen through Terraform inputs rather than manual edits to GitOps manifests.
 
 ## Repository Layout
 
 - `bootstrap.sh`: main bootstrap entrypoint
 - `destroy.sh`: Terraform destroy helper for bootstrap-managed resources
+- `cmp-build/`: source for the custom Argo CD CMP image
 - `terraform/stack/main`: Terraform entrypoint
 - `ansible/playbooks/bootstrap.yml`: local bootstrap playbook
-- `gitops/`: Argo CD applications and app manifests
-- `example.env.bootstrap`: example Terraform input environment
+- `gitops/`: Argo CD applications and application content
+- `example.env.bootstrap`: example bootstrap environment file
 
 ## Prerequisites
 
@@ -43,14 +65,16 @@ Install or have available:
 - Docker
 - `kind`
 - `terraform`
-- `ansible-playbook` and `ansible-galaxy`
+- `ansible-playbook`
+- `ansible-galaxy`
 
-`kubectl` and `helm` do not have to be preinstalled in every case. The bootstrap playbook attempts to install them when missing on supported Debian or RedHat hosts.
+`kubectl` and `helm` do not have to be preinstalled in every case. The bootstrap tooling role attempts to install them when missing on supported Debian or RedHat hosts.
 
 You also need:
 
-- internet access for Terraform providers, Ansible collections, and Helm charts
-- a GitHub App that Argo CD can use to read the GitOps repository
+- internet access for Terraform providers, Ansible collections, image pulls, and Helm charts
+- a GitHub App Argo CD can use to read the GitOps repository
+- AWS credentials with access to the Route53 zone used by `cert-manager`
 
 ## Required Inputs
 
@@ -60,23 +84,112 @@ Create `.env.bootstrap` from [`example.env.bootstrap`](./example.env.bootstrap):
 cp example.env.bootstrap .env.bootstrap
 ```
 
-Fill in:
+At minimum, provide:
 
 - `TF_VAR_github_app_id`
 - `TF_VAR_github_app_installation_id`
 - `TF_VAR_github_app_private_key`
+- `TF_VAR_aws_access_key_id`
+- `TF_VAR_aws_secret_access_key`
 
-Example shape:
+Example:
 
 ```bash
 export TF_VAR_github_app_id="xxxxxx"
 export TF_VAR_github_app_installation_id="xxxxxx"
 export TF_VAR_github_app_private_key="$(cat /path/to/argocd-github-app.pem)"
+export TF_VAR_aws_access_key_id="AKIA..."
+export TF_VAR_aws_secret_access_key="..."
 ```
 
-These values are consumed by Terraform and passed to Ansible so Ansible can create the Argo CD GitHub App repository secret.
+These are consumed by Terraform, rendered into the bootstrap artifacts, and then used by Ansible to create:
 
-`.env.bootstrap` is not a Kubernetes secret file.
+- the Argo CD GitHub App repository secret
+- the `route53-credentials-secret` in `cert-manager`
+
+`.env.bootstrap` is local bootstrap input, not a Kubernetes secret manifest.
+
+## Useful Terraform Inputs
+
+The defaults are intentionally usable, but these inputs are the main ones worth overriding per environment:
+
+- `TF_VAR_gitops_root_app_repo_url`
+- `TF_VAR_gitops_root_app_target_revision`
+- `TF_VAR_kubeconfig_path`
+- `TF_VAR_argocd_chart_version`
+- `TF_VAR_argocd_cmp_image`
+- `TF_VAR_metallb_addresses_start`
+- `TF_VAR_metallb_addresses_end`
+- `TF_VAR_cert_manager_acme_email`
+- `TF_VAR_cert_manager_route53_region`
+- `TF_VAR_cert_manager_route53_hosted_zone_id`
+- `TF_VAR_base_domain`
+
+The platform application chart versions are also variableized through Terraform:
+
+- `TF_VAR_cert_manager_version`
+- `TF_VAR_external_dns_version`
+- `TF_VAR_istio_main_version`
+- `TF_VAR_istio_ingress_gateway_version`
+- `TF_VAR_kiali_version`
+- `TF_VAR_kyverno_version`
+- `TF_VAR_metallb_version`
+- `TF_VAR_openebs_version`
+
+## How The System Works
+
+### Bootstrap Phase
+
+`bootstrap.sh`:
+
+1. loads `.env.bootstrap`
+2. changes into `terraform/stack/main`
+3. runs `terraform init`
+4. runs `terraform apply --auto-approve`
+
+Terraform then:
+
+1. renders Argo CD Helm values
+2. renders the Argo CD root application manifest
+3. renders the local Ansible inventory and vars file
+4. runs the local bootstrap Ansible workflow
+
+Ansible then:
+
+1. prepares local tooling
+2. installs `Cilium`
+3. installs `Argo CD`
+4. creates the Argo CD GitHub App repository secret
+5. creates the Route53 credentials secret for `cert-manager`
+6. applies the root Argo CD application
+
+### GitOps Phase
+
+After bootstrap, Argo CD reconciles the child applications from `gitops/`.
+
+The root app uses the `envsubstappofapp` CMP plugin to render child `Application` manifests with environment-specific values such as:
+
+- repo URL
+- target revision
+- MetalLB IP range
+- cert-manager email / Route53 settings
+- base domain
+- per-application chart versions
+
+Child applications that need variable substitution use the `envsubst` CMP plugin. This is how the repo now injects Helm chart versions into `gitops/apps/**/kustomization.yaml` without hardcoding them.
+
+## Argo CD CMP Model
+
+Argo CD is configured with two CMP plugins:
+
+- `envsubstappofapp`
+  Used for the root app-of-apps layer.
+- `envsubst`
+  Used by child applications that need environment substitution before `kustomize build --enable-helm`.
+
+The CMP sidecars run from the custom image referenced by `argocd_cmp_image`. The image is built from [`cmp-build/`](./cmp-build/) and published by [`.github/workflows/build-cmp-envsubst.yml`](./.github/workflows/build-cmp-envsubst.yml).
+
+This avoids runtime package installation inside repo-server and keeps the CMP runtime versioned and reproducible.
 
 ## How To Run
 
@@ -90,7 +203,7 @@ kind create cluster \
   --kubeconfig kind-kubeconfig.yaml
 ```
 
-This is the expected default because Terraform currently defaults `kubeconfig_path` to `../../../kind-kubeconfig.yaml`, which resolves to the repo-root `kind-kubeconfig.yaml`.
+This matches the default Terraform `kubeconfig_path`.
 
 ### 2. Bootstrap The Platform
 
@@ -100,60 +213,35 @@ Run:
 ./bootstrap.sh
 ```
 
-`bootstrap.sh` does the following:
+### 3. Verify
 
-1. loads `.env.bootstrap`
-2. changes into `terraform/stack/main`
-3. runs `terraform init`
-4. runs `terraform apply --auto-approve`
-
-Terraform then:
-
-1. renders Argo CD values and the root app manifest
-2. renders the Ansible inventory and vars file
-3. runs the local bootstrap Ansible module
-
-Ansible then:
-
-1. validates the kubeconfig and bootstrap inputs
-2. prepares local tooling
-3. installs `Cilium`
-4. installs `Argo CD`
-5. creates the Argo CD GitHub App repository secret
-6. applies the root Argo CD application
-
-After that, Argo CD starts reconciling the child applications from `gitops/`.
-
-## Important Configuration To Review
-
-Some GitOps manifests are environment-specific and should be reviewed before relying on a full sync:
-
-- [`gitops/apps/metallb/metallb-pool.yaml`](./gitops/apps/metallb/metallb-pool.yaml): the IP pool must match an unused range in your local `kind` Docker network
-- [`gitops/apps/cert-manager/clusterissuer-route53.yaml`](./gitops/apps/cert-manager/clusterissuer-route53.yaml): contains Route53 zone-specific settings
-- [`gitops/apps/cert-manager/certificate.yaml`](./gitops/apps/cert-manager/certificate.yaml): contains the configured DNS names
-
-By default, the Argo CD root application points to the GitHub repo URL and revision configured in Terraform. If you want Argo CD to reconcile a different repo or branch, update the Terraform inputs in `terraform/stack/main`.
-
-## Manual Secrets Still Required
-
-The repo references a Route53 credentials secret for the cert-manager DNS01 solver:
-
-- name: `route53-credentials-secret`
-- namespace: `cert-manager`
-
-That secret is not created by `.env.bootstrap` and is not bootstrapped by Terraform or Ansible. If you want cert-manager DNS validation to work, create it separately, for example:
+Typical checks:
 
 ```bash
-kubectl -n cert-manager create secret generic route53-credentials-secret \
-  --from-literal=access-key-id='AKIA...' \
-  --from-literal=secret-access-key='YOUR_SECRET_ACCESS_KEY'
+kubectl --kubeconfig kind-kubeconfig.yaml get nodes
+kubectl --kubeconfig kind-kubeconfig.yaml -n argocd get applications
+kubectl --kubeconfig kind-kubeconfig.yaml -n argocd get pods
 ```
+
+## What To Review Before A Real Sync
+
+Most environment-specific values now come from Terraform variables, not direct manifest edits. The main ones to review are:
+
+- MetalLB address range
+- GitOps repo URL and target revision
+- base domain
+- cert-manager ACME email
+- Route53 region
+- Route53 hosted zone ID
+- Argo CD chart version
+- CMP image tag
+- per-application chart versions
 
 ## Logs And Generated Files
 
 During bootstrap:
 
-- Terraform logs are written under `/tmp/kube-signal`
+- Terraform apply logs are written under `/tmp/kube-signal`
 - rendered artifacts are written under `terraform/stack/main/artifacts`
 - local Ansible cache content is written under `.ansible/`
 
