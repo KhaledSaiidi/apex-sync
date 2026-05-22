@@ -60,3 +60,7 @@ variable "argocd_values_path" {
 variable "argocd_root_app_path" {
   type = string
 }
+
+variable "argocd_chart_version" {
+  type = string
+}

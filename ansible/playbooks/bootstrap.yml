@@ -12,7 +12,6 @@
         that:
           - cluster is defined
           - cluster.kubeconfig is defined
-          - cluster.kubeconfig.local_path is defined
           - artifacts is defined
           - artifacts.argocd_values_local_path is defined
           - artifacts.gitops_root_app_manifest_local_path is defined
@@ -23,10 +22,10 @@
           - github.github_app_private_key is defined
           - aws.access_key_id is defined
           - aws.secret_access_key is defined
+          - argocd.argocd_chart_version is defined
         fail_msg: >
           Missing required keys in vars (-e @ansible-vars.yaml).
           Required:
-            cluster.kubeconfig.local_path.
             artifacts.argocd_values_local_path.
             artifacts.gitops_root_app_manifest_local_path.
             github.gitops_root_app_repo_url.
@@ -35,6 +34,7 @@
             github.github_app_private_key.
             aws.access_key_id.
             aws.secret_access_key.
+            argocd.argocd_chart_version.
 
   tasks:
     - name: Prepare local bootstrap tooling

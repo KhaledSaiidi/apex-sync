@@ -8,7 +8,7 @@ argocd_install_create_namespace: true
 argocd_install_helm_repo_name: argo
 argocd_install_helm_repo_url: https://argoproj.github.io/argo-helm
 argocd_install_chart_name: argo/argo-cd
-argocd_install_chart_version: "9.5.15"   # pin like "6.9.4" if you want deterministic installs
+argocd_install_chart_version: "{{ argocd.argocd_chart_version }}"
 argocd_install_release_name: argocd
 argocd_install_server_deployment_name: argocd-server
 argocd_install_repo_server_deployment_name: argocd-repo-server

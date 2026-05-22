@@ -52,7 +52,7 @@ module "bootstrap_ansible" {
   github_app_private_key     = var.github_app_private_key
   aws_access_key_id          = var.aws_access_key_id
   aws_secret_access_key      = var.aws_secret_access_key
-
+  argocd_chart_version       = var.argocd_chart_version
   requirements_path          = "${local.repo_root}/ansible/requirements.yml"
   playbook_path              = "${local.repo_root}/ansible/playbooks/bootstrap.yml"
   bootstrap_sources_sha256   = local.bootstrap_sources_sha256

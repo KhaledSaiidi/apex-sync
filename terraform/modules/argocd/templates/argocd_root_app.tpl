@@ -19,6 +19,10 @@ spec:
           value: "${metallb_addresses_start}"
         - name: metallb_config_addresses_end
           value: "${metallb_addresses_end}"
+        - name: gitops_root_app_repo_url
+          value: "${gitops_root_app_repo_url}"
+        - name: gitops_root_app_target_revision
+          value: "${gitops_root_app_target_revision}"
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}

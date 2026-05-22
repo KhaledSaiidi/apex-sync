@@ -86,3 +86,8 @@ variable "argocd_cmp_image" {
   type    = string
   default = "ghcr.io/khaledsaiidi/kube-signal/argocd-cmp-envsubst:1.2.0"
 }
+
+variable "argocd_chart_version" {
+  type    = string
+  default = "9.5.15"
+}
