@@ -3,7 +3,7 @@ name: 🚀 Publish CMP Image Artifacts
 on:
   push:
     branches:
-      - "**"
+      - main
     paths:
       - "cmp-build/**"
   workflow_dispatch:
@@ -74,7 +74,7 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ steps.version.outputs.version }}
+            type=raw,value=${{ steps.version.outputs.version }},enable={{is_default_branch}}
             type=raw,value=sha-${{ github.sha }}
             type=raw,value=latest,enable={{is_default_branch}}
 

@@ -81,3 +81,8 @@ variable "metallb_addresses_end" {
   default = "172.18.255.230"
 
 }
+
+variable "argocd_cmp_image" {
+  type    = string
+  default = "ghcr.io/khaledsaiidi/kube-signal/argocd-cmp-envsubst:1.1.0"
+}

@@ -28,6 +28,7 @@ module "argocd" {
   gitops_root_app_path            = var.gitops_root_app_path
   metallb_addresses_start         = var.metallb_addresses_start
   metallb_addresses_end           = var.metallb_addresses_end
+  argocd_cmp_image                = var.argocd_cmp_image
 
   depends_on = [
     null_resource.artifacts_dir

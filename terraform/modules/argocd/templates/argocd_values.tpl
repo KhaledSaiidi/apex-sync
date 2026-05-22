@@ -68,86 +68,16 @@ configs:
             command:
               - /home/argocd/cmp-server/scripts/envsubst.sh
 
-extraObjects:
-  - apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: argocd-envsubst-plugin-scripts
-      namespace: ${argocd_namespace}
-    data:
-      envsubstappofapp.sh: |
-        #!/bin/sh
-        set -eu
-
-        rendered="$(mktemp)"
-        cleanup() {
-          rm -f "$rendered"
-        }
-        trap cleanup EXIT
-
-        kustomize build . >"$rendered"
-        envsubst <"$rendered"
-      envsubst.sh: |
-        #!/bin/sh
-        set -eu
-
-        workdir="$(mktemp -d)"
-        cleanup() {
-          rm -rf "$workdir"
-        }
-        trap cleanup EXIT
-
-        src="$workdir/src"
-        mkdir -p "$src"
-        cp -R ./. "$src"
-        cd "$src"
-
-        find . -type f \( -name '*.yaml' -o -name '*.yml' \) | while IFS= read -r file; do
-          tmp="$file.tmp"
-          envsubst <"$file" >"$tmp"
-          mv "$tmp" "$file"
-        done
-
-        kustomize build --enable-helm .
-
 repoServer:
-  initContainers:
-    - name: install-envsubst-for-cmp
-      image: '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ .Values.repoServer.image.tag | default (.Values.global.image.tag | default .Chart.AppVersion) }}'
-      imagePullPolicy: IfNotPresent
-      securityContext:
-        runAsNonRoot: false
-        runAsUser: 0
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
-      command:
-        - /bin/sh
-        - -ec
-      args:
-        - |
-          apt-get update
-          apt-get install --no-install-recommends -y gettext-base
-          cp /usr/bin/envsubst /custom-tools/envsubst
-          chmod 0555 /custom-tools/envsubst
-          apt-get clean
-          rm -rf /var/lib/apt/lists/*
-      volumeMounts:
-        - name: envsubst-tools
-          mountPath: /custom-tools
-
   extraContainers:
     - name: cmp-envsubstappofapp
-      image: '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ .Values.repoServer.image.tag | default (.Values.global.image.tag | default .Chart.AppVersion) }}'
+      image: ${argocd_cmp_image}
       imagePullPolicy: IfNotPresent
       command:
         - /var/run/argocd/argocd-cmp-server
       env:
         - name: ARGOCD_EXEC_TIMEOUT
           value: "${argocd_exec_timeout}"
-        - name: PATH
-          value: /custom-tools:/usr/local/bin:/usr/bin:/bin
         - name: HOME
           value: /tmp
       securityContext:
@@ -163,27 +93,19 @@ repoServer:
           mountPath: /var/run/argocd
         - name: plugins
           mountPath: /home/argocd/cmp-server/plugins
-        - name: envsubst-tools
-          mountPath: /custom-tools
-          readOnly: true
-        - name: envsubst-plugin-scripts
-          mountPath: /home/argocd/cmp-server/scripts
-          readOnly: true
         - name: cmp-plugin-config
           mountPath: /home/argocd/cmp-server/config/plugin.yaml
           subPath: envsubstappofapp.yaml
         - name: cmp-tmp
           mountPath: /tmp
     - name: cmp-envsubst
-      image: '{{ default .Values.global.image.repository .Values.repoServer.image.repository }}:{{ .Values.repoServer.image.tag | default (.Values.global.image.tag | default .Chart.AppVersion) }}'
+      image: ${argocd_cmp_image}
       imagePullPolicy: IfNotPresent
       command:
         - /var/run/argocd/argocd-cmp-server
       env:
         - name: ARGOCD_EXEC_TIMEOUT
           value: "${argocd_exec_timeout}"
-        - name: PATH
-          value: /custom-tools:/usr/local/bin:/usr/bin:/bin
         - name: HOME
           value: /tmp
         - name: HELM_CACHE_HOME
@@ -205,12 +127,6 @@ repoServer:
           mountPath: /var/run/argocd
         - name: plugins
           mountPath: /home/argocd/cmp-server/plugins
-        - name: envsubst-tools
-          mountPath: /custom-tools
-          readOnly: true
-        - name: envsubst-plugin-scripts
-          mountPath: /home/argocd/cmp-server/scripts
-          readOnly: true
         - name: cmp-plugin-config
           mountPath: /home/argocd/cmp-server/config/plugin.yaml
           subPath: envsubst.yaml
@@ -221,11 +137,5 @@ repoServer:
     - name: cmp-plugin-config
       configMap:
         name: argocd-cmp-cm
-    - name: envsubst-plugin-scripts
-      configMap:
-        name: argocd-envsubst-plugin-scripts
-        defaultMode: 0555
-    - name: envsubst-tools
-      emptyDir: {}
     - name: cmp-tmp
       emptyDir: {}

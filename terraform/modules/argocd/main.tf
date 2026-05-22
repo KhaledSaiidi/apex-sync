@@ -13,6 +13,7 @@ resource "local_file" "argocd_values" {
     argocd_reconciliation_timeout   = var.argocd_reconciliation_timeout
     argocd_exec_timeout             = var.argocd_exec_timeout
     argocd_repo_server_timeout_secs = var.argocd_repo_server_timeout_secs
+    argocd_cmp_image                = var.argocd_cmp_image
   })
 
 }

@@ -38,3 +38,7 @@ variable "metallb_addresses_start" {
 variable "metallb_addresses_end" {
   type = string
 }
+
+variable "argocd_cmp_image" {
+  type = string
+}
