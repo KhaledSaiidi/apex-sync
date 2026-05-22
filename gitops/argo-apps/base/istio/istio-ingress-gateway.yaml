@@ -12,6 +12,11 @@ spec:
     path: gitops/apps/istio/istio-ingress-gateway
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    plugin:
+      name: envsubst
+      env:
+        - name: istio_ingress_gateway_version
+          value: "${ARGOCD_ENV_istio_ingress_gateway_version}"
 
   destination:
     namespace: istio-ingress-gateway

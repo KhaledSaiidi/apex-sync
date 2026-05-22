@@ -101,3 +101,43 @@ variable "base_domain" {
   type    = string
   default = "kube-forge.com"
 }
+
+variable "cert_manager_version" {
+  type    = string
+  default = "v1.20.2"
+}
+
+variable "external_dns_version" {
+  type    = string
+  default = "1.21.1"
+}
+
+variable "istio_main_version" {
+  type    = string
+  default = "1.29.2"
+}
+
+variable "istio_ingress_gateway_version" {
+  type    = string
+  default = "1.29.2"
+}
+
+variable "kiali_version" {
+  type    = string
+  default = "2.26.0"
+}
+
+variable "kyverno_version" {
+  type    = string
+  default = "3.8.0"
+}
+
+variable "metallb_version" {
+  type    = string
+  default = "0.15.3"
+}
+
+variable "openebs_version" {
+  type    = string
+  default = "4.4.0"
+}

@@ -31,6 +31,22 @@ spec:
           value: "${cert_manager_route53_hosted_zone_id}"
         - name: base_domain
           value: "${base_domain}"
+        - name: cert_manager_version
+          value: "${cert_manager_version}"
+        - name: external_dns_version
+          value: "${external_dns_version}"
+        - name: istio_main_version
+          value: "${istio_main_version}"
+        - name: istio_ingress_gateway_version
+          value: "${istio_ingress_gateway_version}"
+        - name: kiali_version
+          value: "${kiali_version}"
+        - name: kyverno_version
+          value: "${kyverno_version}"
+        - name: metallb_version
+          value: "${metallb_version}"
+        - name: openebs_version
+          value: "${openebs_version}"
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}

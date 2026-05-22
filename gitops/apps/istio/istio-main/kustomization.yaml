@@ -4,11 +4,11 @@ namespace: istio-system
 helmCharts:
   - name: base
     repo: https://istio-release.storage.googleapis.com/charts
-    version: 1.29.2
+    version: ${ARGOCD_ENV_istio_main_version}
     releaseName: istio-base
     namespace: istio-system
   - name: istiod
     repo: https://istio-release.storage.googleapis.com/charts
-    version: 1.29.2
+    version: ${ARGOCD_ENV_istio_main_version}
     releaseName: istiod
     namespace: istio-system

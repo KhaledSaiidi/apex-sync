@@ -23,6 +23,8 @@ spec:
           value: "${ARGOCD_ENV_metallb_config_addresses_start}"
         - name: addresses_end
           value: "${ARGOCD_ENV_metallb_config_addresses_end}"
+        - name: metallb_version
+          value: "${ARGOCD_ENV_metallb_version}"
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system

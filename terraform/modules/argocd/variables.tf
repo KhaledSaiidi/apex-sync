@@ -58,3 +58,35 @@ variable "cert_manager_route53_hosted_zone_id" {
 variable "base_domain" {
   type = string
 }
+
+variable "cert_manager_version" {
+  type = string
+}
+
+variable "external_dns_version" {
+  type = string
+}
+
+variable "istio_main_version" {
+  type = string
+}
+
+variable "istio_ingress_gateway_version" {
+  type = string
+}
+
+variable "kiali_version" {
+  type = string
+}
+
+variable "kyverno_version" {
+  type = string
+}
+
+variable "metallb_version" {
+  type = string
+}
+
+variable "openebs_version" {
+  type = string
+}
