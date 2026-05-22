@@ -6,15 +6,15 @@ metadata:
     argocd.argoproj.io/sync-wave: "10"
 spec:
   acme:
-    email: khaled.saiidi@outlook.com
+    email: "${ARGOCD_ENV_cert_manager_acme_email}"
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-prod-route53-account-key
     solvers:
       - dns01:
           route53:
-            region: us-east-1
-            hostedZoneID: Z032863786J0OF6PKT1D
+            region: "${ARGOCD_ENV_cert_manager_route53_region}"
+            hostedZoneID: "${ARGOCD_ENV_cert_manager_route53_hosted_zone_id}"
             accessKeyIDSecretRef:
               name: route53-credentials-secret
               key: aws_access_key_id

@@ -23,6 +23,14 @@ spec:
           value: "${gitops_root_app_repo_url}"
         - name: gitops_root_app_target_revision
           value: "${gitops_root_app_target_revision}"
+        - name: cert_manager_acme_email
+          value: "${cert_manager_acme_email}"
+        - name: cert_manager_route53_region
+          value: "${cert_manager_route53_region}"
+        - name: cert_manager_route53_hosted_zone_id
+          value: "${cert_manager_route53_hosted_zone_id}"
+        - name: base_domain
+          value: "${base_domain}"
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}

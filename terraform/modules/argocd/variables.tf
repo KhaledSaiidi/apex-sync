@@ -42,3 +42,19 @@ variable "metallb_addresses_end" {
 variable "argocd_cmp_image" {
   type = string
 }
+
+variable "cert_manager_acme_email" {
+  type = string
+}
+
+variable "cert_manager_route53_region" {
+  type = string
+}
+
+variable "cert_manager_route53_hosted_zone_id" {
+  type = string
+}
+
+variable "base_domain" {
+  type = string
+}

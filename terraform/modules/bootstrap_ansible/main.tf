@@ -20,9 +20,7 @@ resource "local_file" "ansible_vars" {
   file_permission = "0644"
 
   content = templatefile("${path.module}/templates/ansible_vars.tpl", {
-    project_name                  = var.project_name
     kubeconfig_local_path         = var.kubeconfig_path
-    cluster_endpoint              = var.cluster_endpoint
     argocd_values_local_path      = var.argocd_values_path
     gitops_root_app_manifest_path = var.argocd_root_app_path
     gitops_root_app_repo_url      = var.gitops_root_app_repo_url

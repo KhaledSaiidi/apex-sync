@@ -3,11 +3,6 @@ variable "project_name" {
   default = "platform"
 }
 
-variable "remote_deployment" {
-  type    = bool
-  default = false
-}
-
 variable "argocd_reconciliation_timeout" {
   type    = string
   default = "180s"
@@ -44,11 +39,6 @@ variable "ansible_python_interpreter" {
 variable "kubeconfig_path" {
   type    = string
   default = "../../../kind-kubeconfig.yaml"
-}
-
-variable "cluster_endpoint" {
-  type    = string
-  default = ""
 }
 
 
@@ -90,4 +80,24 @@ variable "argocd_cmp_image" {
 variable "argocd_chart_version" {
   type    = string
   default = "9.5.15"
+}
+
+variable "cert_manager_acme_email" {
+  type    = string
+  default = "khaled.saiidi@outlook.com"
+}
+
+variable "cert_manager_route53_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+variable "cert_manager_route53_hosted_zone_id" {
+  type    = string
+  default = "Z032863786J0OF6PKT1D"
+}
+
+variable "base_domain" {
+  type    = string
+  default = "kube-forge.com"
 }

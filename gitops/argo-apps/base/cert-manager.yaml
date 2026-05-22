@@ -16,6 +16,17 @@ spec:
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
     path: gitops/apps/cert-manager
+    plugin:
+      name: envsubst
+      env:
+        - name: cert_manager_acme_email
+          value: "${ARGOCD_ENV_cert_manager_acme_email}"
+        - name: cert_manager_route53_region
+          value: "${ARGOCD_ENV_cert_manager_route53_region}"
+        - name: cert_manager_route53_hosted_zone_id
+          value: "${ARGOCD_ENV_cert_manager_route53_hosted_zone_id}"
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager

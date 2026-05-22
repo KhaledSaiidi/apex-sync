@@ -18,17 +18,21 @@ resource "null_resource" "artifacts_dir" {
 module "argocd" {
   source = "../../modules/argocd"
 
-  artifacts_dir                   = local.artifacts_dir
-  project_name                    = var.project_name
-  argocd_reconciliation_timeout   = var.argocd_reconciliation_timeout
-  argocd_exec_timeout             = var.argocd_exec_timeout
-  argocd_repo_server_timeout_secs = var.argocd_repo_server_timeout_secs
-  gitops_root_app_repo_url        = var.gitops_root_app_repo_url
-  gitops_root_app_target_revision = var.gitops_root_app_target_revision
-  gitops_root_app_path            = var.gitops_root_app_path
-  metallb_addresses_start         = var.metallb_addresses_start
-  metallb_addresses_end           = var.metallb_addresses_end
-  argocd_cmp_image                = var.argocd_cmp_image
+  artifacts_dir                       = local.artifacts_dir
+  project_name                        = var.project_name
+  argocd_reconciliation_timeout       = var.argocd_reconciliation_timeout
+  argocd_exec_timeout                 = var.argocd_exec_timeout
+  argocd_repo_server_timeout_secs     = var.argocd_repo_server_timeout_secs
+  gitops_root_app_repo_url            = var.gitops_root_app_repo_url
+  gitops_root_app_target_revision     = var.gitops_root_app_target_revision
+  gitops_root_app_path                = var.gitops_root_app_path
+  metallb_addresses_start             = var.metallb_addresses_start
+  metallb_addresses_end               = var.metallb_addresses_end
+  argocd_cmp_image                    = var.argocd_cmp_image
+  cert_manager_acme_email             = var.cert_manager_acme_email
+  cert_manager_route53_region         = var.cert_manager_route53_region
+  cert_manager_route53_hosted_zone_id = var.cert_manager_route53_hosted_zone_id
+  base_domain                         = var.base_domain
 
   depends_on = [
     null_resource.artifacts_dir
@@ -45,7 +49,6 @@ module "bootstrap_ansible" {
   kubeconfig_path            = local.kubeconfig_path
   ansible_python_interpreter = var.ansible_python_interpreter
   project_name               = var.project_name
-  cluster_endpoint           = var.cluster_endpoint
   gitops_root_app_repo_url   = var.gitops_root_app_repo_url
   github_app_id              = var.github_app_id
   github_app_installation_id = var.github_app_installation_id

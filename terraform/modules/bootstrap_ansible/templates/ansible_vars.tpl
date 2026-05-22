@@ -1,6 +1,4 @@
 cluster:
-  name: "${project_name}"
-  endpoint: "${cluster_endpoint}"
   kubeconfig:
     local_path: "${kubeconfig_local_path}"
 

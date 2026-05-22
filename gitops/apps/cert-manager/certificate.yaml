@@ -1,15 +1,15 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: app-kube-forge-com
+  name: "app-domain-certificate"
   namespace: cert-manager
   annotations:
     argocd.argoproj.io/sync-wave: "20"
 spec:
-  secretName: wildcard-kube-forge-com-tls
+  secretName: "wildcard-domain-secret-tls"
   issuerRef:
     name: letsencrypt-prod-route53
     kind: ClusterIssuer
   dnsNames:
-    - "*.kube-forge.com"
-    - kube-forge.com
+    - "*.${ARGOCD_ENV_base_domain}"
+    - "${ARGOCD_ENV_base_domain}"
