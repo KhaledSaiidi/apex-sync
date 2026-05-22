@@ -1,0 +1,90 @@
+name: 🚀 Publish CMP Image Artifacts
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "cmp-build/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-cmp-artifacts-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}/argocd-cmp-envsubst
+
+jobs:
+  publish:
+    name: 🐳 Build & Push CMP Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔎 Inspect Docker setup
+        run: |
+          echo "🕵️ Checking Docker engine..."
+          docker version
+          echo ""
+          echo "🧱 Checking Docker Buildx..."
+          docker buildx version
+          echo ""
+          echo "✅ Docker looks ready. The image factory is open."
+
+      - name: 🔐 Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Read CMP image version
+        id: version
+        run: |
+          echo "📖 Reading semantic version from cmp-build/VERSION..."
+
+          VERSION="$(cat cmp-build/VERSION | tr -d '[:space:]')"
+
+          echo "🔢 Found version: $VERSION"
+
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "❌ Invalid VERSION: $VERSION"
+            echo "👉 Expected format: 1.2.3"
+            echo "💥 Refusing to publish a confused container."
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          echo "✅ Version is valid. Semantic gods are pleased."
+
+      - name: 🧾 Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.version.outputs.version }}
+            type=raw,value=sha-${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 🐳 Build and push CMP image
+        uses: docker/build-push-action@v6
+        with:
+          context: cmp-build
+          file: cmp-build/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
