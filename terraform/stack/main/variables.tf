@@ -122,9 +122,9 @@ variable "istio_main_version" {
   default = "1.29.2"
 }
 
-variable "istio_ingress_gateway_version" {
+variable "gateway_api_version" {
   type    = string
-  default = "1.29.2"
+  default = "v1.5.1"
 }
 
 variable "kiali_version" {

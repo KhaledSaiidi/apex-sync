@@ -1,0 +1,44 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: public-gateway
+  namespace: istio-ingress
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+spec:
+  gatewayClassName: istio
+  infrastructure:
+    parametersRef:
+      group: ""
+      kind: ConfigMap
+      name: public-gateway-infrastructure
+  listeners:
+    - name: http-wildcard
+      hostname: "*.${ARGOCD_ENV_base_domain}"
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        kinds:
+          - kind: HTTPRoute
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              ingress.kube-signal.io/public-gateway-access: "true"
+    - name: https-wildcard
+      hostname: "*.${ARGOCD_ENV_base_domain}"
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: wildcard-domain-secret-tls
+      allowedRoutes:
+        kinds:
+          - kind: HTTPRoute
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              ingress.kube-signal.io/public-gateway-access: "true"

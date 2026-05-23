@@ -75,7 +75,7 @@ variable "istio_main_version" {
   type = string
 }
 
-variable "istio_ingress_gateway_version" {
+variable "gateway_api_version" {
   type = string
 }
 

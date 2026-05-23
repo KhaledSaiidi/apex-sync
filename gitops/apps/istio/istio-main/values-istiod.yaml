@@ -1,0 +1,16 @@
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+meshConfig:
+  accessLogFile: /dev/stdout
+
+global:
+  proxy:
+    holdApplicationUntilProxyStarts: true

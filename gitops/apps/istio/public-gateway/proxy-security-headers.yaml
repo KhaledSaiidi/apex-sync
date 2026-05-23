@@ -1,8 +1,8 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: istio-ingress-gateway-proxy-security-headers
-  namespace: istio-ingress-gateway
+  name: public-gateway-proxy-security-headers
+  namespace: istio-ingress
 spec:
   workloadSelector:
     labels:

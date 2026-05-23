@@ -16,7 +16,7 @@ env:
     value: ${ARGOCD_ENV_cert_manager_route53_region}
 
 sources:
-  - istio-virtualservice
+  - gateway-httproute
 
 domainFilters:
   - ${ARGOCD_ENV_base_domain}

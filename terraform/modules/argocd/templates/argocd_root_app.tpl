@@ -39,8 +39,8 @@ spec:
           value: "${external_dns_txt_owner_id}"
         - name: istio_main_version
           value: "${istio_main_version}"
-        - name: istio_ingress_gateway_version
-          value: "${istio_ingress_gateway_version}"
+        - name: gateway_api_version
+          value: "${gateway_api_version}"
         - name: kiali_version
           value: "${kiali_version}"
         - name: kyverno_version

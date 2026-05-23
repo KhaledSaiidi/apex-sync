@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - gateway-infrastructure.yaml
+  - wildcard-certificate.yaml
+  - gateway.yaml
+  - keep-alive.yaml
+  - proxy-security-headers.yaml
