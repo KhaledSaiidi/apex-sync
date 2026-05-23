@@ -1,8 +1,8 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: istio-ingress-gateway-keep-alive
-  namespace: istio-ingress-gateway
+  name: public-gateway-keep-alive
+  namespace: istio-ingress
 spec:
   workloadSelector:
     labels:

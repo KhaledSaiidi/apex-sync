@@ -7,5 +7,6 @@ helmCharts:
     version: ${ARGOCD_ENV_metallb_version}
     releaseName: metallb
     namespace: metallb-system
+    valuesFile: values.yaml
 resources:
   - metallb-pool.yaml

@@ -17,6 +17,13 @@ spec:
       env:
         - name: external_dns_version
           value: "${ARGOCD_ENV_external_dns_version}"
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
+        - name: external_dns_txt_owner_id
+          value: "${ARGOCD_ENV_external_dns_txt_owner_id}"
+        - name: cert_manager_route53_region
+          value: "${ARGOCD_ENV_cert_manager_route53_region}"
+
   destination:
     namespace: external-dns
     server: https://kubernetes.default.svc

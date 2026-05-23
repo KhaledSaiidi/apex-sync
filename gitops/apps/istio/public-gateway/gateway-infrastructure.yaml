@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: public-gateway-infrastructure
+  namespace: istio-ingress
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+data:
+  service: |
+    spec:
+      type: LoadBalancer
+      externalTrafficPolicy: Cluster
+  deployment: |
+    spec:
+      replicas: 3
+      template:
+        metadata:
+          labels:
+            app: istio-ingress-gateway
+            istio: ingressgateway
+        spec:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app: istio-ingress-gateway
+          containers:
+            - name: istio-proxy
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  cpu: 1000m
+                  memory: 512Mi
+  horizontalPodAutoscaler: |
+    spec:
+      minReplicas: 3
+      maxReplicas: 5
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80
+        - type: Resource
+          resource:
+            name: memory
+            target:
+              type: Utilization
+              averageUtilization: 80
+  podDisruptionBudget: |
+    spec:
+      minAvailable: 1

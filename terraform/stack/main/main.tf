@@ -35,13 +35,14 @@ module "argocd" {
   base_domain                         = var.base_domain
   cert_manager_version                = var.cert_manager_version
   external_dns_version                = var.external_dns_version
+  external_dns_txt_owner_id           = var.external_dns_txt_owner_id
   istio_main_version                  = var.istio_main_version
-  istio_ingress_gateway_version       = var.istio_ingress_gateway_version
+  gateway_api_version                 = var.gateway_api_version
   kiali_version                       = var.kiali_version
   kyverno_version                     = var.kyverno_version
   metallb_version                     = var.metallb_version
   openebs_version                     = var.openebs_version
-
+  reflector_version                   = var.reflector_version
   depends_on = [
     null_resource.artifacts_dir
   ]

@@ -7,3 +7,7 @@ helmCharts:
     version: ${ARGOCD_ENV_external_dns_version}
     releaseName: external-dns
     namespace: external-dns
+    includeCRDs: true
+    valuesFile: values.yaml
+resources:
+  - poddisruptionbudget.yaml

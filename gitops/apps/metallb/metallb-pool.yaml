@@ -6,6 +6,8 @@ metadata:
 spec:
   addresses:
     - "${ARGOCD_ENV_addresses_start}-${ARGOCD_ENV_addresses_end}"
+  autoAssign: true
+  avoidBuggyIPs: true
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement

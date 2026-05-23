@@ -112,14 +112,19 @@ variable "external_dns_version" {
   default = "1.21.1"
 }
 
+variable "external_dns_txt_owner_id" {
+  type    = string
+  default = "kube-signal"
+}
+
 variable "istio_main_version" {
   type    = string
   default = "1.29.2"
 }
 
-variable "istio_ingress_gateway_version" {
+variable "gateway_api_version" {
   type    = string
-  default = "1.29.2"
+  default = "v1.5.1"
 }
 
 variable "kiali_version" {
@@ -140,4 +145,9 @@ variable "metallb_version" {
 variable "openebs_version" {
   type    = string
   default = "4.4.0"
+}
+
+variable "reflector_version" {
+  type    = string
+  default = "10.0.45"
 }

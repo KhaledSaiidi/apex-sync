@@ -7,3 +7,4 @@ helmCharts:
     version: ${ARGOCD_ENV_kiali_version}
     releaseName: kiali
     namespace: istio-system
+    valuesFile: values.yaml

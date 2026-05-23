@@ -10,4 +10,3 @@ helmCharts:
     valuesFile: values.yaml
 resources:
   - clusterissuer-route53.yaml
-  - certificate.yaml

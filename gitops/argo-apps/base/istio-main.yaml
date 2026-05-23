@@ -12,6 +12,21 @@ spec:
     path: gitops/argo-apps/base/istio
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    plugin:
+      name: envsubst
+      env:
+        - name: gitops_root_app_repo_url
+          value: "${ARGOCD_ENV_gitops_root_app_repo_url}"
+        - name: gitops_root_app_target_revision
+          value: "${ARGOCD_ENV_gitops_root_app_target_revision}"
+        - name: istio_main_version
+          value: "${ARGOCD_ENV_istio_main_version}"
+        - name: gateway_api_version
+          value: "${ARGOCD_ENV_gateway_api_version}"
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
+        - name: kiali_version
+          value: "${ARGOCD_ENV_kiali_version}"
   destination:
     namespace: istio-system
     server: https://kubernetes.default.svc

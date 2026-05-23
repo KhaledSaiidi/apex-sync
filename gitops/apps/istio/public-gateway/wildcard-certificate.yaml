@@ -1,12 +1,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: "app-domain-certificate"
-  namespace: cert-manager
+  name: app-domain-certificate
+  namespace: istio-ingress
   annotations:
     argocd.argoproj.io/sync-wave: "20"
 spec:
-  secretName: "wildcard-domain-secret-tls"
+  secretName: wildcard-domain-secret-tls
   issuerRef:
     name: letsencrypt-prod-route53
     kind: ClusterIssuer

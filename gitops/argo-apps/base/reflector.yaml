@@ -2,25 +2,23 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
-  name: istio-main-app
+    argocd.argoproj.io/sync-wave: "-20"
+  name: reflector
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   source:
-    path: gitops/apps/istio/istio-main
+    path: gitops/apps/reflector
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
     plugin:
       name: envsubst
       env:
-        - name: istio_main_version
-          value: "${ARGOCD_ENV_istio_main_version}"
-        - name: gateway_api_version
-          value: "${ARGOCD_ENV_gateway_api_version}"
+        - name: reflector_version
+          value: "${ARGOCD_ENV_reflector_version}"
   destination:
-    namespace: istio-system
+    namespace: reflector
     server: https://kubernetes.default.svc
   project: platform
   syncPolicy:
