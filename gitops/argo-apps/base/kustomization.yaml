@@ -5,6 +5,8 @@ resources:
   - openebs.yaml
   - metallb.yaml
   - istio-main.yaml
+  - stateful-operator.yaml
+  - stateful-resources.yaml
   - external-dns.yaml
   - kyverno.yaml
   - reflector.yaml

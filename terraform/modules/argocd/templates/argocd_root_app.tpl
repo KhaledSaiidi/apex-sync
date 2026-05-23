@@ -51,6 +51,9 @@ spec:
           value: "${openebs_version}"
         - name: reflector_version
           value: "${reflector_version}"
+        - name: percona_version
+          value: "${percona_version}"
+          
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}

@@ -151,3 +151,8 @@ variable "reflector_version" {
   type    = string
   default = "10.0.45"
 }
+
+variable "percona_version" {
+  type    = string
+  default = "1.19.1"
+}

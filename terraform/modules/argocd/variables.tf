@@ -98,3 +98,8 @@ variable "openebs_version" {
 variable "reflector_version" {
   type = string
 }
+
+variable "percona_version" {
+  type = string
+}
+
