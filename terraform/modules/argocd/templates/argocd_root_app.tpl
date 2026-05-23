@@ -35,6 +35,8 @@ spec:
           value: "${cert_manager_version}"
         - name: external_dns_version
           value: "${external_dns_version}"
+        - name: external_dns_txt_owner_id
+          value: "${external_dns_txt_owner_id}"
         - name: istio_main_version
           value: "${istio_main_version}"
         - name: istio_ingress_gateway_version
@@ -47,6 +49,8 @@ spec:
           value: "${metallb_version}"
         - name: openebs_version
           value: "${openebs_version}"
+        - name: reflector_version
+          value: "${reflector_version}"
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}

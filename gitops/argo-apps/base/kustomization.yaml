@@ -7,3 +7,4 @@ resources:
   - istio-main.yaml
   - external-dns.yaml
   - kyverno.yaml
+  - reflector.yaml

@@ -67,6 +67,10 @@ variable "external_dns_version" {
   type = string
 }
 
+variable "external_dns_txt_owner_id" {
+  type = string
+}
+
 variable "istio_main_version" {
   type = string
 }
@@ -88,5 +92,9 @@ variable "metallb_version" {
 }
 
 variable "openebs_version" {
+  type = string
+}
+
+variable "reflector_version" {
   type = string
 }

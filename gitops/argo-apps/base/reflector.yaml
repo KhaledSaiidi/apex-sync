@@ -2,30 +2,23 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "15"
-  name: external-dns
+    argocd.argoproj.io/sync-wave: "-20"
+  name: reflector
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   source:
-    path: gitops/apps/external-dns
+    path: gitops/apps/reflector
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
     plugin:
       name: envsubst
       env:
-        - name: external_dns_version
-          value: "${ARGOCD_ENV_external_dns_version}"
-        - name: base_domain
-          value: "${ARGOCD_ENV_base_domain}"
-        - name: external_dns_txt_owner_id
-          value: "${ARGOCD_ENV_external_dns_txt_owner_id}"
-        - name: cert_manager_route53_region
-          value: "${ARGOCD_ENV_cert_manager_route53_region}"
-
+        - name: reflector_version
+          value: "${ARGOCD_ENV_reflector_version}"
   destination:
-    namespace: external-dns
+    namespace: reflector
     server: https://kubernetes.default.svc
   project: platform
   syncPolicy:
