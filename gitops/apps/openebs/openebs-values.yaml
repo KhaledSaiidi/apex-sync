@@ -11,3 +11,19 @@ alloy:
   enabled: false
 loki:
   enabled: false
+localpv-provisioner:
+  analytics:
+    enabled: false
+  hostpathClass:
+    enabled: false
+  localpv:
+    enabled: true
+    basePath: /var/openebs/kube-signal
+    replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 300m
+        memory: 256Mi

@@ -1,0 +1,46 @@
+admissionController:
+  replicas: 2
+  apiPriorityAndFairness: true
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+  container:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 384Mi
+  metricsService:
+    create: true
+  serviceMonitor:
+    enabled: false
+
+backgroundController:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+  metricsService:
+    create: true
+  serviceMonitor:
+    enabled: false
+
+reportsController:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+  metricsService:
+    create: true
+  serviceMonitor:
+    enabled: false

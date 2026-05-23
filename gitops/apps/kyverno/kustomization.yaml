@@ -8,6 +8,7 @@ helmCharts:
     includeCRDs: true
     releaseName: kyverno
     namespace: kyverno
+    valuesFile: values.yaml
 resources:
   - kyverno-background-rbac.yaml
   - kyverno-istio-default-policies.yaml
