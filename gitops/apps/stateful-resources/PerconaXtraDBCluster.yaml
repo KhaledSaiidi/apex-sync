@@ -16,7 +16,7 @@ spec:
 #    - iam.amazonaws.com/role
 #  ignoreLabels:
 #    - rack
-#  secretsName: mysql-cluster-secrets
+  secretsName: mysql-cluster-secrets
 #  vaultSecretName: keyring-secret-vault
 #  sslSecretName: mysql-cluster-ssl
 #  sslInternalSecretName: mysql-cluster-ssl-internal
@@ -117,24 +117,24 @@ spec:
 #      iam.amazonaws.com/role: role-arn
 #    labels:
 #      rack: rack-22
-#    readinessProbes:
-#      initialDelaySeconds: 15
-#      timeoutSeconds: 15
-#      periodSeconds: 30
-#      successThreshold: 1
-#      failureThreshold: 5
-#    livenessProbes:
-#      initialDelaySeconds: 300
-#      timeoutSeconds: 5
-#      periodSeconds: 10
-#      successThreshold: 1
-#      failureThreshold: 3
-#    containerSecurityContext:
-#      privileged: false
-#    podSecurityContext:
-#      runAsUser: 1001
-#      runAsGroup: 1001
-#      supplementalGroups: [1001]
+    readinessProbes:
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+      periodSeconds: 30
+      successThreshold: 1
+      failureThreshold: 5
+    livenessProbes:
+      initialDelaySeconds: 300
+      timeoutSeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+    containerSecurityContext:
+      privileged: false
+    podSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      supplementalGroups: [1001]
 #    serviceAccountName: percona-xtradb-cluster-operator-workload
 #    imagePullPolicy: Always
 #    runtimeClassName: image-rc
@@ -153,22 +153,22 @@ spec:
 #    envVarsSecret: my-env-var-secrets
     resources:
       requests:
-        memory: 1G
-        cpu: 600m
-#        ephemeral-storage: 1G
-#      limits:
-#        memory: 1G
-#        cpu: "1"
-#        ephemeral-storage: 1G
+        memory: 400Mi
+        cpu: 300m
+        ephemeral-storage: 1G
+      limits:
+        memory: 1536Mi
+        cpu: "1"
+        ephemeral-storage: 1G
 #    nodeSelector:
 #      disktype: ssd
-#    topologySpreadConstraints:
-#    - labelSelector:
-#        matchLabels:
-#          app.kubernetes.io/name: percona-xtradb-cluster
-#      maxSkew: 1
-#      topologyKey: kubernetes.io/hostname
-#      whenUnsatisfiable: DoNotSchedule
+    topologySpreadConstraints:
+    - labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: percona-xtradb-cluster
+      maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
     affinity:
       antiAffinityTopologyKey: "kubernetes.io/hostname"
 #      advanced:
@@ -275,20 +275,20 @@ spec:
 #      iam.amazonaws.com/role: role-arn
 #    labels:
 #      rack: rack-22
-#    readinessProbes:
-#      initialDelaySeconds: 15
-#      timeoutSeconds: 1
-#      periodSeconds: 5
-#      successThreshold: 1
-#      failureThreshold: 3
-#    livenessProbes:
-#      initialDelaySeconds: 60
-#      timeoutSeconds: 5
-#      periodSeconds: 30
-#      successThreshold: 1
-#      failureThreshold: 4
-#    exposePrimary:
-#      type: ClusterIP
+    readinessProbes:
+      initialDelaySeconds: 15
+      timeoutSeconds: 1
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
+    livenessProbes:
+      initialDelaySeconds: 60
+      timeoutSeconds: 5
+      periodSeconds: 30
+      successThreshold: 1
+      failureThreshold: 4
+    exposePrimary:
+      type: ClusterIP
 #      loadBalancerClass: "eks.amazonaws.com/nlb"
 #      annotations:
 #        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
@@ -298,10 +298,10 @@ spec:
 #        rack: rack-22
 #      loadBalancerSourceRanges:
 #        - 10.0.0.0/8
-#    exposeReplicas:
-#      enabled: true
-#      onlyReaders: false
-#      type: ClusterIP
+    exposeReplicas:
+      enabled: true
+      onlyReaders: true
+      type: ClusterIP
 #      loadBalancerClass: "eks.amazonaws.com/nlb"
 #      annotations:
 #        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
@@ -337,12 +337,12 @@ spec:
 #        readOnly: false
     resources:
       requests:
-        memory: 1G
-        cpu: 600m
-#      limits:
-#        memory: 1G
-#        cpu: 700m
-#    priorityClassName: high-priority
+        memory: 400Mi
+        cpu: 300m
+      limits:
+        memory: 1536Mi
+        cpu: 800m
+    priorityClassName: high-priority
 #    nodeSelector:
 #      disktype: ssd
 #    sidecarResources:
@@ -352,20 +352,20 @@ spec:
 #      limits:
 #        memory: 2G
 #        cpu: 600m
-#    containerSecurityContext:
-#      privileged: false
-#    podSecurityContext:
-#      runAsUser: 1001
-#      runAsGroup: 1001
-#      supplementalGroups: [1001]
+    containerSecurityContext:
+      privileged: false
+    podSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      supplementalGroups: [1001]
 #    serviceAccountName: percona-xtradb-cluster-operator-workload
-#    topologySpreadConstraints:
-#    - labelSelector:
-#        matchLabels:
-#          app.kubernetes.io/name: percona-xtradb-cluster
-#      maxSkew: 1
-#      topologyKey: kubernetes.io/hostname
-#      whenUnsatisfiable: DoNotSchedule
+    topologySpreadConstraints:
+    - labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: percona-xtradb-cluster
+      maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
     affinity:
       antiAffinityTopologyKey: "kubernetes.io/hostname"
 #      advanced:
@@ -619,7 +619,7 @@ spec:
           count: 5
           deleteFromStorage: true
         storageName: fs-pvc
-#  passwordGenerationOptions:
-#    symbols: "!#$%&()*+,-.<=>?@[]^_{}~"
-#    maxLength: 20
-#    minLength: 16
+  passwordGenerationOptions:
+    symbols: "!#$%&()+,-.<=>?@[]^_{}~"
+    maxLength: 16
+    minLength: 12

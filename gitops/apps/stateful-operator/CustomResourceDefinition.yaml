@@ -12571,7 +12571,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: percona-xtradb-cluster-operator
-  namespace: "pxc-operator"
+  namespace: "stateful-operator"
 roleRef:
   kind: ClusterRole
   name: percona-xtradb-cluster-operator
