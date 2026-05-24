@@ -53,7 +53,7 @@ spec:
                     timeout 900 sh -ec '"'"'
                       while [ -z "$(kubectl get garagenodes.deuxfleurs.fr \
                         --namespace garage \
-                        -o jsonpath='"'"'"'"'"'"'"'"'{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}'"'"'"'"'"'"'"'"' \
+                        -o jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.spec.hostname}{'\t'}{.spec.address}{'\n'}{end}" \
                         | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')" ]; do
                         sleep 5
                       done
@@ -82,7 +82,7 @@ spec:
                 | xargs -r -n 3 sh -ec '
                     if [ -z "$(kubectl get garagenodes.deuxfleurs.fr \
                       --namespace garage \
-                      -o jsonpath='"'"'"'"'"'"'"'"'{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}'"'"'"'"'"'"'"'"' \
+                      -o jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.spec.hostname}{'\t'}{.spec.address}{'\n'}{end}" \
                       | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')" ]; then
                       echo "Missing GarageNode resource for pod $1 ($2)" >&2
                       exit 1
@@ -104,12 +104,12 @@ spec:
                       -c "$(kubectl get pvc \
                         --namespace garage \
                         "data-$1" \
-                        -o jsonpath='"'"'"'"'"'"'"'"'{.spec.resources.requests.storage}'"'"'"'"'"'"'"'"' \
+                        -o jsonpath="{.spec.resources.requests.storage}" \
                         | sed '"'"'"'"'"'"'"'"'s/Gi$/GB/'"'"'"'"'"'"'"'"')" \
                       -t "$1" \
                       "$(kubectl get garagenodes.deuxfleurs.fr \
                         --namespace garage \
-                        -o jsonpath='"'"'"'"'"'"'"'"'{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}'"'"'"'"'"'"'"'"' \
+                        -o jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.spec.hostname}{'\t'}{.spec.address}{'\n'}{end}" \
                         | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')"
                   ' _
 
