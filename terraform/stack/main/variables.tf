@@ -24,7 +24,7 @@ variable "gitops_root_app_repo_url" {
 }
 variable "gitops_root_app_target_revision" {
   type    = string
-  default = "HEAD"
+  default = "test/platform-stateful-resources"
 }
 variable "gitops_root_app_path" {
   type    = string
