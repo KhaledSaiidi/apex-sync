@@ -3,9 +3,8 @@ kind: Kustomization
 namespace: reflector
 helmCharts:
   - name: reflector
-    repo: oci://ghcr.io/emberstack/helm-charts/reflector
+    repo: oci://ghcr.io/emberstack/helm-charts
     version: ${ARGOCD_ENV_reflector_version}
     releaseName: reflector
     namespace: reflector
     valuesFile: values.yaml
-

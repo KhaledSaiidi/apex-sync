@@ -47,26 +47,16 @@ configs:
   cmp:
     create: true
     plugins:
-      envsubstappofapp.yaml: |
-        apiVersion: argoproj.io/v1alpha1
-        kind: ConfigManagementPlugin
-        metadata:
-          name: envsubstappofapp
-        spec:
-          allowConcurrency: true
-          generate:
-            command:
-              - /home/argocd/cmp-server/scripts/envsubstappofapp.sh
-      envsubst.yaml: |
-        apiVersion: argoproj.io/v1alpha1
-        kind: ConfigManagementPlugin
-        metadata:
-          name: envsubst
-        spec:
-          allowConcurrency: true
-          generate:
-            command:
-              - /home/argocd/cmp-server/scripts/envsubst.sh
+      envsubstappofapp:
+        allowConcurrency: true
+        generate:
+          command:
+            - /home/argocd/cmp-server/scripts/envsubstappofapp.sh
+      envsubst:
+        allowConcurrency: true
+        generate:
+          command:
+            - /home/argocd/cmp-server/scripts/envsubst.sh
 
 repoServer:
   extraContainers:
