@@ -1,6 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: stateful-resources
-resources:
-  - namespace.yaml
-  - PerconaXtraDBCluster.yaml
+helmCharts:
+  - name: pxc-db
+    repo: https://percona.github.io/percona-helm-charts
+    version: ${ARGOCD_ENV_percona_version}
+    releaseName: mysql-cluster
+    namespace: stateful-resources
+    valuesFile: values.yaml
