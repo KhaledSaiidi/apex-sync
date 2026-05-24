@@ -1,0 +1,108 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: garage-cluster-layout-bootstrap
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded,BeforeHookCreation
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: garage-backup-bootstrap
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bootstrap
+          image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              set -eu
+
+              GARAGE_NAMESPACE="garage"
+              GARAGE_POD="garage-0"
+              EXPECTED_NODES=3
+              GARAGE_LABEL_SELECTOR="app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage"
+
+              wait_for_pods() {
+                deadline=$(($(date +%s) + 900))
+                while [ "$(date +%s)" -lt "${deadline}" ]; do
+                  pod_count="$(kubectl get pod \
+                    --namespace "${GARAGE_NAMESPACE}" \
+                    --selector "${GARAGE_LABEL_SELECTOR}" \
+                    --field-selector=status.phase=Running \
+                    --no-headers 2>/dev/null | wc -l | tr -d ' ')"
+                  if [ "${pod_count}" = "${EXPECTED_NODES}" ]; then
+                    return 0
+                  fi
+                  sleep 5
+                done
+                echo "Timed out waiting for ${EXPECTED_NODES} running Garage pods" >&2
+                return 1
+              }
+
+              wait_for_garage_nodes() {
+                deadline=$(($(date +%s) + 900))
+                while [ "$(date +%s)" -lt "${deadline}" ]; do
+                  node_count="$(kubectl get garagenodes.deuxfleurs.fr \
+                    --namespace "${GARAGE_NAMESPACE}" \
+                    --no-headers 2>/dev/null | wc -l | tr -d ' ')"
+                  if [ "${node_count}" = "${EXPECTED_NODES}" ]; then
+                    return 0
+                  fi
+                  sleep 5
+                done
+                echo "Timed out waiting for ${EXPECTED_NODES} GarageNode resources" >&2
+                return 1
+              }
+
+              wait_for_pods
+              wait_for_garage_nodes
+
+              STATUS="$(kubectl exec -n "${GARAGE_NAMESPACE}" "${GARAGE_POD}" -- /garage status)"
+              if ! printf '%s\n' "${STATUS}" | grep -q "NO ROLE ASSIGNED"; then
+                echo "Garage layout already initialized"
+                exit 0
+              fi
+
+              kubectl get garagenodes.deuxfleurs.fr \
+                --namespace "${GARAGE_NAMESPACE}" \
+                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\n"}{end}' \
+                | while IFS="$(printf '\t')" read -r node_id hostname; do
+                    [ -n "${node_id}" ] || continue
+                    [ -n "${hostname}" ] || continue
+                    zone="$(kubectl get pod \
+                      --namespace "${GARAGE_NAMESPACE}" \
+                      "${hostname}" \
+                      -o jsonpath='{.spec.nodeName}')"
+                    capacity="$(kubectl get pvc \
+                      --namespace "${GARAGE_NAMESPACE}" \
+                      "data-${hostname}" \
+                      -o jsonpath='{.spec.resources.requests.storage}')"
+                    capacity_value="${capacity%Gi}"
+                    if [ "${capacity_value}" = "${capacity}" ]; then
+                      echo "Unsupported Garage PVC capacity format: ${capacity}" >&2
+                      exit 1
+                    fi
+                    kubectl exec -n "${GARAGE_NAMESPACE}" "${GARAGE_POD}" -- \
+                      /garage layout assign \
+                      -z "${zone}" \
+                      -c "${capacity_value}GB" \
+                      -t "${hostname}" \
+                      "${node_id}"
+                  done
+
+              kubectl exec -n "${GARAGE_NAMESPACE}" "${GARAGE_POD}" -- /garage layout apply
