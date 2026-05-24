@@ -4,3 +4,4 @@ namespace: stateful-operator
 resources:
   - namespace.yaml
   - CustomResourceDefinition.yaml
+  - operator-metrics-service.yaml
