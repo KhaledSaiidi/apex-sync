@@ -27,8 +27,9 @@ spec:
   ignoreDifferences:
     - group: apiextensions.k8s.io
       kind: CustomResourceDefinition
-      jqPathExpressions:
-        - '.. | select(type == "object" and has("labels") and .labels == {}) | .labels'
+      jsonPointers:
+        - /metadata/labels
+        - /metadata/managedFields
   syncPolicy:
     automated:
       prune: true
