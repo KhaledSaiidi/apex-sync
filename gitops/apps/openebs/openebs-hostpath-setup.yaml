@@ -21,12 +21,13 @@ spec:
             - |
               set -e
 
-              for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
-                cat <<EOF | kubectl apply -f -
+              kubectl get nodes -o custom-columns=NAME:.metadata.name --no-headers \
+                | xargs -r -I{} sh -c '
+                    cat <<EOF | kubectl apply -f -
               apiVersion: batch/v1
               kind: Job
               metadata:
-                name: openebs-hostpath-setup-${node}
+                name: openebs-hostpath-setup-{}
                 namespace: openebs
                 labels:
                   app: openebs-hostpath-setup
@@ -34,7 +35,7 @@ spec:
                 template:
                   spec:
                     restartPolicy: OnFailure
-                    nodeName: ${node}
+                    nodeName: {}
                     tolerations:
                       - operator: Exists
                     containers:
@@ -57,7 +58,7 @@ spec:
                           path: /
                           type: Directory
               EOF
-              done
+                  '
 
               kubectl wait --for=condition=complete job -l app=openebs-hostpath-setup -n openebs --timeout=1200s
 
