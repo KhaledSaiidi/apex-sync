@@ -12,9 +12,12 @@
 
 ~~- Expose one stable internal write endpoint first through HAProxy with a clear service name, then add a separate read-only endpoint only if applications actually need it.~~
 
-- Configure backups to object storage, not filesystem PVCs: one daily full backup, retention policy, and restore-target naming that is easy to operate.
+~~- Install gaqrage to have an S3 like bucket in the cluster to persist the backups and create aws_access_key_id, aws_secret_access_key, endpointUrl, bucket_name and region for it so it can be used by the backup in stateful-resources~~
 
-- Enable PITR with binlog uploads to the same object storage so you can restore between daily full backups.
+- Configure backups to object storage S3 like bucket: one daily full backup, retention policy, and restore-target naming that is easy to operate.
+
+- Enable PITR with binlog uploads to the same object storage so you can restore between daily full backups. For binlogs, Percona recommends: at least a separate folder/prefix for each cluster
+
 
 - Add a restore test path early: document and test full restore and point-in-time restore before calling the database production ready.
 
