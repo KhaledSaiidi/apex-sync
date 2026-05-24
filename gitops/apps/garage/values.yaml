@@ -81,7 +81,7 @@ livenessProbe:
   httpGet:
     path: /health
     port: 3903
-  initialDelaySeconds: 20
+  initialDelaySeconds: 180
   periodSeconds: 30
   timeoutSeconds: 5
   failureThreshold: 3

@@ -46,7 +46,9 @@ spec:
                 --namespace garage \
                 --selector app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage \
                 --field-selector=status.phase=Running \
-                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\t"}{.spec.nodeName}{"\n"}{end}' \
+                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\t"}{.spec.nodeName}{"\n"}{end}' > /tmp/garage-pods.tsv
+
+              cat /tmp/garage-pods.tsv \
                 | xargs -r -n 3 sh -ec '
                     timeout 900 sh -ec '"'"'
                       while [ -z "$(kubectl get garagenodes.deuxfleurs.fr \
@@ -58,16 +60,25 @@ spec:
                     '"'"' _ "$1" "$2"
                   ' _
 
-              if ! kubectl exec -n garage garage-0 -- /garage status | grep -q "NO ROLE ASSIGNED"; then
+              timeout 900 sh -ec '
+                until kubectl exec -n garage garage-0 -- /garage status >/tmp/garage-status 2>/dev/null; do
+                  sleep 5
+                done
+              '
+
+              timeout 900 sh -ec '
+                until kubectl exec -n garage garage-0 -- /garage layout show >/tmp/garage-layout.txt 2>/dev/null; do
+                  sleep 5
+                done
+              '
+
+              if ! grep -q "NO ROLE ASSIGNED" /tmp/garage-status \
+                && [ "$(grep 'Current cluster layout version:' /tmp/garage-layout.txt | cut -d: -f2 | tr -d ' ')" -gt 0 ]; then
                 echo "Garage layout already initialized"
                 exit 0
               fi
 
-              kubectl get pod \
-                --namespace garage \
-                --selector app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage \
-                --field-selector=status.phase=Running \
-                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\t"}{.spec.nodeName}{"\n"}{end}' \
+              cat /tmp/garage-pods.tsv \
                 | xargs -r -n 3 sh -ec '
                     if [ -z "$(kubectl get garagenodes.deuxfleurs.fr \
                       --namespace garage \
@@ -102,4 +113,5 @@ spec:
                         | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')"
                   ' _
 
-              kubectl exec -n garage garage-0 -- /garage layout apply
+              kubectl exec -n garage garage-0 -- /garage layout show >/tmp/garage-layout.txt
+              kubectl exec -n garage garage-0 -- /garage layout apply --version "$(( $(grep 'Current cluster layout version:' /tmp/garage-layout.txt | cut -d: -f2 | tr -d ' ') + 1 ))"
