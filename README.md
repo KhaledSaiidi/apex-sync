@@ -260,3 +260,7 @@ kind delete cluster --name kube-signal
 ```
 
 `destroy.sh` does not delete the `kind` cluster for you.
+
+<!-- write endpoint service: mysql-cluster-haproxy.stateful-resources.svc.cluster.local:3306
+read endpoint service: mysql-cluster-haproxy-replicas.stateful-resources.svc.cluster.local:3306
+https://github.com/percona/percona-xtradb-cluster-operator -->

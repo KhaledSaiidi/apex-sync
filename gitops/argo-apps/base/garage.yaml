@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+  name: garage
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  source:
+    path: gitops/apps/garage
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    plugin:
+      name: envsubst
+      env:
+        - name: garage_version
+          value: "${ARGOCD_ENV_garage_version}"
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
+  destination:
+    namespace: garage
+    server: https://kubernetes.default.svc
+  project: platform
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true

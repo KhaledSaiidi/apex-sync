@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: stateful-operator
+helmCharts:
+  - name: pxc-operator
+    repo: https://percona.github.io/percona-helm-charts
+    version: ${ARGOCD_ENV_percona_version}
+    releaseName: percona-xtradb-cluster-operator
+    namespace: stateful-operator
+    includeCRDs: true
+    valuesFile: values.yaml
+resources:
+  - operator-metrics-service.yaml

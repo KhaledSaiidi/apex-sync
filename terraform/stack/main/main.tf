@@ -43,6 +43,9 @@ module "argocd" {
   metallb_version                     = var.metallb_version
   openebs_version                     = var.openebs_version
   reflector_version                   = var.reflector_version
+  percona_version                     = var.percona_version
+  garage_version = var.garage_version
+
   depends_on = [
     null_resource.artifacts_dir
   ]

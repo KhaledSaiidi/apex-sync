@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stateful-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-8'
+  labels:
+    app.kubernetes.io/name: stateful-operator
+    app.kubernetes.io/part-of: platform-baseline
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  source:
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    path: gitops/apps/stateful-operator
+    plugin:
+      name: envsubst
+      env:
+        - name: percona_version
+          value: "${ARGOCD_ENV_percona_version}"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: stateful-operator
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true
