@@ -1,0 +1,117 @@
+fullnameOverride: garage
+
+garage:
+  dbEngine: "lmdb"
+  blockSize: "4194304"
+  replicationFactor: "3"
+  consistencyMode: "consistent"
+  compressionLevel: "1"
+  metadataAutoSnapshotInterval: "24h"
+  rpc:
+    bindAddr: "[::]:3901"
+    secret:
+      create: true
+      name: "garage-rpc-secret"
+      value: ""
+  admin:
+    token:
+      create: true
+      secret:
+        create: true
+        name: "garage-admin-token"
+        value: ""
+  s3:
+    api:
+      region: "garage"
+      rootDomain: ".s3.garage.internal"
+    web:
+      rootDomain: ".web.garage.internal"
+      index: "index.html"
+
+persistence:
+  enabled: true
+  meta:
+    storageClass: openebs-storage-class
+    size: 1Gi
+  data:
+    storageClass: openebs-storage-class
+    size: 20Gi
+
+deployment:
+  kind: StatefulSet
+  replicaCount: 3
+  podManagementPolicy: OrderedReady
+
+serviceAccount:
+  create: true
+
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  fsGroupChangePolicy: "OnRootMismatch"
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  s3:
+    api:
+      port: 3900
+    web:
+      port: 3902
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 2Gi
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3903
+  initialDelaySeconds: 20
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3903
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: garage
+              app.kubernetes.io/instance: garage
+          topologyKey: kubernetes.io/hostname
+
+monitoring:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

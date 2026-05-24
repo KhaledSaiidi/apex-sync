@@ -9,4 +9,5 @@ resources:
   - stateful-resources.yaml
   - external-dns.yaml
   - kyverno.yaml
+  - garage.yaml
   - reflector.yaml

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: garage
+helmCharts:
+  - name: garage
+    repo: https://charts.derwitt.dev
+    version: ${ARGOCD_ENV_garage_version}
+    releaseName: garage
+    namespace: garage
+    valuesFile: values.yaml
+resources:
+  - backup-bootstrap-serviceaccount.yaml
+  - backup-bootstrap-rbac.yaml
+  - backup-bootstrap-job.yaml

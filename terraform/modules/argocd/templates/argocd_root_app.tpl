@@ -53,7 +53,8 @@ spec:
           value: "${reflector_version}"
         - name: percona_version
           value: "${percona_version}"
-          
+        - name: garage_version
+          value: "${garage_version}"
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}

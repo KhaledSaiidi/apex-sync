@@ -103,3 +103,6 @@ variable "percona_version" {
   type = string
 }
 
+variable "garage_version" {
+  type = string
+}
