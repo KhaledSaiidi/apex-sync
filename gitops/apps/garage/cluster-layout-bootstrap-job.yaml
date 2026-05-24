@@ -32,97 +32,74 @@ spec:
             - |
               set -eu
 
-              GARAGE_NAMESPACE="garage"
-              GARAGE_POD="garage-0"
-              EXPECTED_NODES=3
-              GARAGE_LABEL_SELECTOR="app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage"
-              TAB="$(printf '\t')"
-
-              wait_for_pods() {
-                deadline=$(($(date +%s) + 900))
-                while [ "$(date +%s)" -lt "${deadline}" ]; do
-                  pod_count="$(kubectl get pod \
-                    --namespace "${GARAGE_NAMESPACE}" \
-                    --selector "${GARAGE_LABEL_SELECTOR}" \
-                    --field-selector=status.phase=Running \
-                    --no-headers 2>/dev/null | wc -l | tr -d ' ')"
-                  if [ "${pod_count}" = "${EXPECTED_NODES}" ]; then
-                    return 0
-                  fi
+              timeout 900 sh -ec '
+                while [ "$(kubectl get pod \
+                  --namespace garage \
+                  --selector app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage \
+                  --field-selector=status.phase=Running \
+                  --no-headers 2>/dev/null | wc -l | tr -d " ")" != "$1" ]; do
                   sleep 5
                 done
-                echo "Timed out waiting for ${EXPECTED_NODES} running Garage pods" >&2
-                return 1
-              }
+              ' _ 3
 
-              wait_for_garage_node_for_pod() {
-                hostname="$1"
-                pod_ip="$2"
-                deadline=$(($(date +%s) + 900))
-                while [ "$(date +%s)" -lt "${deadline}" ]; do
-                  node_id="$(kubectl get garagenodes.deuxfleurs.fr \
-                    --namespace "${GARAGE_NAMESPACE}" \
-                    -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}' \
-                    | awk -F "$(printf '\t')" -v target_hostname="${hostname}" -v target_ip="${pod_ip}" '$2 == target_hostname && $3 == target_ip { print $1; exit }')"
-                  if [ -n "${node_id}" ]; then
-                    return 0
-                  fi
-                  sleep 5
-                done
-                echo "Timed out waiting for GarageNode resource for pod ${hostname} (${pod_ip})" >&2
-                return 1
-              }
-
-              wait_for_pods
-
-              pods_file="$(mktemp)"
-              trap 'rm -f "${pods_file}"' EXIT
               kubectl get pod \
-                --namespace "${GARAGE_NAMESPACE}" \
-                --selector "${GARAGE_LABEL_SELECTOR}" \
+                --namespace garage \
+                --selector app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage \
                 --field-selector=status.phase=Running \
-                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\t"}{.spec.nodeName}{"\n"}{end}' > "${pods_file}"
+                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\t"}{.spec.nodeName}{"\n"}{end}' \
+                | xargs -r -n 3 sh -ec '
+                    timeout 900 sh -ec '"'"'
+                      while [ -z "$(kubectl get garagenodes.deuxfleurs.fr \
+                        --namespace garage \
+                        -o jsonpath='"'"'"'"'"'"'"'"'{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}'"'"'"'"'"'"'"'"' \
+                        | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')" ]; do
+                        sleep 5
+                      done
+                    '"'"' _ "$1" "$2"
+                  ' _
 
-              while IFS="${TAB}" read -r hostname pod_ip node_name; do
-                [ -n "${hostname}" ] || continue
-                [ -n "${pod_ip}" ] || continue
-                [ -n "${node_name}" ] || continue
-                wait_for_garage_node_for_pod "${hostname}" "${pod_ip}"
-              done < "${pods_file}"
-
-              STATUS="$(kubectl exec -n "${GARAGE_NAMESPACE}" "${GARAGE_POD}" -- /garage status)"
-              if ! printf '%s\n' "${STATUS}" | grep -q "NO ROLE ASSIGNED"; then
+              if ! kubectl exec -n garage garage-0 -- /garage status | grep -q "NO ROLE ASSIGNED"; then
                 echo "Garage layout already initialized"
                 exit 0
               fi
 
-              while IFS="${TAB}" read -r hostname pod_ip node_name; do
-                [ -n "${hostname}" ] || continue
-                [ -n "${pod_ip}" ] || continue
-                [ -n "${node_name}" ] || continue
-                node_id="$(kubectl get garagenodes.deuxfleurs.fr \
-                  --namespace "${GARAGE_NAMESPACE}" \
-                  -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}' \
-                  | awk -F "$(printf '\t')" -v target_hostname="${hostname}" -v target_ip="${pod_ip}" '$2 == target_hostname && $3 == target_ip { print $1; exit }')"
-                if [ -z "${node_id}" ]; then
-                  echo "Missing GarageNode resource for pod ${hostname} (${pod_ip})" >&2
-                  exit 1
-                fi
-                capacity="$(kubectl get pvc \
-                  --namespace "${GARAGE_NAMESPACE}" \
-                  "data-${hostname}" \
-                  -o jsonpath='{.spec.resources.requests.storage}')"
-                capacity_value="${capacity%Gi}"
-                if [ "${capacity_value}" = "${capacity}" ]; then
-                  echo "Unsupported Garage PVC capacity format: ${capacity}" >&2
-                  exit 1
-                fi
-                kubectl exec -n "${GARAGE_NAMESPACE}" "${GARAGE_POD}" -- \
-                  /garage layout assign \
-                  -z "${node_name}" \
-                  -c "${capacity_value}GB" \
-                  -t "${hostname}" \
-                  "${node_id}"
-              done < "${pods_file}"
+              kubectl get pod \
+                --namespace garage \
+                --selector app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage \
+                --field-selector=status.phase=Running \
+                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\t"}{.spec.nodeName}{"\n"}{end}' \
+                | xargs -r -n 3 sh -ec '
+                    if [ -z "$(kubectl get garagenodes.deuxfleurs.fr \
+                      --namespace garage \
+                      -o jsonpath='"'"'"'"'"'"'"'"'{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}'"'"'"'"'"'"'"'"' \
+                      | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')" ]; then
+                      echo "Missing GarageNode resource for pod $1 ($2)" >&2
+                      exit 1
+                    fi
+                    if [ "$(kubectl get pvc \
+                      --namespace garage \
+                      "data-$1" \
+                      -o jsonpath='"'"'"'"'"'"'"'"'{.spec.resources.requests.storage}'"'"'"'"'"'"'"'"' \
+                      | sed '"'"'"'"'"'"'"'"'s/Gi$/GB/'"'"'"'"'"'"'"'"')" = "$(kubectl get pvc \
+                      --namespace garage \
+                      "data-$1" \
+                      -o jsonpath='"'"'"'"'"'"'"'"'{.spec.resources.requests.storage}'"'"'"'"'"'"'"'"')" ]; then
+                      echo "Unsupported Garage PVC capacity format for pod $1" >&2
+                      exit 1
+                    fi
+                    kubectl exec -n garage garage-0 -- \
+                      /garage layout assign \
+                      -z "$3" \
+                      -c "$(kubectl get pvc \
+                        --namespace garage \
+                        "data-$1" \
+                        -o jsonpath='"'"'"'"'"'"'"'"'{.spec.resources.requests.storage}'"'"'"'"'"'"'"'"' \
+                        | sed '"'"'"'"'"'"'"'"'s/Gi$/GB/'"'"'"'"'"'"'"'"')" \
+                      -t "$1" \
+                      "$(kubectl get garagenodes.deuxfleurs.fr \
+                        --namespace garage \
+                        -o jsonpath='"'"'"'"'"'"'"'"'{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}'"'"'"'"'"'"'"'"' \
+                        | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')"
+                  ' _
 
-              kubectl exec -n "${GARAGE_NAMESPACE}" "${GARAGE_POD}" -- /garage layout apply
+              kubectl exec -n garage garage-0 -- /garage layout apply
