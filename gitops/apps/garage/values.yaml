@@ -23,7 +23,7 @@ garage:
   s3:
     api:
       region: "garage"
-      rootDomain: ".s3.garage.internal"
+      rootDomain: ".garage-s3.${ARGOCD_ENV_base_domain}"
     web:
       rootDomain: ".web.garage.internal"
       index: "index.html"

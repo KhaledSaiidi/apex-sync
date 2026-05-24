@@ -21,6 +21,8 @@ spec:
       env:
         - name: percona_version
           value: "${ARGOCD_ENV_percona_version}"
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
   destination:
     server: https://kubernetes.default.svc
     namespace: stateful-resources

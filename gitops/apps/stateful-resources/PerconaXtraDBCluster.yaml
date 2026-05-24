@@ -475,19 +475,19 @@ spec:
 #    imagePullSecrets:
 #      - name: private-registry-credentials
     pitr:
-      enabled: false
-      storageName: STORAGE-NAME-HERE
+      enabled: true
+      storageName: garage-binlogs
       timeBetweenUploads: 60
       timeoutSeconds: 60
-#      resources:
-#        requests:
-#          memory: 0.1G
-#          cpu: 100m
-#        limits:
-#          memory: 1G
-#          cpu: 700m
+      resources:
+        requests:
+          memory: 0.1G
+          cpu: 100m
+        limits:
+          memory: 1G
+          cpu: 700m
     storages:
-      s3-us-west:
+      garage-full:
         type: s3
         verifyTLS: true
 #        nodeSelector:
@@ -541,84 +541,26 @@ spec:
 #            xbstream:
 #            - "--someflag=abc"
         s3:
-          bucket: S3-BACKUP-BUCKET-NAME-HERE
-          credentialsSecret: my-cluster-name-backup-s3
-          region: us-west-2
+          bucket: percona-backups/full
+          credentialsSecret: percona-backup-garage-s3
+          endpointUrl: https://garage-s3.${ARGOCD_ENV_base_domain}
+          region: garage
 #          caBundle:
 #           name: s3-ca-bundle-secret
 #           key: ca.crt
-      azure-blob:
-        type: azure
-        azure:
-          credentialsSecret: azure-secret
-          container: test
-#          endpointUrl: https://accountName.blob.core.windows.net
-#          storageClass: Hot
-#          blockSize: 4194304
-#          concurrency: 4
-      fs-pvc:
-        type: filesystem
-#        nodeSelector:
-#          storage: tape
-#          backupWorker: 'True'
-#        resources:
-#          requests:
-#            memory: 1G
-#            cpu: 600m
-#        topologySpreadConstraints:
-#        - labelSelector:
-#            matchLabels:
-#              app.kubernetes.io/name: percona-xtradb-cluster
-#          maxSkew: 1
-#          topologyKey: kubernetes.io/hostname
-#          whenUnsatisfiable: DoNotSchedule
-#        affinity:
-#          nodeAffinity:
-#            requiredDuringSchedulingIgnoredDuringExecution:
-#              nodeSelectorTerms:
-#              - matchExpressions:
-#                - key: backupWorker
-#                  operator: In
-#                  values:
-#                  - 'True'
-#        tolerations:
-#          - key: "backupWorker"
-#            operator: "Equal"
-#            value: "True"
-#            effect: "NoSchedule"
-#        annotations:
-#          testName: scheduled-backup
-#        labels:
-#          backupWorker: 'True'
-#        schedulerName: 'default-scheduler'
-#        priorityClassName: 'high-priority'
-#        containerSecurityContext:
-#          privileged: true
-#        podSecurityContext:
-#          fsGroup: 1001
-#          supplementalGroups: [1001, 1002, 1003]
-        volume:
-          persistentVolumeClaim:
-#            storageClassName: standard
-            accessModes: [ "ReadWriteOnce" ]
-            resources:
-              requests:
-                storage: 6G
+      garage-binlogs:
+        type: s3
+        verifyTLS: true
+        s3:
+          bucket: percona-backups/binlogs
+          credentialsSecret: percona-backup-garage-s3
+          endpointUrl: https://garage-s3.${ARGOCD_ENV_base_domain}
+          region: garage
+
     schedule:
-#      - name: "sat-night-backup"
-#        schedule: "0 0 * * 6"
-#        retention:
-#          type: "count"
-#          count: 5
-#          deleteFromStorage: true
-#        storageName: s3-us-west
       - name: "daily-backup"
         schedule: "0 0 * * *"
-        retention:
-          type: "count"
-          count: 5
-          deleteFromStorage: true
-        storageName: fs-pvc
+        storageName: garage-full
   passwordGenerationOptions:
     symbols: "!#$%&()+,-.<=>?@[]^_{}~"
     maxLength: 16

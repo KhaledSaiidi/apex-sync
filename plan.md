@@ -18,7 +18,4 @@
 
 - Enable PITR with binlog uploads to the same object storage so you can restore between daily full backups. For binlogs, Percona recommends: at least a separate folder/prefix for each cluster
 
-
-- Add a restore test path early: document and test full restore and point-in-time restore before calling the database production ready.
-
 - Add observability last: metrics, alerts, and backup failure visibility, then remove leftover commented examples so the manifest reflects the real supported design.

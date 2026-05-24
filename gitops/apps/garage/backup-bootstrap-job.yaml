@@ -36,7 +36,7 @@ spec:
               BUCKET_NAME="percona-backups"
               KEY_NAME="percona-backup-key"
               SECRET_NAME="percona-backup-garage-s3"
-              ENDPOINT_URL="http://garage.garage.svc.cluster.local:3900"
+              ENDPOINT_URL="https://garage-s3.${ARGOCD_ENV_base_domain}"
               REGION="garage"
               GARAGE_LABEL_SELECTOR="app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage"
 

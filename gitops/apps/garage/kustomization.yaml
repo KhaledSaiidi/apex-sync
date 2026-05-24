@@ -9,6 +9,9 @@ helmCharts:
     namespace: garage
     valuesFile: values.yaml
 resources:
+  - namespace.yaml
+  - s3-api-httproute.yaml
   - backup-bootstrap-serviceaccount.yaml
   - backup-bootstrap-rbac.yaml
   - backup-bootstrap-job.yaml
+  - backup-lifecycle-job.yaml
