@@ -4,7 +4,7 @@ metadata:
   name: kyverno
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: '30'
+    argocd.argoproj.io/sync-wave: '5'
   labels:
     app.kubernetes.io/name: kyverno
     app.kubernetes.io/part-of: platform-baseline

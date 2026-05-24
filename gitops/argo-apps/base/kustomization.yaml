@@ -1,13 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - cert-manager.yaml
-  - openebs.yaml
-  - metallb.yaml
-  - istio-main.yaml
-  - stateful-operator.yaml
-  - stateful-resources.yaml
-  - external-dns.yaml
-  - kyverno.yaml
-  - garage.yaml
-  - reflector.yaml
+  - cert-manager.yaml # sync-wave: -20
+  - reflector.yaml # sync-wave: -20
+  - metallb.yaml # sync-wave: -10
+  - openebs.yaml # sync-wave: -10
+  - istio-main.yaml # sync-wave: 0
+  - kyverno.yaml # sync-wave: 5
+  - garage.yaml # sync-wave: 10
+  - stateful-operator.yaml # sync-wave: 10
+  - external-dns.yaml # sync-wave: 15
+  - argocd-server-route.yaml # sync-wave: 18
+  - stateful-resources.yaml # sync-wave: 20

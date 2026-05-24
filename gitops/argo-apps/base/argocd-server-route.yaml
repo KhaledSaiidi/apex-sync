@@ -1,28 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "10"
-  name: garage
+  name: argocd-server-route
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "18"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
+  project: platform
   source:
-    path: gitops/apps/garage
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    path: gitops/apps/argocd-server-route
     plugin:
       name: envsubst
       env:
-        - name: garage_version
-          value: "${ARGOCD_ENV_garage_version}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
   destination:
-    namespace: garage
     server: https://kubernetes.default.svc
-  project: platform
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true

@@ -4,7 +4,7 @@ metadata:
   name: stateful-operator
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: '-8'
+    argocd.argoproj.io/sync-wave: '10'
   labels:
     app.kubernetes.io/name: stateful-operator
     app.kubernetes.io/part-of: platform-baseline
