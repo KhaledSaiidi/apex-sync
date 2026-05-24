@@ -30,6 +30,11 @@ spec:
       jsonPointers:
         - /metadata/labels
         - /metadata/managedFields
+    - group: flowcontrol.apiserver.k8s.io
+      kind: FlowSchema
+      name: kyverno-admission-controller
+      jqPathExpressions:
+        - '.spec.rules[]?.resourceRules[]? | select(.clusterScope == true) | .namespaces'
   syncPolicy:
     automated:
       prune: true

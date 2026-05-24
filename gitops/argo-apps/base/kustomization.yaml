@@ -7,8 +7,8 @@ resources:
   - openebs.yaml # sync-wave: -10
   - istio-main.yaml # sync-wave: 0
   - kyverno.yaml # sync-wave: 5
+  - external-dns.yaml # sync-wave: 8
   - garage.yaml # sync-wave: 10
   - stateful-operator.yaml # sync-wave: 10
-  - external-dns.yaml # sync-wave: 15
   - argocd-server-route.yaml # sync-wave: 18
   - stateful-resources.yaml # sync-wave: 20

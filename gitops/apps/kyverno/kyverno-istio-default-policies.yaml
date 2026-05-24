@@ -5,9 +5,14 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "10"
 spec:
+  admission: true
+  background: true
+  emitWarning: false
   mutateExistingOnPolicyUpdate: true
+  validationFailureAction: Audit
   rules:
     - name: add-istio-injection-label-to-default
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
