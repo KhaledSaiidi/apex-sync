@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: garage-cluster-layout-bootstrap
   annotations:
-    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/sync-wave: "0"
     argocd.argoproj.io/hook-delete-policy: HookSucceeded,BeforeHookCreation
 spec:
@@ -26,92 +26,106 @@ spec:
             capabilities:
               drop:
                 - ALL
+          env:
+            - name: GARAGE_NAMESPACE
+              value: garage
+            - name: GARAGE_LABEL_SELECTOR
+              value: app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage
+            - name: GARAGE_REPLICA_COUNT
+              value: "3"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           command:
             - /bin/sh
             - -ec
             - |
               set -eu
 
+              set -- \
+                "$(printenv GARAGE_NAMESPACE)" \
+                "$(printenv GARAGE_LABEL_SELECTOR)" \
+                "$(printenv GARAGE_REPLICA_COUNT)"
+
               timeout 900 sh -ec '
                 while [ "$(kubectl get pod \
-                  --namespace garage \
-                  --selector app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage \
+                  --namespace "$1" \
+                  --selector "$2" \
                   --field-selector=status.phase=Running \
-                  --no-headers 2>/dev/null | wc -l | tr -d " ")" != "$1" ]; do
+                  --no-headers 2>/dev/null | wc -l | tr -d " ")" != "$3" ]; do
                   sleep 5
                 done
-              ' _ 3
+              ' _ "$1" "$2" "$3"
 
               kubectl get pod \
-                --namespace garage \
-                --selector app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage \
+                --namespace "$1" \
+                --selector "$2" \
                 --field-selector=status.phase=Running \
                 -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\t"}{.spec.nodeName}{"\n"}{end}' > /tmp/garage-pods.tsv
+
+              : > /tmp/garage-assignments.tsv
 
               cat /tmp/garage-pods.tsv \
                 | xargs -r -n 3 sh -ec '
                     timeout 900 sh -ec '"'"'
-                      while [ -z "$(kubectl get garagenodes.deuxfleurs.fr \
-                        --namespace garage \
-                        -o jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.spec.hostname}{'\t'}{.spec.address}{'\n'}{end}" \
-                        | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')" ]; do
+                      until kubectl exec -n "$1" "$2" -- /garage node id >/tmp/garage-node-id 2>/dev/null; do
                         sleep 5
                       done
                     '"'"' _ "$1" "$2"
-                  ' _
+
+                    if [ "$(kubectl get pvc \
+                      --namespace "$1" \
+                      "data-$2" \
+                      -o jsonpath='"'"'{.spec.resources.requests.storage}'"'"' \
+                      | sed '"'"'s/Gi$/GB/'"'"')" = "$(kubectl get pvc \
+                      --namespace "$1" \
+                      "data-$2" \
+                      -o jsonpath='"'"'{.spec.resources.requests.storage}'"'"')" ]; then
+                      echo "Unsupported Garage PVC capacity format for pod $2" >&2
+                      exit 1
+                    fi
+
+                    set -- "$(kubectl get node "$4" -o jsonpath='"'"'{.metadata.labels.topology\.kubernetes\.io/zone}'"'"' 2>/dev/null || true)" "$1" "$2" "$3" "$4"
+
+                    if [ -z "$1" ]; then
+                      set -- "$5" "$2" "$3" "$4" "$5"
+                    fi
+
+                    printf "%s\t%s\t%s\t%s\n" \
+                      "$3" \
+                      "$(cut -d@ -f1 /tmp/garage-node-id | tr -d '\n')" \
+                      "$1" \
+                      "$(kubectl get pvc \
+                        --namespace "$2" \
+                        "data-$3" \
+                        -o jsonpath='"'"'{.spec.resources.requests.storage}'"'"' \
+                        | sed '"'"'s/Gi$/GB/'"'"')" \
+                      >> /tmp/garage-assignments.tsv
+                  ' _ "$1"
 
               timeout 900 sh -ec '
-                until kubectl exec -n garage garage-0 -- /garage status >/tmp/garage-status 2>/dev/null; do
+                until kubectl exec -n "$1" garage-0 -- /garage status >/tmp/garage-status.txt 2>/dev/null; do
                   sleep 5
                 done
-              '
+              ' _ "$1"
 
-              timeout 900 sh -ec '
-                until kubectl exec -n garage garage-0 -- /garage layout show >/tmp/garage-layout.txt 2>/dev/null; do
-                  sleep 5
-                done
-              '
-
-              if ! grep -q "NO ROLE ASSIGNED" /tmp/garage-status \
-                && [ "$(grep 'Current cluster layout version:' /tmp/garage-layout.txt | cut -d: -f2 | tr -d ' ')" -gt 0 ]; then
-                echo "Garage layout already initialized"
-                exit 0
+              if ! grep -q "NO ROLE ASSIGNED" /tmp/garage-status.txt; then
+                if [ "$(cat /tmp/garage-assignments.tsv \
+                  | xargs -r -n 4 sh -ec '\''grep -F "$1" /tmp/garage-status.txt | grep -F "$3" | grep -F "$4" >/dev/null && echo ok'\'' _ \
+                  | wc -l | tr -d " ")" = "$(wc -l < /tmp/garage-assignments.tsv | tr -d " ")" ]; then
+                  echo "Garage layout already matches the desired topology"
+                  exit 0
+                fi
               fi
 
-              cat /tmp/garage-pods.tsv \
-                | xargs -r -n 3 sh -ec '
-                    if [ -z "$(kubectl get garagenodes.deuxfleurs.fr \
-                      --namespace garage \
-                      -o jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.spec.hostname}{'\t'}{.spec.address}{'\n'}{end}" \
-                      | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')" ]; then
-                      echo "Missing GarageNode resource for pod $1 ($2)" >&2
-                      exit 1
-                    fi
-                    if [ "$(kubectl get pvc \
-                      --namespace garage \
-                      "data-$1" \
-                      -o jsonpath='"'"'"'"'"'"'"'"'{.spec.resources.requests.storage}'"'"'"'"'"'"'"'"' \
-                      | sed '"'"'"'"'"'"'"'"'s/Gi$/GB/'"'"'"'"'"'"'"'"')" = "$(kubectl get pvc \
-                      --namespace garage \
-                      "data-$1" \
-                      -o jsonpath='"'"'"'"'"'"'"'"'{.spec.resources.requests.storage}'"'"'"'"'"'"'"'"')" ]; then
-                      echo "Unsupported Garage PVC capacity format for pod $1" >&2
-                      exit 1
-                    fi
-                    kubectl exec -n garage garage-0 -- \
-                      /garage layout assign \
-                      -z "$3" \
-                      -c "$(kubectl get pvc \
-                        --namespace garage \
-                        "data-$1" \
-                        -o jsonpath="{.spec.resources.requests.storage}" \
-                        | sed '"'"'"'"'"'"'"'"'s/Gi$/GB/'"'"'"'"'"'"'"'"')" \
-                      -t "$1" \
-                      "$(kubectl get garagenodes.deuxfleurs.fr \
-                        --namespace garage \
-                        -o jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.spec.hostname}{'\t'}{.spec.address}{'\n'}{end}" \
-                        | awk -F "\t" -v target_hostname="$1" -v target_ip="$2" '"'"'"'"'"'"'"'"'$2 == target_hostname && $3 == target_ip { print $1; exit }'"'"'"'"'"'"'"'"')"
-                  ' _
+              cat /tmp/garage-assignments.tsv \
+                | xargs -r -n 4 sh -ec '
+                    kubectl exec -n "$1" garage-0 -- /garage layout assign "$3" -z "$4" -c "$5" -t "$2"
+                  ' _ "$1"
 
-              kubectl exec -n garage garage-0 -- /garage layout show >/tmp/garage-layout.txt
-              kubectl exec -n garage garage-0 -- /garage layout apply --version "$(( $(grep 'Current cluster layout version:' /tmp/garage-layout.txt | cut -d: -f2 | tr -d ' ') + 1 ))"
+              kubectl exec -n "$1" garage-0 -- /garage layout show >/tmp/garage-layout.txt
+              kubectl exec -n "$1" garage-0 -- /garage layout apply --version "$(( $(grep '"'"'Current cluster layout version:'"'"' /tmp/garage-layout.txt | cut -d: -f2 | tr -d '"'"' '"'"') + 1 ))"

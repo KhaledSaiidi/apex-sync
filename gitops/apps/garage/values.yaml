@@ -5,25 +5,25 @@ garage:
   blockSize: "4194304"
   replicationFactor: "3"
   consistencyMode: "consistent"
-  compressionLevel: "1"
-  metadataAutoSnapshotInterval: "24h"
+  compressionLevel: "2"
+  metadataAutoSnapshotInterval: "6h"
   rpc:
     bindAddr: "[::]:3901"
     secret:
-      create: true
+      create: false
       name: "garage-rpc-secret"
       value: ""
   admin:
     token:
       create: true
       secret:
-        create: true
+        create: false
         name: "garage-admin-token"
         value: ""
   s3:
     api:
       region: "garage"
-      rootDomain: ".garage-s3.${ARGOCD_ENV_base_domain}"
+      rootDomain: ""
     web:
       rootDomain: ".web.garage.internal"
       index: "index.html"
@@ -32,7 +32,7 @@ persistence:
   enabled: true
   meta:
     storageClass: openebs-storage-class
-    size: 1Gi
+    size: 8Gi
   data:
     storageClass: openebs-storage-class
     size: 20Gi
@@ -40,7 +40,10 @@ persistence:
 deployment:
   kind: StatefulSet
   replicaCount: 3
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
+
+image:
+  tag: "v2.3.1"
 
 serviceAccount:
   create: true
@@ -97,14 +100,12 @@ readinessProbe:
 
 affinity:
   podAntiAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: garage
-              app.kubernetes.io/instance: garage
-          topologyKey: kubernetes.io/hostname
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: garage
+            app.kubernetes.io/instance: garage
+        topologyKey: kubernetes.io/hostname
 
 monitoring:
   metrics:
