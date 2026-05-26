@@ -40,7 +40,7 @@ persistence:
 deployment:
   kind: StatefulSet
   replicaCount: 3
-  podManagementPolicy: OrderedReady
+  podManagementPolicy: Parallel
 
 serviceAccount:
   create: true
