@@ -49,6 +49,8 @@ spec:
               selector="$(printenv GARAGE_LABEL_SELECTOR)"
               replica_count="$(printenv GARAGE_REPLICA_COUNT)"
 
+              echo "Waiting for $replica_count Garage pods in namespace $namespace"
+
               timeout 900 sh -ec '
                 while [ "$(kubectl get pod \
                   --namespace "$1" \
@@ -65,9 +67,13 @@ spec:
                 --field-selector=status.phase=Running \
                 -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\t"}{.spec.nodeName}{"\n"}{end}' > /tmp/garage-pods.tsv
 
+              echo "Discovered Garage pods:"
+              cat /tmp/garage-pods.tsv
+
               : > /tmp/garage-assignments.tsv
 
               while IFS="$(printf '\t')" read -r pod_name pod_ip node_name; do
+                echo "Collecting node data for $pod_name"
                 timeout 900 sh -ec '
                   until kubectl exec -n "$1" "$2" -- /garage node id >/tmp/garage-node-id 2>/dev/null; do
                     sleep 5
@@ -99,11 +105,17 @@ spec:
                   >> /tmp/garage-assignments.tsv
               done < /tmp/garage-pods.tsv
 
+              echo "Computed Garage assignments:"
+              cat /tmp/garage-assignments.tsv
+
               timeout 900 sh -ec '
                 until kubectl exec -n "$1" garage-0 -- /garage status >/tmp/garage-status.txt 2>/dev/null; do
                   sleep 5
                 done
               ' _ "$namespace"
+
+              echo "Current Garage status:"
+              cat /tmp/garage-status.txt
 
               if ! grep -q "NO ROLE ASSIGNED" /tmp/garage-status.txt; then
                 desired_assignments="$(wc -l < /tmp/garage-assignments.tsv | tr -d ' ')"
@@ -122,9 +134,13 @@ spec:
               fi
 
               while IFS="$(printf '\t')" read -r pod_ip node_id zone capacity; do
+                echo "Assigning $node_id to zone=$zone capacity=$capacity tag=$pod_ip"
                 kubectl exec -n "$namespace" garage-0 -- /garage layout assign "$node_id" -z "$zone" -c "$capacity" -t "$pod_ip"
               done < /tmp/garage-assignments.tsv
 
               kubectl exec -n "$namespace" garage-0 -- /garage layout show >/tmp/garage-layout.txt
+              echo "Garage layout before apply:"
+              cat /tmp/garage-layout.txt
               layout_version="$(awk -F': *' '/Current cluster layout version:/ {print $2; exit}' /tmp/garage-layout.txt | tr -d ' ')"
+              echo "Applying Garage layout version $((layout_version + 1))"
               kubectl exec -n "$namespace" garage-0 -- /garage layout apply --version "$((layout_version + 1))"

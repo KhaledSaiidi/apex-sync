@@ -11,6 +11,7 @@ helmCharts:
 resources:
   - namespace.yaml
   - internal-secrets-bootstrap-job.yaml
+  - discovery-cleanup-job.yaml
   - s3-api-httproute.yaml
   - backup-bootstrap-serviceaccount.yaml
   - backup-bootstrap-rbac.yaml

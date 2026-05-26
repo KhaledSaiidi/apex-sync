@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: garage-discovery-cleanup
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "-5"
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded,BeforeHookCreation
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: garage-backup-bootstrap
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: cleanup
+          image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: GARAGE_NAMESPACE
+              value: garage
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              set -eu
+              namespace="$(printenv GARAGE_NAMESPACE)"
+
+              if ! kubectl get crd garagenodes.deuxfleurs.fr >/dev/null 2>&1; then
+                echo "GarageNode CRD not present yet, nothing to clean"
+                exit 0
+              fi
+
+              stale_nodes="$(kubectl get garagenodes.deuxfleurs.fr \
+                --namespace "$namespace" \
+                -l garage.deuxfleurs.fr/service=garage \
+                -o name 2>/dev/null || true)"
+
+              if [ -z "$stale_nodes" ]; then
+                echo "No stale GarageNode objects found"
+                exit 0
+              fi
+
+              printf '%s\n' "$stale_nodes" | while IFS= read -r node_name; do
+                [ -n "$node_name" ] || continue
+                kubectl delete --namespace "$namespace" "$node_name"
+              done
