@@ -42,9 +42,6 @@ deployment:
   replicaCount: 3
   podManagementPolicy: OrderedReady
 
-image:
-  tag: "v2.3.1"
-
 serviceAccount:
   create: true
 
