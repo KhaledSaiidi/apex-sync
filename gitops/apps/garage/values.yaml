@@ -95,6 +95,9 @@ readinessProbe:
   timeoutSeconds: 5
   failureThreshold: 6
 
+tolerations:
+  - operator: Exists
+
 affinity:
   podAntiAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
