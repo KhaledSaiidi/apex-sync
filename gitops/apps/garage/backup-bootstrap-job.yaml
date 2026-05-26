@@ -119,7 +119,7 @@ spec:
               kubectl exec -n "$1" "$8" -- /garage key info --show-secret "$9" >/tmp/garage-key-info.txt
 
               awk -F': *' '/Key ID:/ {print $2; exit}' /tmp/garage-key-info.txt >/tmp/garage-access-key-id.txt
-              awk -F': *' '/Secret key:/ {print $2; exit}' /tmp/garage-secret-key.txt
+              awk -F': *' '/Secret key:/ {print $2; exit}' /tmp/garage-key-info.txt >/tmp/garage-secret-key.txt
 
               if [ ! -s /tmp/garage-access-key-id.txt ] || [ ! -s /tmp/garage-secret-key.txt ]; then
                 echo "Failed to read Garage access key material" >&2
