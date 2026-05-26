@@ -142,8 +142,8 @@ spec:
               fi
 
               xargs -r -n 4 sh -ec '
-                echo "Assigning $2 to zone=$3 capacity=$4 tag=$1"
-                kubectl exec -n "$5" garage-0 -- /garage layout assign "$2" -z "$3" -c "$4" -t "$1"
+                echo "Assigning $3 to zone=$4 capacity=$5 tag=$2"
+                kubectl exec -n "$1" garage-0 -- /garage layout assign "$3" -z "$4" -c "$5" -t "$2"
               ' _ "$1" </tmp/garage-assignments.tsv
 
               kubectl exec -n "$1" garage-0 -- /garage layout show >/tmp/garage-layout.txt
