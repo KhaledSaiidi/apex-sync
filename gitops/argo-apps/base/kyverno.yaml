@@ -29,7 +29,6 @@ spec:
       kind: CustomResourceDefinition
       jsonPointers:
         - /metadata/labels
-        - /metadata/managedFields
     - group: flowcontrol.apiserver.k8s.io
       kind: FlowSchema
       name: kyverno-admission-controller
