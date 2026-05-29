@@ -83,6 +83,7 @@ haproxy:
       cpu: 600m
     limits:
       memory: 512Mi
+  envVarsSecret: mysql-cluster-haproxy-env
   priorityClassName: high-priority
   tolerations:
     - operator: Exists
