@@ -85,6 +85,8 @@ haproxy:
       memory: 512Mi
       cpu: 500m
   priorityClassName: high-priority
+  tolerations:
+    - operator: Exists
   topologySpreadConstraints:
     - labelSelector:
         matchLabels:
