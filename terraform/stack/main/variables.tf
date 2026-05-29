@@ -158,6 +158,6 @@ variable "percona_version" {
 }
 
 variable "garage_version" {
-  type = string
+  type    = string
   default = "2.3.1"
 }

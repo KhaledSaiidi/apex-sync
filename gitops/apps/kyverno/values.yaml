@@ -7,11 +7,11 @@ admissionController:
   container:
     resources:
       requests:
-        cpu: 100m
-        memory: 128Mi
+        cpu: 50m
+        memory: 256Mi
       limits:
         cpu: 500m
-        memory: 384Mi
+        memory: 768Mi
   metricsService:
     create: true
   serviceMonitor:
@@ -21,11 +21,25 @@ backgroundController:
   replicas: 1
   resources:
     requests:
-      cpu: 100m
+      cpu: 25m
       memory: 128Mi
     limits:
       cpu: 300m
-      memory: 256Mi
+      memory: 384Mi
+  metricsService:
+    create: true
+  serviceMonitor:
+    enabled: false
+
+cleanupController:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 384Mi
   metricsService:
     create: true
   serviceMonitor:
@@ -35,11 +49,11 @@ reportsController:
   replicas: 1
   resources:
     requests:
-      cpu: 100m
+      cpu: 25m
       memory: 128Mi
     limits:
       cpu: 300m
-      memory: 256Mi
+      memory: 384Mi
   metricsService:
     create: true
   serviceMonitor:

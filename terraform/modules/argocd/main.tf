@@ -47,6 +47,6 @@ resource "local_file" "argocd_root_app" {
     openebs_version                       = var.openebs_version
     reflector_version                     = var.reflector_version
     percona_version                       = var.percona_version
-    garage_version = var.garage_version
+    garage_version                        = var.garage_version
   })
 }

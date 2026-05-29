@@ -43,11 +43,11 @@ spec:
               value: app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage
           resources:
             requests:
-              cpu: 100m
-              memory: 128Mi
+              cpu: 25m
+              memory: 64Mi
             limits:
-              cpu: 300m
-              memory: 256Mi
+              cpu: 200m
+              memory: 128Mi
           command:
             - /bin/sh
             - -ec

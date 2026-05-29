@@ -12,8 +12,8 @@ prometheus:
 
 resources:
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 20m
+    memory: 64Mi
   limits:
     cpu: 200m
     memory: 256Mi
@@ -41,8 +41,8 @@ webhook:
     minAvailable: 1
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 20m
+      memory: 64Mi
     limits:
       cpu: 200m
       memory: 256Mi
@@ -64,8 +64,8 @@ cainjector:
     minAvailable: 1
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 20m
+      memory: 64Mi
     limits:
       cpu: 200m
       memory: 256Mi
@@ -79,3 +79,12 @@ cainjector:
       drop:
         - ALL
     readOnlyRootFilesystem: true
+
+startupapicheck:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
