@@ -20,6 +20,8 @@ pxc:
   certManager: true
   size: 3
   autoRecovery: true
+  tolerations:
+    - operator: Exists
   resources:
     requests:
       memory: 384Mi
