@@ -101,7 +101,7 @@ haproxy:
   gracePeriod: 30
   readinessProbes:
     initialDelaySeconds: 15
-    timeoutSeconds: 1
+    timeoutSeconds: 5
     periodSeconds: 5
     successThreshold: 1
     failureThreshold: 3
