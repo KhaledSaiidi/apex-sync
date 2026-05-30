@@ -20,10 +20,12 @@ pxc:
   certManager: true
   size: 3
   autoRecovery: true
+  tolerations:
+    - operator: Exists
   resources:
     requests:
-      memory: 400Mi
-      cpu: 300m
+      memory: 384Mi
+      cpu: 150m
       ephemeral-storage: 1G
     limits:
       memory: 1536Mi
@@ -77,12 +79,14 @@ haproxy:
     type: ClusterIP
   resources:
     requests:
-      memory: 400Mi
-      cpu: 300m
+      memory: 512Mi
+      cpu: 600m
     limits:
-      memory: 1536Mi
-      cpu: 800m
+      memory: 512Mi
+  envVarsSecret: mysql-cluster-haproxy-env
   priorityClassName: high-priority
+  tolerations:
+    - operator: Exists
   topologySpreadConstraints:
     - labelSelector:
         matchLabels:
@@ -97,7 +101,7 @@ haproxy:
   gracePeriod: 30
   readinessProbes:
     initialDelaySeconds: 15
-    timeoutSeconds: 1
+    timeoutSeconds: 5
     periodSeconds: 5
     successThreshold: 1
     failureThreshold: 3
@@ -122,8 +126,11 @@ logcollector:
   enabled: true
   resources:
     requests:
-      memory: 100M
-      cpu: 200m
+      memory: 64Mi
+      cpu: 25m
+    limits:
+      memory: 128Mi
+      cpu: 100m
 
 backup:
   enabled: true
@@ -134,22 +141,22 @@ backup:
     timeoutSeconds: 60
     resources:
       requests:
-        memory: 128Mi
-        cpu: 100m
+        memory: 64Mi
+        cpu: 25m
       limits:
-        memory: 1Gi
-        cpu: 700m
+        memory: 256Mi
+        cpu: 200m
   storages:
     garage-full:
       type: s3
       verifyTLS: true
       resources:
         requests:
+          memory: 128Mi
+          cpu: 50m
+        limits:
           memory: 512Mi
           cpu: 300m
-        limits:
-          memory: 1Gi
-          cpu: 700m
       containerSecurityContext:
         privileged: false
       podSecurityContext:

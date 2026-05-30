@@ -4,7 +4,7 @@ metadata:
   name: kyverno
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: '30'
+    argocd.argoproj.io/sync-wave: '5'
   labels:
     app.kubernetes.io/name: kyverno
     app.kubernetes.io/part-of: platform-baseline
@@ -24,6 +24,16 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: kyverno
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /metadata/labels
+    - group: flowcontrol.apiserver.k8s.io
+      kind: FlowSchema
+      name: kyverno-admission-controller
+      jqPathExpressions:
+        - '.spec.rules[]?.resourceRules[]? | select(.clusterScope == true) | .namespaces'
   syncPolicy:
     automated:
       prune: true
@@ -38,3 +48,5 @@ spec:
       - CreateNamespace=true
       - PrunePropagationPolicy=background
       - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ServerSideApply=true

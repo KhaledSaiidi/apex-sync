@@ -28,11 +28,22 @@ spec:
           envFrom:
             - secretRef:
                 name: percona-backup-garage-s3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           command:
             - /bin/sh
             - -ec
             - |
               set -eu
+
+              set -- \
+                "$(printenv AWS_REGION)" \
+                "$(printenv BUCKET_NAME)"
 
               cat >/tmp/lifecycle.json <<EOF
               {
@@ -73,6 +84,6 @@ spec:
 
               aws s3api put-bucket-lifecycle-configuration \
                 --endpoint-url "http://garage.garage.svc.cluster.local:3900" \
-                --region "${AWS_REGION}" \
-                --bucket "${BUCKET_NAME}" \
+                --region "$1" \
+                --bucket "$2" \
                 --lifecycle-configuration "file:///tmp/lifecycle.json"

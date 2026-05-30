@@ -2,11 +2,11 @@ replicaCount: 1
 
 resources:
   requests:
-    cpu: 200m
+    cpu: 100m
     memory: 256Mi
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: "1"
+    memory: 1Gi
 
 meshConfig:
   accessLogFile: /dev/stdout

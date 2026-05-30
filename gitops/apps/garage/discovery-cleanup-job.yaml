@@ -1,0 +1,108 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: garage-discovery-cleanup
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "-5"
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded,BeforeHookCreation
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: garage-backup-bootstrap
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: cleanup
+          image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: GARAGE_NAMESPACE
+              value: garage
+            - name: GARAGE_LABEL_SELECTOR
+              value: app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage
+            - name: GARAGE_REPLICA_COUNT
+              value: "3"
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              set -eu
+              set -- \
+                "$(printenv GARAGE_NAMESPACE)" \
+                "$(printenv GARAGE_LABEL_SELECTOR)" \
+                "$(printenv GARAGE_REPLICA_COUNT)"
+
+              if ! kubectl get crd garagenodes.deuxfleurs.fr >/dev/null 2>&1; then
+                echo "GarageNode CRD not present yet, nothing to clean"
+                exit 0
+              fi
+
+              kubectl get garagenodes.deuxfleurs.fr \
+                --namespace "$1" \
+                -l garage.deuxfleurs.fr/service=garage \
+                -o name >/tmp/stale-garagenodes.txt 2>/dev/null || true
+
+              if [ ! -s /tmp/stale-garagenodes.txt ]; then
+                echo "No stale GarageNode objects found"
+                exit 0
+              fi
+
+              set -- \
+                "$1" \
+                "$2" \
+                "$3" \
+                "$(kubectl get pod \
+                --namespace "$1" \
+                --selector "$2" \
+                --field-selector=status.phase=Running \
+                --no-headers 2>/dev/null | wc -l | tr -d ' ')"
+
+              if [ "$4" = "0" ]; then
+                echo "No running Garage pods found, deleting all GarageNode discovery objects for a clean bootstrap"
+                xargs -r kubectl delete --namespace "$1" </tmp/stale-garagenodes.txt
+                exit 0
+              fi
+
+              if [ "$4" != "0" ] && [ "$4" != "$3" ]; then
+                echo "Garage has a partial running set ($4/$3), skipping discovery cleanup to avoid disrupting a live cluster"
+                exit 0
+              fi
+
+              kubectl get pod \
+                --namespace "$1" \
+                --selector "$2" \
+                --field-selector=status.phase=Running \
+                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\n"}{end}' > /tmp/current-garage-pods.tsv
+
+              kubectl get garagenodes.deuxfleurs.fr \
+                --namespace "$1" \
+                -l garage.deuxfleurs.fr/service=garage \
+                -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.hostname}{"\t"}{.spec.address}{"\n"}{end}' > /tmp/current-garagenodes.tsv
+
+              xargs -r -n 3 sh -ec '
+                if grep -F "$(printf "%s\t%s" "$3" "$4")" /tmp/current-garage-pods.tsv >/dev/null; then
+                  echo "Keeping active GarageNode $2 for $3 at $4"
+                  exit 0
+                fi
+
+                echo "Deleting stale GarageNode $2 for $3 at $4"
+                kubectl delete --namespace "$1" "garagenodes.deuxfleurs.fr/$2"
+              ' _ "$1" </tmp/current-garagenodes.tsv

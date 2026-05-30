@@ -2,13 +2,27 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: garage-backup-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
 rules:
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get"]
+  - apiGroups: ["deuxfleurs.fr"]
+    resources: ["garagenodes"]
+    verbs: ["get", "list", "delete"]
   - apiGroups: [""]
     resources: ["pods"]
-    verbs: ["get", "list"]
+    verbs: ["get", "list", "watch"]
   - apiGroups: [""]
     resources: ["pods/exec"]
     verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get"]
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "create", "update", "patch"]
@@ -17,6 +31,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: garage-backup-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
 subjects:
   - kind: ServiceAccount
     name: garage-backup-bootstrap

@@ -10,8 +10,11 @@ helmCharts:
     valuesFile: values.yaml
 resources:
   - namespace.yaml
+  - internal-secrets-bootstrap-job.yaml
+  - discovery-cleanup-job.yaml
   - s3-api-httproute.yaml
   - backup-bootstrap-serviceaccount.yaml
   - backup-bootstrap-rbac.yaml
+  - cluster-layout-bootstrap-job.yaml
   - backup-bootstrap-job.yaml
   - backup-lifecycle-job.yaml

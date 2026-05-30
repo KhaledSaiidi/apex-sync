@@ -22,6 +22,31 @@ spec:
   destination:
     namespace: istio-system
     server: https://kubernetes.default.svc
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: istio-validator-istio-system
+      jqPathExpressions:
+        - .webhooks[]?.clientConfig.caBundle
+        - .webhooks[]?.clientConfig.service.port
+        - .webhooks[]?.failurePolicy
+        - .webhooks[]?.matchPolicy
+        - .webhooks[]?.namespaceSelector
+        - .webhooks[]?.objectSelector
+        - .webhooks[]?.rules[]?.scope
+        - .webhooks[]?.timeoutSeconds
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: istiod-default-validator
+      jqPathExpressions:
+        - .webhooks[]?.clientConfig.caBundle
+        - .webhooks[]?.clientConfig.service.port
+        - .webhooks[]?.failurePolicy
+        - .webhooks[]?.matchPolicy
+        - .webhooks[]?.namespaceSelector
+        - .webhooks[]?.objectSelector
+        - .webhooks[]?.rules[]?.scope
+        - .webhooks[]?.timeoutSeconds
   project: platform
   syncPolicy:
     automated:
@@ -37,3 +62,4 @@ spec:
       - CreateNamespace=true
       - PrunePropagationPolicy=background
       - PruneLast=true
+      - RespectIgnoreDifferences=true
