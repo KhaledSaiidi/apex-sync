@@ -111,12 +111,42 @@ spec:
                 set -- "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$3"
               fi
 
+              timeout 180 sh -ec '
+                until kubectl exec -n "$1" "$2" -- /garage key info "$3" >/dev/null 2>&1; do
+                  sleep 5
+                done
+              ' _ "$1" "$8" "$9"
+
               if ! kubectl exec -n "$1" "$8" -- /garage bucket info "$2" >/dev/null 2>&1; then
                 kubectl exec -n "$1" "$8" -- /garage bucket create "$2" >/dev/null
               fi
 
-              kubectl exec -n "$1" "$8" -- /garage bucket allow --key "$9" --read --write --owner "$2" >/dev/null
-              kubectl exec -n "$1" "$8" -- /garage key info --show-secret "$9" >/tmp/garage-key-info.txt
+              timeout 180 sh -ec '
+                until kubectl exec -n "$1" "$2" -- /garage bucket info "$3" >/dev/null 2>&1; do
+                  sleep 5
+                done
+              ' _ "$1" "$8" "$2"
+
+              timeout 180 sh -ec '
+                until kubectl exec -n "$1" "$2" -- /garage bucket allow --key "$4" --read --write --owner "$3" >/dev/null 2>&1; do
+                  sleep 5
+                done
+              ' _ "$1" "$8" "$2" "$9"
+
+              timeout 180 sh -ec '
+                while true; do
+                  if kubectl exec -n "$1" "$2" -- /garage key info --show-secret "$3" >/tmp/garage-key-info.txt 2>/dev/null; then
+                    awk -F": *" "/Key ID:/ {print \$2; exit}" /tmp/garage-key-info.txt >/tmp/garage-access-key-id.txt
+                    awk -F": *" "/Secret key:/ {print \$2; exit}" /tmp/garage-key-info.txt >/tmp/garage-secret-key.txt
+
+                    if [ -s /tmp/garage-access-key-id.txt ] && [ -s /tmp/garage-secret-key.txt ]; then
+                      exit 0
+                    fi
+                  fi
+
+                  sleep 5
+                done
+              ' _ "$1" "$8" "$9"
 
               awk -F': *' '/Key ID:/ {print $2; exit}' /tmp/garage-key-info.txt >/tmp/garage-access-key-id.txt
               awk -F': *' '/Secret key:/ {print $2; exit}' /tmp/garage-key-info.txt >/tmp/garage-secret-key.txt
