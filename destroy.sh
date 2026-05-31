@@ -2,19 +2,27 @@
 
 set -euo pipefail
 
-LOCKFILE="/tmp/kube-signal-terraform.lock"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+CONFIG_FILE="$SCRIPT_DIR/custom-config.yaml"
+ENV_FILE="$SCRIPT_DIR/.env.bootstrap"
+LOCKFILE="/tmp/kube-signal-terraform.lock"
+
 TERRAFORM_DIR="$SCRIPT_DIR/terraform/stack/main"
 ARTIFACTS_DIR="$TERRAFORM_DIR/artifacts"
 ANSIBLE_DIR="$SCRIPT_DIR/.ansible"
+
 LOG_DIR="${TMPDIR:-/tmp}/kube-signal"
 LOG_TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
 LOG_FILE="$LOG_DIR/terraform-destroy-$LOG_TIMESTAMP.log"
+
 DESTROY_SUCCEEDED=0
 
 cleanup() {
-    echo "Cleaning up lockfile"
-    rm -f "$LOCKFILE"
+    if [[ -f "$LOCKFILE" ]] && [[ "$(cat "$LOCKFILE")" == "$$" ]]; then
+        echo "Cleaning up lockfile"
+        rm -f "$LOCKFILE"
+    fi
 
     if [[ "$DESTROY_SUCCEEDED" -eq 1 ]]; then
         echo "Cleaning up generated local files"
@@ -36,23 +44,51 @@ if ! command -v terraform >/dev/null 2>&1; then
     exit 1
 fi
 
+if ! command -v yq >/dev/null 2>&1; then
+    echo "yq is not installed or not in PATH."
+    exit 1
+fi
+
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    echo "Custom config file not found: $CONFIG_FILE"
+    exit 1
+fi
+
+if [[ ! -f "$ENV_FILE" ]]; then
+    echo "Bootstrap env file not found: $ENV_FILE"
+    exit 1
+fi
+
 if [[ ! -d "$TERRAFORM_DIR" ]]; then
     echo "Terraform directory not found: $TERRAFORM_DIR"
     exit 1
 fi
 
-if ! (set -o noclobber; echo "$$" >"$LOCKFILE") 2>/dev/null; then
+if ! (set -o noclobber; echo "$$" > "$LOCKFILE") 2>/dev/null; then
     echo "Another terraform operation is already running."
     exit 1
 fi
+
+source "$ENV_FILE"
+
+while IFS='=' read -r key value; do
+    export "TF_VAR_${key}=${value}"
+done < <(
+    yq -r '
+      to_entries[]
+      | select(.value != null)
+      | "\(.key)=\(.value)"
+    ' "$CONFIG_FILE"
+)
 
 mkdir -p "$LOG_DIR"
 
 echo "Running terraform destroy in $TERRAFORM_DIR"
 echo "Logging to $LOG_FILE"
-source .env.bootstrap
 
 cd "$TERRAFORM_DIR"
+
 terraform init 2>&1 | tee "$LOG_FILE"
 terraform destroy --auto-approve 2>&1 | tee -a "$LOG_FILE"
+
 DESTROY_SUCCEEDED=1
