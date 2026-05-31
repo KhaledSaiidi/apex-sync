@@ -172,10 +172,6 @@ backup:
     garage-binlogs:
       type: s3
       verifyTLS: true
-      labels:
-        app.kubernetes.io/name: mysql-cluster-backup
-        app.kubernetes.io/component: backup-pitr
-        app.kubernetes.io/part-of: stateful-resources
       containerSecurityContext:
         privileged: false
       s3:
