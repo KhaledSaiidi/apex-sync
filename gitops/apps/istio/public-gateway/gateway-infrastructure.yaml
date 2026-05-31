@@ -12,7 +12,7 @@ data:
       externalTrafficPolicy: Cluster
   deployment: |
     spec:
-      replicas: 3
+      replicas: ${ARGOCD_ENV_public_gateway_replicas}
       template:
         metadata:
           labels:
@@ -44,8 +44,8 @@ data:
                   memory: 512Mi
   horizontalPodAutoscaler: |
     spec:
-      minReplicas: 3
-      maxReplicas: 5
+      minReplicas: ${ARGOCD_ENV_public_gateway_min_replicas}
+      maxReplicas: ${ARGOCD_ENV_public_gateway_max_replicas}
       metrics:
         - type: Resource
           resource:

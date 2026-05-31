@@ -19,6 +19,10 @@ spec:
           value: "${ARGOCD_ENV_garage_version}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
+        - name: garage_replication_factor
+          value: "${ARGOCD_ENV_garage_replication_factor}"
+        - name: garage_replicas
+          value: "${ARGOCD_ENV_garage_replicas}"
   destination:
     namespace: garage
     server: https://kubernetes.default.svc

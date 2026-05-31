@@ -18,7 +18,7 @@ upgradeOptions:
 pxc:
   clusterSecretName: mysql-cluster-secrets
   certManager: true
-  size: 3
+  size: ${ARGOCD_ENV_stateful_resources_pxc_replicas}
   autoRecovery: true
   tolerations:
     - operator: Exists
@@ -70,7 +70,7 @@ pxc:
 
 haproxy:
   enabled: true
-  size: 3
+  size: ${ARGOCD_ENV_stateful_resources_haproxy_replicas}
   exposePrimary:
     type: ClusterIP
   exposeReplicas:

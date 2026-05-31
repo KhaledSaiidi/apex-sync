@@ -1,5 +1,5 @@
 deployment:
-  replicas: 1
+  replicas: ${ARGOCD_ENV_kiali_replicas}
   resources:
     requests:
       cpu: 50m

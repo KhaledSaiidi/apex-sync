@@ -21,6 +21,14 @@ spec:
       env:
         - name: kyverno_version
           value: "${ARGOCD_ENV_kyverno_version}"
+        - name: kyverno_admission_controller_replicas
+          value: "${ARGOCD_ENV_kyverno_admission_controller_replicas}"
+        - name: kyverno_background_controller_replicas
+          value: "${ARGOCD_ENV_kyverno_background_controller_replicas}"
+        - name: kyverno_cleanup_controller_replicas
+          value: "${ARGOCD_ENV_kyverno_cleanup_controller_replicas}"
+        - name: kyverno_reports_controller_replicas
+          value: "${ARGOCD_ENV_kyverno_reports_controller_replicas}"
   destination:
     server: https://kubernetes.default.svc
     namespace: kyverno

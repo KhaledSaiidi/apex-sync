@@ -29,6 +29,12 @@ spec:
           value: "${ARGOCD_ENV_base_domain}"
         - name: cert_manager_version
           value: "${ARGOCD_ENV_cert_manager_version}"
+        - name: cert_manager_replicas
+          value: "${ARGOCD_ENV_cert_manager_replicas}"
+        - name: cert_manager_webhook_replicas
+          value: "${ARGOCD_ENV_cert_manager_webhook_replicas}"
+        - name: cert_manager_cainjector_replicas
+          value: "${ARGOCD_ENV_cert_manager_cainjector_replicas}"
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager

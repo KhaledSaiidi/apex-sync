@@ -19,7 +19,7 @@ localpv-provisioner:
   localpv:
     enabled: true
     basePath: /var/openebs/kube-signal
-    replicas: 1
+    replicas: ${ARGOCD_ENV_openebs_localpv_replicas}
     resources:
       requests:
         cpu: 25m

@@ -17,6 +17,8 @@ spec:
       env:
         - name: kiali_version
           value: "${ARGOCD_ENV_kiali_version}"
+        - name: kiali_replicas
+          value: "${ARGOCD_ENV_kiali_replicas}"
 
   destination:
     namespace: istio-system

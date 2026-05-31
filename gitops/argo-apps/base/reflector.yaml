@@ -17,6 +17,10 @@ spec:
       env:
         - name: reflector_version
           value: "${ARGOCD_ENV_reflector_version}"
+        - name: reflector_min_replicas
+          value: "${ARGOCD_ENV_reflector_min_replicas}"
+        - name: reflector_max_replicas
+          value: "${ARGOCD_ENV_reflector_max_replicas}"
   destination:
     namespace: reflector
     server: https://kubernetes.default.svc

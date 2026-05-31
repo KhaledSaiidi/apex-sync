@@ -1,7 +1,7 @@
 crds:
   enabled: true
 
-replicaCount: 2
+replicaCount: ${ARGOCD_ENV_cert_manager_replicas}
 
 podDisruptionBudget:
   enabled: true
@@ -35,7 +35,7 @@ global:
     namespace: cert-manager
 
 webhook:
-  replicaCount: 2
+  replicaCount: ${ARGOCD_ENV_cert_manager_webhook_replicas}
   podDisruptionBudget:
     enabled: true
     minAvailable: 1
@@ -58,7 +58,7 @@ webhook:
     readOnlyRootFilesystem: true
 
 cainjector:
-  replicaCount: 2
+  replicaCount: ${ARGOCD_ENV_cert_manager_cainjector_replicas}
   podDisruptionBudget:
     enabled: true
     minAvailable: 1

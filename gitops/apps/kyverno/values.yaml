@@ -1,5 +1,5 @@
 admissionController:
-  replicas: 2
+  replicas: ${ARGOCD_ENV_kyverno_admission_controller_replicas}
   apiPriorityAndFairness: true
   podDisruptionBudget:
     enabled: true
@@ -18,7 +18,7 @@ admissionController:
     enabled: false
 
 backgroundController:
-  replicas: 1
+  replicas: ${ARGOCD_ENV_kyverno_background_controller_replicas}
   resources:
     requests:
       cpu: 25m
@@ -32,7 +32,7 @@ backgroundController:
     enabled: false
 
 cleanupController:
-  replicas: 1
+  replicas: ${ARGOCD_ENV_kyverno_cleanup_controller_replicas}
   resources:
     requests:
       cpu: 25m
@@ -46,7 +46,7 @@ cleanupController:
     enabled: false
 
 reportsController:
-  replicas: 1
+  replicas: ${ARGOCD_ENV_kyverno_reports_controller_replicas}
   resources:
     requests:
       cpu: 25m

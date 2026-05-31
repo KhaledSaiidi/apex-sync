@@ -21,6 +21,8 @@ spec:
       env:
         - name: openebs_version
           value: "${ARGOCD_ENV_openebs_version}"
+        - name: openebs_localpv_replicas
+          value: "${ARGOCD_ENV_openebs_localpv_replicas}"
   destination:
     server: https://kubernetes.default.svc
     namespace: openebs

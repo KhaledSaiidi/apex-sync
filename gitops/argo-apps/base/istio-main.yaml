@@ -27,6 +27,16 @@ spec:
           value: "${ARGOCD_ENV_base_domain}"
         - name: kiali_version
           value: "${ARGOCD_ENV_kiali_version}"
+        - name: istiod_replicas
+          value: "${ARGOCD_ENV_istiod_replicas}"
+        - name: public_gateway_replicas
+          value: "${ARGOCD_ENV_public_gateway_replicas}"
+        - name: public_gateway_min_replicas
+          value: "${ARGOCD_ENV_public_gateway_min_replicas}"
+        - name: public_gateway_max_replicas
+          value: "${ARGOCD_ENV_public_gateway_max_replicas}"
+        - name: kiali_replicas
+          value: "${ARGOCD_ENV_kiali_replicas}"
   destination:
     namespace: istio-system
     server: https://kubernetes.default.svc

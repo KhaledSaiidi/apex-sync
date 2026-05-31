@@ -1,7 +1,7 @@
 autoscaling:
   enabled: true
-  minReplicas: 1
-  maxReplicas: 3
+  minReplicas: ${ARGOCD_ENV_reflector_min_replicas}
+  maxReplicas: ${ARGOCD_ENV_reflector_max_replicas}
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 

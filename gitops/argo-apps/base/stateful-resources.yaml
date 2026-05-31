@@ -23,6 +23,10 @@ spec:
           value: "${ARGOCD_ENV_percona_version}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
+        - name: stateful_resources_pxc_replicas
+          value: "${ARGOCD_ENV_stateful_resources_pxc_replicas}"
+        - name: stateful_resources_haproxy_replicas
+          value: "${ARGOCD_ENV_stateful_resources_haproxy_replicas}"
   destination:
     server: https://kubernetes.default.svc
     namespace: stateful-resources

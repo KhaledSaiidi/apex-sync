@@ -136,3 +136,83 @@ variable "percona_version" {
 variable "garage_version" {
   type = string
 }
+
+variable "kyverno_admission_controller_replicas" {
+  type = string
+}
+
+variable "kyverno_background_controller_replicas" {
+  type = string
+}
+
+variable "kyverno_cleanup_controller_replicas" {
+  type = string
+}
+
+variable "kyverno_reports_controller_replicas" {
+  type = string
+}
+
+variable "reflector_min_replicas" {
+  type = string
+}
+
+variable "reflector_max_replicas" {
+  type = string
+}
+
+variable "stateful_operator_replicas" {
+  type = string
+}
+
+variable "garage_replication_factor" {
+  type = string
+}
+
+variable "garage_replicas" {
+  type = string
+}
+
+variable "istiod_replicas" {
+  type = string
+}
+
+variable "openebs_localpv_replicas" {
+  type = string
+}
+
+variable "public_gateway_replicas" {
+  type = string
+}
+
+variable "public_gateway_min_replicas" {
+  type = string
+}
+
+variable "public_gateway_max_replicas" {
+  type = string
+}
+
+variable "cert_manager_replicas" {
+  type = string
+}
+
+variable "cert_manager_webhook_replicas" {
+  type = string
+}
+
+variable "cert_manager_cainjector_replicas" {
+  type = string
+}
+
+variable "kiali_replicas" {
+  type = string
+}
+
+variable "stateful_resources_pxc_replicas" {
+  type = string
+}
+
+variable "stateful_resources_haproxy_replicas" {
+  type = string
+}

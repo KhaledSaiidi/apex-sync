@@ -3,7 +3,7 @@ fullnameOverride: garage
 garage:
   dbEngine: "lmdb"
   blockSize: "4194304"
-  replicationFactor: "3"
+  replicationFactor: "${ARGOCD_ENV_garage_replication_factor}"
   consistencyMode: "consistent"
   compressionLevel: "2"
   metadataAutoSnapshotInterval: "6h"
@@ -39,7 +39,7 @@ persistence:
 
 deployment:
   kind: StatefulSet
-  replicaCount: 3
+  replicaCount: ${ARGOCD_ENV_garage_replicas}
   podManagementPolicy: Parallel
 
 serviceAccount:
