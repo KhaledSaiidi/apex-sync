@@ -58,6 +58,12 @@ spec:
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}
+  ignoreDifferences:
+    - group: argoproj.io
+      kind: Application
+      name: kyverno
+      jsonPointers:
+        - /metadata/finalizers
   syncPolicy:
     automated:
       prune: true
