@@ -23,6 +23,7 @@ module "argocd" {
   argocd_reconciliation_timeout       = var.argocd_reconciliation_timeout
   argocd_exec_timeout                 = var.argocd_exec_timeout
   argocd_repo_server_timeout_secs     = var.argocd_repo_server_timeout_secs
+  argocd_server_service_type          = var.argocd_server_service_type
   gitops_root_app_repo_url            = var.gitops_root_app_repo_url
   gitops_root_app_target_revision     = var.gitops_root_app_target_revision
   gitops_root_app_path                = var.gitops_root_app_path

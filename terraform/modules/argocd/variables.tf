@@ -3,11 +3,14 @@ variable "artifacts_dir" {
   type        = string
 }
 variable "project_name" {
-  type    = string
-  default = "platform"
+  type = string
 }
 
 variable "argocd_reconciliation_timeout" {
+  type = string
+}
+
+variable "argocd_server_service_type" {
   type = string
 }
 
@@ -20,16 +23,13 @@ variable "argocd_repo_server_timeout_secs" {
 }
 
 variable "gitops_root_app_repo_url" {
-  type    = string
-  default = "https://github.com/KhaledSaiidi/kube-signal.git"
+  type = string
 }
 variable "gitops_root_app_target_revision" {
-  type    = string
-  default = "HEAD"
+  type = string
 }
 variable "gitops_root_app_path" {
-  type    = string
-  default = "gitops/argo-apps"
+  type = string
 }
 
 variable "metallb_addresses_start" {

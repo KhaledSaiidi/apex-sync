@@ -1,0 +1,36 @@
+## argocd_config:
+argocd_server_service_type: "LoadBalancer"
+argocd_reconciliation_timeout: "180s"
+argocd_repo_server_timeout_secs: "300"
+argocd_cmp_image: "ghcr.io/khaledsaiidi/kube-signal/argocd-cmp-envsubst:1.2.0"
+argocd_exec_timeout: "180s"
+
+## gitops:
+project_name: "platform"
+metallb_addresses_start: "172.18.255.200"
+metallb_addresses_end: "172.18.255.230"
+gitops_root_app_target_revision: "test/platform-stateful-resources"
+gitops_root_app_path: "gitops/argo-apps"
+cert_manager_acme_email: "khaled.saiidi@outlook.com"
+cert_manager_route53_region: "us-east-1"
+cert_manager_route53_hosted_zone_id: "Z032863786J0OF6PKT1D"
+base_domain: "kube-forge.com"
+cert_manager_version: "v1.20.2"
+external_dns_version: "1.21.1"
+external_dns_txt_owner_id: "kube-signal"
+istio_main_version: "1.29.2"
+gateway_api_version: "v1.5.1"
+kiali_version: "2.26.0"
+kyverno_version: "3.8.0"
+metallb_version: "0.15.3"
+openebs_version: "4.4.0"
+reflector_version: "10.0.45"
+percona_version: "1.19.1"
+garage_version: "2.3.1"
+
+
+## ansible:
+kubeconfig_path: "../../../kind-kubeconfig.yaml"
+gitops_root_app_repo_url: "https://github.com/KhaledSaiidi/kube-signal.git"
+argocd_chart_version: "9.5.15"
+ansible_python_interpreter: "/usr/bin/python3"

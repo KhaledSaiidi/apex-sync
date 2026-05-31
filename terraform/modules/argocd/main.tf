@@ -9,7 +9,7 @@ resource "local_file" "argocd_values" {
   file_permission = "0644"
   content = templatefile("${path.module}/templates/argocd_values.tpl", {
     argocd_namespace                = "argocd"
-    argocd_server_service_type      = "LoadBalancer"
+    argocd_server_service_type      = var.argocd_server_service_type
     argocd_reconciliation_timeout   = var.argocd_reconciliation_timeout
     argocd_exec_timeout             = var.argocd_exec_timeout
     argocd_repo_server_timeout_secs = var.argocd_repo_server_timeout_secs
