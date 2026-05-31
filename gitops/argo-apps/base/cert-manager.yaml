@@ -35,6 +35,38 @@ spec:
           value: "${ARGOCD_ENV_cert_manager_webhook_replicas}"
         - name: cert_manager_cainjector_replicas
           value: "${ARGOCD_ENV_cert_manager_cainjector_replicas}"
+        - name: resource_cert_manager_requests_cpu
+          value: "${ARGOCD_ENV_resource_cert_manager_requests_cpu}"
+        - name: resource_cert_manager_requests_memory
+          value: "${ARGOCD_ENV_resource_cert_manager_requests_memory}"
+        - name: resource_cert_manager_limits_cpu
+          value: "${ARGOCD_ENV_resource_cert_manager_limits_cpu}"
+        - name: resource_cert_manager_limits_memory
+          value: "${ARGOCD_ENV_resource_cert_manager_limits_memory}"
+        - name: resource_cert_manager_webhook_requests_cpu
+          value: "${ARGOCD_ENV_resource_cert_manager_webhook_requests_cpu}"
+        - name: resource_cert_manager_webhook_requests_memory
+          value: "${ARGOCD_ENV_resource_cert_manager_webhook_requests_memory}"
+        - name: resource_cert_manager_webhook_limits_cpu
+          value: "${ARGOCD_ENV_resource_cert_manager_webhook_limits_cpu}"
+        - name: resource_cert_manager_webhook_limits_memory
+          value: "${ARGOCD_ENV_resource_cert_manager_webhook_limits_memory}"
+        - name: resource_cert_manager_cainjector_requests_cpu
+          value: "${ARGOCD_ENV_resource_cert_manager_cainjector_requests_cpu}"
+        - name: resource_cert_manager_cainjector_requests_memory
+          value: "${ARGOCD_ENV_resource_cert_manager_cainjector_requests_memory}"
+        - name: resource_cert_manager_cainjector_limits_cpu
+          value: "${ARGOCD_ENV_resource_cert_manager_cainjector_limits_cpu}"
+        - name: resource_cert_manager_cainjector_limits_memory
+          value: "${ARGOCD_ENV_resource_cert_manager_cainjector_limits_memory}"
+        - name: resource_cert_manager_startupapicheck_requests_cpu
+          value: "${ARGOCD_ENV_resource_cert_manager_startupapicheck_requests_cpu}"
+        - name: resource_cert_manager_startupapicheck_requests_memory
+          value: "${ARGOCD_ENV_resource_cert_manager_startupapicheck_requests_memory}"
+        - name: resource_cert_manager_startupapicheck_limits_cpu
+          value: "${ARGOCD_ENV_resource_cert_manager_startupapicheck_limits_cpu}"
+        - name: resource_cert_manager_startupapicheck_limits_memory
+          value: "${ARGOCD_ENV_resource_cert_manager_startupapicheck_limits_memory}"
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager

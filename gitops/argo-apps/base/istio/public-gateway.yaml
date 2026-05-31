@@ -23,6 +23,14 @@ spec:
           value: "${ARGOCD_ENV_public_gateway_min_replicas}"
         - name: public_gateway_max_replicas
           value: "${ARGOCD_ENV_public_gateway_max_replicas}"
+        - name: resource_public_gateway_requests_cpu
+          value: "${ARGOCD_ENV_resource_public_gateway_requests_cpu}"
+        - name: resource_public_gateway_requests_memory
+          value: "${ARGOCD_ENV_resource_public_gateway_requests_memory}"
+        - name: resource_public_gateway_limits_cpu
+          value: "${ARGOCD_ENV_resource_public_gateway_limits_cpu}"
+        - name: resource_public_gateway_limits_memory
+          value: "${ARGOCD_ENV_resource_public_gateway_limits_memory}"
   destination:
     namespace: istio-ingress
     server: https://kubernetes.default.svc

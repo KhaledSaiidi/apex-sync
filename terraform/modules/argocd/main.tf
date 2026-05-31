@@ -68,5 +68,6 @@ resource "local_file" "argocd_root_app" {
     kiali_replicas                         = var.kiali_replicas
     stateful_resources_pxc_replicas        = var.stateful_resources_pxc_replicas
     stateful_resources_haproxy_replicas    = var.stateful_resources_haproxy_replicas
+    resource_env                           = var.resource_env
   })
 }

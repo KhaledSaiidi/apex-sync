@@ -17,11 +17,11 @@ spec:
           image: bitnami/kubectl:latest
           resources:
             requests:
-              cpu: 25m
-              memory: 64Mi
+              cpu: "${ARGOCD_ENV_resource_openebs_hostpath_setup_requests_cpu}"
+              memory: "${ARGOCD_ENV_resource_openebs_hostpath_setup_requests_memory}"
             limits:
-              cpu: 200m
-              memory: 128Mi
+              cpu: "${ARGOCD_ENV_resource_openebs_hostpath_setup_limits_cpu}"
+              memory: "${ARGOCD_ENV_resource_openebs_hostpath_setup_limits_memory}"
           command:
             - sh
             - -c
@@ -49,12 +49,12 @@ spec:
                       - name: hostpath-setup
                         image: docker.io/library/busybox:1.36.1
                         resources:
-                          requests:
-                            cpu: 10m
-                            memory: 32Mi
-                          limits:
-                            cpu: 100m
-                            memory: 64Mi
+                        requests:
+                            cpu: "${ARGOCD_ENV_resource_openebs_hostpath_chown_requests_cpu}"
+                            memory: "${ARGOCD_ENV_resource_openebs_hostpath_chown_requests_memory}"
+                        limits:
+                            cpu: "${ARGOCD_ENV_resource_openebs_hostpath_chown_limits_cpu}"
+                            memory: "${ARGOCD_ENV_resource_openebs_hostpath_chown_limits_memory}"
                         command:
                           - sh
                           - -c

@@ -23,6 +23,14 @@ spec:
           value: "${ARGOCD_ENV_external_dns_txt_owner_id}"
         - name: cert_manager_route53_region
           value: "${ARGOCD_ENV_cert_manager_route53_region}"
+        - name: resource_external_dns_requests_cpu
+          value: "${ARGOCD_ENV_resource_external_dns_requests_cpu}"
+        - name: resource_external_dns_requests_memory
+          value: "${ARGOCD_ENV_resource_external_dns_requests_memory}"
+        - name: resource_external_dns_limits_cpu
+          value: "${ARGOCD_ENV_resource_external_dns_limits_cpu}"
+        - name: resource_external_dns_limits_memory
+          value: "${ARGOCD_ENV_resource_external_dns_limits_memory}"
 
   destination:
     namespace: external-dns

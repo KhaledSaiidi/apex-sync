@@ -43,11 +43,11 @@ spec:
               value: app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage
           resources:
             requests:
-              cpu: 25m
-              memory: 64Mi
+              cpu: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_cpu}"
+              memory: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_memory}"
             limits:
-              cpu: 200m
-              memory: 128Mi
+              cpu: "${ARGOCD_ENV_resource_garage_bootstrap_job_limits_cpu}"
+              memory: "${ARGOCD_ENV_resource_garage_bootstrap_job_limits_memory}"
           command:
             - /bin/sh
             - -ec

@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
-CONFIG_FILE="$SCRIPT_DIR/custom-config.yaml"
+CONFIG_DIR="$SCRIPT_DIR/custom-config"
 ENV_FILE="$SCRIPT_DIR/.env.bootstrap"
 LOCKFILE="/tmp/kube-signal-terraform.lock"
 TERRAFORM_DIR="$SCRIPT_DIR/terraform/stack/main"
@@ -29,8 +29,8 @@ if ! command -v yq >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ ! -f "$CONFIG_FILE" ]]; then
-  echo "Custom config file not found: $CONFIG_FILE"
+if [[ ! -d "$CONFIG_DIR" ]]; then
+  echo "Custom config directory not found: $CONFIG_DIR"
   exit 1
 fi
 
@@ -53,15 +53,26 @@ trap cleanup EXIT
 
 source "$ENV_FILE"
 
-while IFS='=' read -r key value; do
-  export "TF_VAR_${key}=${value}"
-done < <(
-  yq -r '
-    to_entries[]
-    | select(.value != null)
-    | "\(.key)=\(.value)"
-  ' "$CONFIG_FILE"
-)
+shopt -s nullglob
+CONFIG_FILES=("$CONFIG_DIR"/*.yaml "$CONFIG_DIR"/*.yml)
+shopt -u nullglob
+
+if [[ "${#CONFIG_FILES[@]}" -eq 0 ]]; then
+  echo "No custom config YAML files found in: $CONFIG_DIR"
+  exit 1
+fi
+
+for config_file in "${CONFIG_FILES[@]}"; do
+  while IFS='=' read -r key value; do
+    export "TF_VAR_${key}=${value}"
+  done < <(
+    yq -r '
+      to_entries[]
+      | select(.value != null)
+      | "\(.key)=\(.value)"
+    ' "$config_file"
+  )
+done
 
 mkdir -p "$LOG_DIR"
 

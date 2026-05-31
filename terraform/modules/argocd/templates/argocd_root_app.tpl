@@ -95,6 +95,10 @@ spec:
           value: "${stateful_resources_pxc_replicas}"
         - name: stateful_resources_haproxy_replicas
           value: "${stateful_resources_haproxy_replicas}"
+%{ for name, value in resource_env ~}
+        - name: ${name}
+          value: "${value}"
+%{ endfor ~}
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}

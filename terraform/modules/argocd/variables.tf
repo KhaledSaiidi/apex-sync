@@ -186,3 +186,7 @@ variable "stateful_resources_pxc_replicas" {
 variable "stateful_resources_haproxy_replicas" {
   type = string
 }
+
+variable "resource_env" {
+  type = map(string)
+}

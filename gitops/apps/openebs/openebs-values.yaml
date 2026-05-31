@@ -22,8 +22,8 @@ localpv-provisioner:
     replicas: ${ARGOCD_ENV_openebs_localpv_replicas}
     resources:
       requests:
-        cpu: 25m
-        memory: 64Mi
+        cpu: "${ARGOCD_ENV_resource_openebs_localpv_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_openebs_localpv_requests_memory}"
       limits:
-        cpu: 200m
-        memory: 128Mi
+        cpu: "${ARGOCD_ENV_resource_openebs_localpv_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_openebs_localpv_limits_memory}"

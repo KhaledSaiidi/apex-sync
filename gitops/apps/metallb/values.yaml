@@ -6,66 +6,66 @@ prometheus:
 controller:
   resources:
     requests:
-      cpu: 25m
-      memory: 64Mi
+      cpu: "${ARGOCD_ENV_resource_metallb_controller_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_metallb_controller_requests_memory}"
     limits:
-      cpu: 200m
-      memory: 128Mi
+      cpu: "${ARGOCD_ENV_resource_metallb_controller_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_metallb_controller_limits_memory}"
 
 speaker:
   resources:
     requests:
-      cpu: 25m
-      memory: 64Mi
+      cpu: "${ARGOCD_ENV_resource_metallb_speaker_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_metallb_speaker_requests_memory}"
     limits:
-      cpu: 200m
-      memory: 128Mi
+      cpu: "${ARGOCD_ENV_resource_metallb_speaker_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_metallb_speaker_limits_memory}"
   frr:
     resources:
       requests:
-        cpu: 25m
-        memory: 64Mi
+        cpu: "${ARGOCD_ENV_resource_metallb_frr_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_metallb_frr_requests_memory}"
       limits:
-        cpu: 200m
-        memory: 128Mi
+        cpu: "${ARGOCD_ENV_resource_metallb_frr_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_metallb_frr_limits_memory}"
   reloader:
     resources:
       requests:
-        cpu: 10m
-        memory: 32Mi
+        cpu: "${ARGOCD_ENV_resource_metallb_reloader_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_metallb_reloader_requests_memory}"
       limits:
-        cpu: 100m
-        memory: 64Mi
+        cpu: "${ARGOCD_ENV_resource_metallb_reloader_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_metallb_reloader_limits_memory}"
   frrMetrics:
     resources:
       requests:
-        cpu: 10m
-        memory: 32Mi
+        cpu: "${ARGOCD_ENV_resource_metallb_frr_metrics_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_metallb_frr_metrics_requests_memory}"
       limits:
-        cpu: 100m
-        memory: 64Mi
+        cpu: "${ARGOCD_ENV_resource_metallb_frr_metrics_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_metallb_frr_metrics_limits_memory}"
   initContainers:
     cpFrrFiles:
       resources:
         requests:
-          cpu: 10m
-          memory: 32Mi
+          cpu: "${ARGOCD_ENV_resource_metallb_cp_frr_files_requests_cpu}"
+          memory: "${ARGOCD_ENV_resource_metallb_cp_frr_files_requests_memory}"
         limits:
-          cpu: 100m
-          memory: 64Mi
+          cpu: "${ARGOCD_ENV_resource_metallb_cp_frr_files_limits_cpu}"
+          memory: "${ARGOCD_ENV_resource_metallb_cp_frr_files_limits_memory}"
     cpReloader:
       resources:
         requests:
-          cpu: 10m
-          memory: 32Mi
+          cpu: "${ARGOCD_ENV_resource_metallb_cp_reloader_requests_cpu}"
+          memory: "${ARGOCD_ENV_resource_metallb_cp_reloader_requests_memory}"
         limits:
-          cpu: 100m
-          memory: 64Mi
+          cpu: "${ARGOCD_ENV_resource_metallb_cp_reloader_limits_cpu}"
+          memory: "${ARGOCD_ENV_resource_metallb_cp_reloader_limits_memory}"
     cpMetrics:
       resources:
         requests:
-          cpu: 10m
-          memory: 32Mi
+          cpu: "${ARGOCD_ENV_resource_metallb_cp_metrics_requests_cpu}"
+          memory: "${ARGOCD_ENV_resource_metallb_cp_metrics_requests_memory}"
         limits:
-          cpu: 100m
-          memory: 64Mi
+          cpu: "${ARGOCD_ENV_resource_metallb_cp_metrics_limits_cpu}"
+          memory: "${ARGOCD_ENV_resource_metallb_cp_metrics_limits_memory}"

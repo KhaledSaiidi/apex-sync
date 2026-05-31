@@ -1,6 +1,9 @@
 locals {
   artifacts_dir            = abspath("${path.root}/artifacts")
   repo_root                = abspath("${path.root}/../../../")
+  custom_config_files      = sort(fileset(local.repo_root, "custom-config/*.y*ml"))
+  custom_config            = merge([for file in local.custom_config_files : yamldecode(file("${local.repo_root}/${file}"))]...)
+  resource_env             = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "resource_") }
   kubeconfig_path          = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
   bootstrap_sources_files  = sort(concat(["ansible.cfg"], tolist(fileset(local.repo_root, "ansible/**/*.yml")), tolist(fileset(local.repo_root, "ansible/**/*.yaml"))))
   bootstrap_sources_sha256 = sha256(join("", [for file in local.bootstrap_sources_files : filesha256("${local.repo_root}/${file}")]))
@@ -66,6 +69,7 @@ module "argocd" {
   kiali_replicas                         = var.kiali_replicas
   stateful_resources_pxc_replicas        = var.stateful_resources_pxc_replicas
   stateful_resources_haproxy_replicas    = var.stateful_resources_haproxy_replicas
+  resource_env                           = local.resource_env
 
   depends_on = [
     null_resource.artifacts_dir

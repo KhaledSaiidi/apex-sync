@@ -23,6 +23,30 @@ spec:
           value: "${ARGOCD_ENV_openebs_version}"
         - name: openebs_localpv_replicas
           value: "${ARGOCD_ENV_openebs_localpv_replicas}"
+        - name: resource_openebs_localpv_requests_cpu
+          value: "${ARGOCD_ENV_resource_openebs_localpv_requests_cpu}"
+        - name: resource_openebs_localpv_requests_memory
+          value: "${ARGOCD_ENV_resource_openebs_localpv_requests_memory}"
+        - name: resource_openebs_localpv_limits_cpu
+          value: "${ARGOCD_ENV_resource_openebs_localpv_limits_cpu}"
+        - name: resource_openebs_localpv_limits_memory
+          value: "${ARGOCD_ENV_resource_openebs_localpv_limits_memory}"
+        - name: resource_openebs_hostpath_setup_requests_cpu
+          value: "${ARGOCD_ENV_resource_openebs_hostpath_setup_requests_cpu}"
+        - name: resource_openebs_hostpath_setup_requests_memory
+          value: "${ARGOCD_ENV_resource_openebs_hostpath_setup_requests_memory}"
+        - name: resource_openebs_hostpath_setup_limits_cpu
+          value: "${ARGOCD_ENV_resource_openebs_hostpath_setup_limits_cpu}"
+        - name: resource_openebs_hostpath_setup_limits_memory
+          value: "${ARGOCD_ENV_resource_openebs_hostpath_setup_limits_memory}"
+        - name: resource_openebs_hostpath_chown_requests_cpu
+          value: "${ARGOCD_ENV_resource_openebs_hostpath_chown_requests_cpu}"
+        - name: resource_openebs_hostpath_chown_requests_memory
+          value: "${ARGOCD_ENV_resource_openebs_hostpath_chown_requests_memory}"
+        - name: resource_openebs_hostpath_chown_limits_cpu
+          value: "${ARGOCD_ENV_resource_openebs_hostpath_chown_limits_cpu}"
+        - name: resource_openebs_hostpath_chown_limits_memory
+          value: "${ARGOCD_ENV_resource_openebs_hostpath_chown_limits_memory}"
   destination:
     server: https://kubernetes.default.svc
     namespace: openebs

@@ -17,11 +17,11 @@ serviceAccount:
 
 resources:
   requests:
-    cpu: 50m
-    memory: 64Mi
+    cpu: "${ARGOCD_ENV_resource_stateful_operator_requests_cpu}"
+    memory: "${ARGOCD_ENV_resource_stateful_operator_requests_memory}"
   limits:
-    cpu: 250m
-    memory: 256Mi
+    cpu: "${ARGOCD_ENV_resource_stateful_operator_limits_cpu}"
+    memory: "${ARGOCD_ENV_resource_stateful_operator_limits_memory}"
 
 containerSecurityContext: {}
 

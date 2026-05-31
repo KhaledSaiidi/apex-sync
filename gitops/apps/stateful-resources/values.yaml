@@ -24,12 +24,12 @@ pxc:
     - operator: Exists
   resources:
     requests:
-      memory: 384Mi
-      cpu: 150m
+      memory: "${ARGOCD_ENV_resource_stateful_resources_pxc_requests_memory}"
+      cpu: "${ARGOCD_ENV_resource_stateful_resources_pxc_requests_cpu}"
       ephemeral-storage: 1G
     limits:
-      memory: 1536Mi
-      cpu: "1"
+      memory: "${ARGOCD_ENV_resource_stateful_resources_pxc_limits_memory}"
+      cpu: "${ARGOCD_ENV_resource_stateful_resources_pxc_limits_cpu}"
       ephemeral-storage: 1G
   topologySpreadConstraints:
     - labelSelector:
@@ -79,10 +79,10 @@ haproxy:
     type: ClusterIP
   resources:
     requests:
-      memory: 512Mi
-      cpu: 600m
+      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_memory}"
+      cpu: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_cpu}"
     limits:
-      memory: 512Mi
+      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_limits_memory}"
   envVarsSecret: mysql-cluster-haproxy-env
   priorityClassName: high-priority
   tolerations:
@@ -126,11 +126,11 @@ logcollector:
   enabled: true
   resources:
     requests:
-      memory: 64Mi
-      cpu: 25m
+      memory: "${ARGOCD_ENV_resource_stateful_resources_logcollector_requests_memory}"
+      cpu: "${ARGOCD_ENV_resource_stateful_resources_logcollector_requests_cpu}"
     limits:
-      memory: 128Mi
-      cpu: 100m
+      memory: "${ARGOCD_ENV_resource_stateful_resources_logcollector_limits_memory}"
+      cpu: "${ARGOCD_ENV_resource_stateful_resources_logcollector_limits_cpu}"
 
 backup:
   enabled: true
@@ -141,22 +141,22 @@ backup:
     timeoutSeconds: 60
     resources:
       requests:
-        memory: 64Mi
-        cpu: 25m
+        memory: "${ARGOCD_ENV_resource_stateful_resources_backup_pitr_requests_memory}"
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_backup_pitr_requests_cpu}"
       limits:
-        memory: 256Mi
-        cpu: 200m
+        memory: "${ARGOCD_ENV_resource_stateful_resources_backup_pitr_limits_memory}"
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_backup_pitr_limits_cpu}"
   storages:
     garage-full:
       type: s3
       verifyTLS: true
       resources:
         requests:
-          memory: 128Mi
-          cpu: 50m
+          memory: "${ARGOCD_ENV_resource_stateful_resources_backup_full_requests_memory}"
+          cpu: "${ARGOCD_ENV_resource_stateful_resources_backup_full_requests_cpu}"
         limits:
-          memory: 512Mi
-          cpu: 300m
+          memory: "${ARGOCD_ENV_resource_stateful_resources_backup_full_limits_memory}"
+          cpu: "${ARGOCD_ENV_resource_stateful_resources_backup_full_limits_cpu}"
       containerSecurityContext:
         privileged: false
       podSecurityContext:
