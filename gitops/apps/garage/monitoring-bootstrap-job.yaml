@@ -36,7 +36,7 @@ spec:
             - name: GARAGE_LABEL_SELECTOR
               value: app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage
             - name: REFLECTION_NAMESPACES
-              value: monitoring
+              value: observability
           resources:
             requests:
               cpu: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_cpu}"

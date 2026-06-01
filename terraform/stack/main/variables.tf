@@ -224,6 +224,120 @@ variable "opentelemetry_operator_replicas" {
   type = string
 }
 
+variable "loki_backend_replicas" {
+  type = string
+}
+
+variable "loki_chunks_cache_replicas" {
+  type = string
+}
+
+variable "loki_gateway_replicas" {
+  type = string
+}
+
+variable "loki_read_replicas" {
+  type = string
+}
+
+variable "loki_results_cache_replicas" {
+  type = string
+}
+
+variable "loki_write_replicas" {
+  type = string
+}
+
+variable "mimir_alertmanager_replicas" {
+  type = string
+}
+
+variable "mimir_chunks_cache_replicas" {
+  type = string
+}
+
+variable "mimir_compactor_replicas" {
+  type = string
+}
+
+variable "mimir_distributor_replicas" {
+  type = string
+}
+
+variable "mimir_gateway_replicas" {
+  type = string
+}
+
+variable "mimir_index_cache_replicas" {
+  type = string
+}
+
+variable "mimir_ingester_replicas" {
+  type = string
+}
+
+variable "mimir_metadata_cache_replicas" {
+  type = string
+}
+
+variable "mimir_overrides_exporter_replicas" {
+  type = string
+}
+
+variable "mimir_querier_replicas" {
+  type = string
+}
+
+variable "mimir_query_frontend_replicas" {
+  type = string
+}
+
+variable "mimir_query_scheduler_replicas" {
+  type = string
+}
+
+variable "mimir_results_cache_replicas" {
+  type = string
+}
+
+variable "mimir_ruler_replicas" {
+  type = string
+}
+
+variable "mimir_store_gateway_replicas" {
+  type = string
+}
+
+variable "tempo_compactor_replicas" {
+  type = string
+}
+
+variable "tempo_distributor_replicas" {
+  type = string
+}
+
+variable "tempo_gateway_replicas" {
+  type = string
+}
+
+variable "tempo_ingester_replicas" {
+  type = string
+}
+
+variable "tempo_memcached_replicas" {
+  type = string
+}
+
+variable "tempo_querier_replicas" {
+  type = string
+}
+
+variable "tempo_query_frontend_replicas" {
+  type = string
+}
+
+
+
 variable "mimir_version" {
   type = string
 }

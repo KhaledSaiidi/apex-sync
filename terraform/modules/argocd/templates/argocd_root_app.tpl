@@ -99,6 +99,62 @@ spec:
           value: "${grafana_operator_replicas}"
         - name: opentelemetry_operator_replicas
           value: "${opentelemetry_operator_replicas}"
+        - name: loki_backend_replicas
+          value: "${loki_backend_replicas}"
+        - name: loki_chunks_cache_replicas
+          value: "${loki_chunks_cache_replicas}"
+        - name: loki_gateway_replicas
+          value: "${loki_gateway_replicas}"
+        - name: loki_read_replicas
+          value: "${loki_read_replicas}"
+        - name: loki_results_cache_replicas
+          value: "${loki_results_cache_replicas}"
+        - name: loki_write_replicas
+          value: "${loki_write_replicas}"
+        - name: mimir_alertmanager_replicas
+          value: "${mimir_alertmanager_replicas}"
+        - name: mimir_chunks_cache_replicas
+          value: "${mimir_chunks_cache_replicas}"
+        - name: mimir_compactor_replicas
+          value: "${mimir_compactor_replicas}"
+        - name: mimir_distributor_replicas
+          value: "${mimir_distributor_replicas}"
+        - name: mimir_gateway_replicas
+          value: "${mimir_gateway_replicas}"
+        - name: mimir_index_cache_replicas
+          value: "${mimir_index_cache_replicas}"
+        - name: mimir_ingester_replicas
+          value: "${mimir_ingester_replicas}"
+        - name: mimir_metadata_cache_replicas
+          value: "${mimir_metadata_cache_replicas}"
+        - name: mimir_overrides_exporter_replicas
+          value: "${mimir_overrides_exporter_replicas}"
+        - name: mimir_querier_replicas
+          value: "${mimir_querier_replicas}"
+        - name: mimir_query_frontend_replicas
+          value: "${mimir_query_frontend_replicas}"
+        - name: mimir_query_scheduler_replicas
+          value: "${mimir_query_scheduler_replicas}"
+        - name: mimir_results_cache_replicas
+          value: "${mimir_results_cache_replicas}"
+        - name: mimir_ruler_replicas
+          value: "${mimir_ruler_replicas}"
+        - name: mimir_store_gateway_replicas
+          value: "${mimir_store_gateway_replicas}"
+        - name: tempo_compactor_replicas
+          value: "${tempo_compactor_replicas}"
+        - name: tempo_distributor_replicas
+          value: "${tempo_distributor_replicas}"
+        - name: tempo_gateway_replicas
+          value: "${tempo_gateway_replicas}"
+        - name: tempo_ingester_replicas
+          value: "${tempo_ingester_replicas}"
+        - name: tempo_memcached_replicas
+          value: "${tempo_memcached_replicas}"
+        - name: tempo_querier_replicas
+          value: "${tempo_querier_replicas}"
+        - name: tempo_query_frontend_replicas
+          value: "${tempo_query_frontend_replicas}"
         - name: mimir_version
           value: "${mimir_version}"
         - name: loki_version
@@ -113,7 +169,6 @@ spec:
           value: "${grafana_operator_version}"
         - name: opentelemetry_operator_version
           value: "${opentelemetry_operator_version}"
-
 %{ for name, value in resource_env ~}
         - name: ${name}
           value: "${value}"

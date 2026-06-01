@@ -1,0 +1,158 @@
+x-all-tolerations: &allTolerations
+  - operator: Exists
+
+deploymentMode: SimpleScalable
+
+global:
+  extraEnvFrom:
+    - secretRef:
+        name: loki-garage-s3
+
+defaults:
+  extraArgs:
+    - -config.expand-env=true
+  extraEnvFrom:
+    - secretRef:
+        name: loki-garage-s3
+
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 3
+  schemaConfig:
+    configs:
+      - from: "2024-04-01"
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+  limits_config:
+    retention_period: 30d
+    ingestion_rate_mb: 32
+    ingestion_burst_size_mb: 64
+    max_query_parallelism: 64
+    split_queries_by_interval: 15m
+    volume_enabled: true
+  compactor:
+    retention_enabled: true
+    delete_request_store: s3
+  ruler:
+    enable_api: true
+    storage:
+      type: s3
+      s3:
+        bucketnames: loki-ruler
+  storage:
+    bucketNames:
+      chunks: loki-chunks
+      ruler: loki-ruler
+      admin: loki-admin
+    type: s3
+    s3:
+      endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+      region: '{{ "$" }}{AWS_REGION}'
+      accessKeyId: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
+      secretAccessKey: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
+      s3ForcePathStyle: true
+      insecure: false
+
+singleBinary:
+  replicas: 0
+
+read:
+  replicas: ${ARGOCD_ENV_loki_read_replicas}
+  persistence:
+    size: 10Gi
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_loki_read_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_read_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_loki_read_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_read_limits_memory}"
+  tolerations: *allTolerations
+
+write:
+  replicas: ${ARGOCD_ENV_loki_write_replicas}
+  persistence:
+    size: 20Gi
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_loki_write_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_write_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_loki_write_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_write_limits_memory}"
+  tolerations: *allTolerations
+
+backend:
+  replicas: ${ARGOCD_ENV_loki_backend_replicas}
+  sidecar: false
+  persistence:
+    size: 20Gi
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_loki_backend_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_backend_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_loki_backend_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_backend_limits_memory}"
+  tolerations: *allTolerations
+
+gateway:
+  replicas: ${ARGOCD_ENV_loki_gateway_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_loki_gateway_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_gateway_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_loki_gateway_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_gateway_limits_memory}"
+  tolerations: *allTolerations
+
+lokiCanary:
+  tolerations: *allTolerations
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_loki_canary_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_canary_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_loki_canary_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_canary_limits_memory}"
+
+chunksCache:
+  enabled: true
+  replicas: ${ARGOCD_ENV_loki_chunks_cache_replicas}
+  allocatedMemory: 512
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_loki_chunks_cache_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_chunks_cache_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_loki_chunks_cache_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_chunks_cache_limits_memory}"
+  tolerations: *allTolerations
+
+resultsCache:
+  enabled: true
+  replicas: ${ARGOCD_ENV_loki_results_cache_replicas}
+  allocatedMemory: 256
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_loki_results_cache_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_results_cache_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_loki_results_cache_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_results_cache_limits_memory}"
+  tolerations: *allTolerations
+
+memcachedExporter:
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_loki_memcached_exporter_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_memcached_exporter_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_loki_memcached_exporter_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_loki_memcached_exporter_limits_memory}"

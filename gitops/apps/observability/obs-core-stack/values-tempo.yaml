@@ -1,0 +1,117 @@
+x-all-tolerations: &allTolerations
+  - operator: Exists
+
+global:
+  extraArgs:
+    - -config.expand-env=true
+  extraEnvFrom:
+    - secretRef:
+        name: tempo-garage-s3
+
+multitenancyEnabled: false
+
+traces:
+  otlp:
+    http:
+      enabled: true
+    grpc:
+      enabled: true
+
+storage:
+  trace:
+    backend: s3
+    s3:
+      bucket: tempo-traces
+      endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+      access_key: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
+      secret_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
+      region: '{{ "$" }}{AWS_REGION}'
+      forcepathstyle: true
+      insecure: false
+
+ingester:
+  replicas: ${ARGOCD_ENV_tempo_ingester_replicas}
+  config:
+    replication_factor: 3
+    trace_idle_period: 10s
+    max_block_bytes: 1073741824
+    max_block_duration: 30m
+    complete_block_timeout: 15m
+    flush_all_on_shutdown: true
+  persistence:
+    enabled: true
+    size: 20Gi
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_tempo_ingester_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_ingester_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_tempo_ingester_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_ingester_limits_memory}"
+  tolerations: *allTolerations
+
+distributor:
+  replicas: ${ARGOCD_ENV_tempo_distributor_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_tempo_distributor_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_distributor_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_tempo_distributor_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_distributor_limits_memory}"
+  tolerations: *allTolerations
+
+querier:
+  replicas: ${ARGOCD_ENV_tempo_querier_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_tempo_querier_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_querier_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_tempo_querier_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_querier_limits_memory}"
+  tolerations: *allTolerations
+
+queryFrontend:
+  replicas: ${ARGOCD_ENV_tempo_query_frontend_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_tempo_query_frontend_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_query_frontend_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_tempo_query_frontend_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_query_frontend_limits_memory}"
+  tolerations: *allTolerations
+
+compactor:
+  replicas: ${ARGOCD_ENV_tempo_compactor_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_tempo_compactor_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_compactor_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_tempo_compactor_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_compactor_limits_memory}"
+  tolerations: *allTolerations
+
+gateway:
+  replicas: ${ARGOCD_ENV_tempo_gateway_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_tempo_gateway_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_gateway_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_tempo_gateway_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_gateway_limits_memory}"
+  tolerations: *allTolerations
+
+memcached:
+  replicas: ${ARGOCD_ENV_tempo_memcached_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_tempo_memcached_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_memcached_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_tempo_memcached_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_tempo_memcached_limits_memory}"
+  tolerations: *allTolerations

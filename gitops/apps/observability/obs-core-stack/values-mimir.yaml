@@ -1,0 +1,240 @@
+x-all-tolerations: &allTolerations
+  - operator: Exists
+
+x-mimir-extra-args: &mimirExtraArgs
+  config.expand-env: "true"
+
+global:
+  extraEnvFrom:
+    - secretRef:
+        name: mimir-garage-s3
+
+mimir:
+  structuredConfig:
+    blocks_storage:
+      s3:
+        bucket_name: mimir-blocks
+        endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+        access_key_id: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
+        secret_access_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
+        insecure: false
+        http:
+          insecure_skip_verify: false
+    ruler_storage:
+      backend: s3
+      s3:
+        bucket_name: mimir-ruler
+        endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+        access_key_id: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
+        secret_access_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
+        insecure: false
+    alertmanager_storage:
+      backend: s3
+      s3:
+        bucket_name: mimir-alertmanager
+        endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+        access_key_id: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
+        secret_access_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
+        insecure: false
+    ingest_storage:
+      enabled: false
+    ingester:
+      push_grpc_method_enabled: true
+    limits:
+      ingestion_rate: 20000
+      ingestion_burst_size: 400000
+      max_global_series_per_user: 1500000
+      max_query_parallelism: 64
+      max_total_query_length: 12000h
+
+minio:
+  enabled: false
+
+kafka:
+  enabled: false
+
+rollout_operator:
+  enabled: false
+
+alertmanager:
+  replicas: ${ARGOCD_ENV_mimir_alertmanager_replicas}
+  extraArgs: *mimirExtraArgs
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_alertmanager_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_alertmanager_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_alertmanager_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_alertmanager_limits_memory}"
+  tolerations: *allTolerations
+
+distributor:
+  replicas: ${ARGOCD_ENV_mimir_distributor_replicas}
+  extraArgs: *mimirExtraArgs
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_distributor_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_distributor_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_distributor_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_distributor_limits_memory}"
+  tolerations: *allTolerations
+
+ingester:
+  replicas: ${ARGOCD_ENV_mimir_ingester_replicas}
+  extraArgs: *mimirExtraArgs
+  persistentVolume:
+    enabled: true
+    size: 20Gi
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_ingester_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_ingester_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_ingester_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_ingester_limits_memory}"
+  tolerations: *allTolerations
+
+overrides_exporter:
+  replicas: ${ARGOCD_ENV_mimir_overrides_exporter_replicas}
+  extraArgs: *mimirExtraArgs
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_overrides_exporter_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_overrides_exporter_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_overrides_exporter_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_overrides_exporter_limits_memory}"
+  tolerations: *allTolerations
+
+ruler:
+  replicas: ${ARGOCD_ENV_mimir_ruler_replicas}
+  extraArgs: *mimirExtraArgs
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_ruler_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_ruler_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_ruler_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_ruler_limits_memory}"
+  tolerations: *allTolerations
+
+querier:
+  replicas: ${ARGOCD_ENV_mimir_querier_replicas}
+  extraArgs: *mimirExtraArgs
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_querier_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_querier_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_querier_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_querier_limits_memory}"
+  tolerations: *allTolerations
+
+query_frontend:
+  replicas: ${ARGOCD_ENV_mimir_query_frontend_replicas}
+  extraArgs: *mimirExtraArgs
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_query_frontend_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_query_frontend_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_query_frontend_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_query_frontend_limits_memory}"
+  tolerations: *allTolerations
+
+query_scheduler:
+  replicas: ${ARGOCD_ENV_mimir_query_scheduler_replicas}
+  extraArgs: *mimirExtraArgs
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_query_scheduler_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_query_scheduler_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_query_scheduler_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_query_scheduler_limits_memory}"
+  tolerations: *allTolerations
+
+store_gateway:
+  replicas: ${ARGOCD_ENV_mimir_store_gateway_replicas}
+  extraArgs: *mimirExtraArgs
+  persistentVolume:
+    enabled: true
+    size: 10Gi
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_store_gateway_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_store_gateway_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_store_gateway_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_store_gateway_limits_memory}"
+  tolerations: *allTolerations
+
+compactor:
+  replicas: ${ARGOCD_ENV_mimir_compactor_replicas}
+  extraArgs: *mimirExtraArgs
+  persistentVolume:
+    enabled: true
+    size: 20Gi
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_compactor_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_compactor_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_compactor_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_compactor_limits_memory}"
+  tolerations: *allTolerations
+
+gateway:
+  replicas: ${ARGOCD_ENV_mimir_gateway_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_gateway_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_gateway_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_gateway_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_gateway_limits_memory}"
+  tolerations: *allTolerations
+
+memcachedExporter:
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_memcached_exporter_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_memcached_exporter_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_memcached_exporter_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_memcached_exporter_limits_memory}"
+
+chunks-cache:
+  enabled: true
+  replicas: ${ARGOCD_ENV_mimir_chunks_cache_replicas}
+  allocatedMemory: 512
+  resources: &mimirCacheResources
+    requests:
+      cpu: "${ARGOCD_ENV_resource_mimir_cache_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_cache_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_mimir_cache_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_mimir_cache_limits_memory}"
+  tolerations: *allTolerations
+
+index-cache:
+  enabled: true
+  replicas: ${ARGOCD_ENV_mimir_index_cache_replicas}
+  allocatedMemory: 512
+  resources: *mimirCacheResources
+  tolerations: *allTolerations
+
+metadata-cache:
+  enabled: true
+  replicas: ${ARGOCD_ENV_mimir_metadata_cache_replicas}
+  allocatedMemory: 512
+  resources: *mimirCacheResources
+  tolerations: *allTolerations
+
+results-cache:
+  enabled: true
+  replicas: ${ARGOCD_ENV_mimir_results_cache_replicas}
+  allocatedMemory: 512
+  resources: *mimirCacheResources
+  tolerations: *allTolerations
