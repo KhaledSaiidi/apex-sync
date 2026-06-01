@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: observability
+helmCharts:
+  - name: mimir-distributed
+    repo: https://grafana.github.io/helm-charts
+    version: ${ARGOCD_ENV_mimir_version}
+    releaseName: mimir-distributed
+    namespace: observability
+    valuesFile: values-mimir.yaml
+  - name: loki
+    repo: https://grafana-community.github.io/helm-charts
+    version: ${ARGOCD_ENV_loki_version}
+    releaseName: loki
+    namespace: observability
+    valuesFile: values-loki.yaml
+  - name: tempo-distributed
+    repo: https://grafana.github.io/helm-charts
+    version: ${ARGOCD_ENV_tempo_version}
+    releaseName: tempo
+    namespace: observability
+    valuesFile: values-tempo.yaml

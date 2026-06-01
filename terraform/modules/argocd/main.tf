@@ -72,8 +72,10 @@ resource "local_file" "argocd_root_app" {
     mimir_version                          = var.mimir_version
     loki_version                           = var.loki_version
     tempo_version                          = var.tempo_version
-    opentelemetry_version                  = var.opentelemetry_version
-    grafana_version                        = var.grafana_version
+    prometheus_operator_crds_version       = var.prometheus_operator_crds_version
+    prometheus_operator_version            = var.prometheus_operator_version
+    grafana_operator_version               = var.grafana_operator_version
+    opentelemetry_operator_version         = var.opentelemetry_operator_version
 
   })
 }

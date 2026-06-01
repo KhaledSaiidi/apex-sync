@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: obs-foundation
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '23'
+  labels:
+    app.kubernetes.io/name: obs-foundation
+    app.kubernetes.io/part-of: platform-baseline
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  source:
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    path: gitops/apps/observability/obs-foundation
+    plugin:
+      name: envsubst
+      env:
+        - name: prometheus_operator_crds_version
+          value: "${ARGOCD_ENV_prometheus_operator_crds_version}"
+        - name: prometheus_operator_version
+          value: "${ARGOCD_ENV_prometheus_operator_version}"
+        - name: grafana_operator_version
+          value: "${ARGOCD_ENV_grafana_operator_version}"
+        - name: opentelemetry_operator_version
+          value: "${ARGOCD_ENV_opentelemetry_operator_version}"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ServerSideApply=true

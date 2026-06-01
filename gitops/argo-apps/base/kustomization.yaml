@@ -12,4 +12,4 @@ resources:
   - argocd-server-route.yaml # sync-wave: 10
   - stateful-operator.yaml # sync-wave: 10
   - stateful-resources.yaml # sync-wave: 20
-  - monitoring.yaml # sync-wave: 25
+  - observability.yaml # sync-wave: 23

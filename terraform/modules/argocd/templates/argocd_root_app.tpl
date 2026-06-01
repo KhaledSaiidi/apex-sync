@@ -101,10 +101,15 @@ spec:
           value: "${loki_version}"
         - name: tempo_version
           value: "${tempo_version}"
-        - name: opentelemetry_version
-          value: "${opentelemetry_version}"
-        - name: grafana_version
-          value: "${grafana_version}"
+        - name: prometheus_operator_crds_version
+          value: "${prometheus_operator_crds_version}"
+        - name: prometheus_operator_version
+          value: "${prometheus_operator_version}"
+        - name: grafana_operator_version
+          value: "${grafana_operator_version}"
+        - name: opentelemetry_operator_version
+          value: "${opentelemetry_operator_version}"
+
 %{ for name, value in resource_env ~}
         - name: ${name}
           value: "${value}"

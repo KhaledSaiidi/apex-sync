@@ -226,9 +226,16 @@ variable "loki_version" {
 variable "tempo_version" {
   type = string
 }
-variable "opentelemetry_version" {
+variable "prometheus_operator_crds_version" {
   type = string
 }
-variable "grafana_version" {
+
+variable "prometheus_operator_version" {
+  type = string
+}
+variable "grafana_operator_version" {
+  type = string
+}
+variable "opentelemetry_operator_version" {
   type = string
 }

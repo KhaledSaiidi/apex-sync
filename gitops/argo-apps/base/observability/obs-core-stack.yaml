@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: monitoring
+  name: obs-core-stack
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: '25'
   labels:
-    app.kubernetes.io/name: monitoring
+    app.kubernetes.io/name: obs-core-stack
     app.kubernetes.io/part-of: platform-baseline
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
-    path: gitops/apps/monitoring
+    path: gitops/apps/observability/obs-core-stack
     plugin:
       name: envsubst
       env:
@@ -27,14 +27,10 @@ spec:
           value: "${ARGOCD_ENV_loki_version}"
         - name: tempo_version
           value: "${ARGOCD_ENV_tempo_version}"
-        - name: opentelemetry_version
-          value: "${ARGOCD_ENV_opentelemetry_version}"
-        - name: grafana_version
-          value: "${ARGOCD_ENV_grafana_version}"
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: monitoring
+    namespace: observability
   syncPolicy:
     automated:
       prune: true
