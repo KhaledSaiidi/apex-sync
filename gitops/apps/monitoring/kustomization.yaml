@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+resources:
+  - namespace.yaml
+  - grafana-httproute.yaml
+helmCharts:
+  - name: mimir-distributed
+    repo: https://grafana.github.io/helm-charts
+    version: ${ARGOCD_ENV_mimir_version}
+    releaseName: mimir-distributed
+    namespace: monitoring
+    valuesFile: values-mimir.yaml
+  - name: loki
+    repo: https://grafana-community.github.io/helm-charts
+    version: ${ARGOCD_ENV_loki_version}
+    releaseName: loki
+    namespace: monitoring
+    valuesFile: values-loki.yaml
+  - name: tempo-distributed
+    repo: https://grafana.github.io/helm-charts
+    version: ${ARGOCD_ENV_tempo_version}
+    releaseName: tempo
+    namespace: monitoring
+    valuesFile: values-tempo.yaml
+  - name: opentelemetry-kube-stack
+    repo: https://open-telemetry.github.io/opentelemetry-helm-charts
+    version: ${ARGOCD_ENV_opentelemetry_version}
+    releaseName: opentelemetry
+    namespace: monitoring
+    valuesFile: values-opentelemetry.yaml
+  - name: grafana
+    repo: https://grafana-community.github.io/helm-charts
+    version: ${ARGOCD_ENV_grafana_version}
+    releaseName: grafana
+    namespace: monitoring
+    valuesFile: values-grafana.yaml

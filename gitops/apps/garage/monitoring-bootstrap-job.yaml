@@ -1,0 +1,186 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: garage-monitoring-bootstrap
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/sync-wave: "12"
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded,BeforeHookCreation
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: garage-backup-bootstrap
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bootstrap
+          image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: GARAGE_NAMESPACE
+              value: garage
+            - name: ENDPOINT_URL
+              value: https://garage-s3.${ARGOCD_ENV_base_domain}
+            - name: REGION
+              value: garage
+            - name: GARAGE_LABEL_SELECTOR
+              value: app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage
+            - name: REFLECTION_NAMESPACES
+              value: monitoring
+          resources:
+            requests:
+              cpu: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_cpu}"
+              memory: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_memory}"
+            limits:
+              cpu: "${ARGOCD_ENV_resource_garage_bootstrap_job_limits_cpu}"
+              memory: "${ARGOCD_ENV_resource_garage_bootstrap_job_limits_memory}"
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              set -eu
+
+              ensure_key() {
+                if kubectl get secret "$3" -n "$1" >/dev/null 2>&1; then
+                  set -- \
+                    "$1" \
+                    "$2" \
+                    "$3" \
+                    "$4" \
+                    "$(kubectl get secret "$3" -n "$1" -o jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 -d)"
+                else
+                  set -- "$1" "$2" "$3" "$4" ""
+                fi
+
+                if [ -n "$5" ] && kubectl exec -n "$1" "$2" -- /garage key info "$5" >/dev/null 2>&1; then
+                  printf '%s\n' "$5"
+                elif kubectl exec -n "$1" "$2" -- /garage key info "$4" >/dev/null 2>&1; then
+                  printf '%s\n' "$4"
+                else
+                  kubectl exec -n "$1" "$2" -- /garage key create "$4" >/dev/null
+                  printf '%s\n' "$4"
+                fi
+              }
+
+              wait_for_key() {
+                timeout 180 sh -ec '
+                  until kubectl exec -n "$1" "$2" -- /garage key info "$3" >/dev/null 2>&1; do
+                    sleep 5
+                  done
+                ' _ "$1" "$2" "$3"
+              }
+
+              ensure_bucket() {
+                if ! kubectl exec -n "$1" "$2" -- /garage bucket info "$3" >/dev/null 2>&1; then
+                  kubectl exec -n "$1" "$2" -- /garage bucket create "$3" >/dev/null
+                fi
+
+                timeout 180 sh -ec '
+                  until kubectl exec -n "$1" "$2" -- /garage bucket info "$3" >/dev/null 2>&1; do
+                    sleep 5
+                  done
+                ' _ "$1" "$2" "$3"
+
+                timeout 180 sh -ec '
+                  until kubectl exec -n "$1" "$2" -- /garage bucket allow --key "$4" --read --write --owner "$3" >/dev/null 2>&1; do
+                    sleep 5
+                  done
+                ' _ "$1" "$2" "$3" "$4"
+              }
+
+              write_secret() {
+                timeout 180 sh -ec '
+                  while true; do
+                    if kubectl exec -n "$1" "$2" -- /garage key info --show-secret "$3" >"/tmp/$4-key-info.txt" 2>/dev/null; then
+                      awk -F": *" "/Key ID:/ {print \$2; exit}" "/tmp/$4-key-info.txt" >"/tmp/$4-access-key-id.txt"
+                      awk -F": *" "/Secret key:/ {print \$2; exit}" "/tmp/$4-key-info.txt" >"/tmp/$4-secret-key.txt"
+
+                      if [ -s "/tmp/$4-access-key-id.txt" ] && [ -s "/tmp/$4-secret-key.txt" ]; then
+                        exit 0
+                      fi
+                    fi
+
+                    sleep 5
+                  done
+                ' _ "$1" "$2" "$3" "$4"
+
+                if [ ! -s "/tmp/$4-access-key-id.txt" ] || [ ! -s "/tmp/$4-secret-key.txt" ]; then
+                  echo "Failed to read Garage access key material for $4" >&2
+                  exit 1
+                fi
+
+                kubectl create secret generic "$4" \
+                  --namespace "$1" \
+                  --from-literal=AWS_ACCESS_KEY_ID="$(cat "/tmp/$4-access-key-id.txt")" \
+                  --from-literal=AWS_SECRET_ACCESS_KEY="$(cat "/tmp/$4-secret-key.txt")" \
+                  --from-literal=AWS_ENDPOINT_URL="$5" \
+                  --from-literal=AWS_REGION="$6" \
+                  --from-literal=BUCKET_NAMES="$7" \
+                  --dry-run=client \
+                  -o yaml \
+                  | kubectl annotate --local -f - \
+                      reflector.v1.k8s.emberstack.com/reflection-allowed="true" \
+                      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces="$8" \
+                      reflector.v1.k8s.emberstack.com/reflection-auto-enabled="true" \
+                      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces="$8" \
+                      -o yaml \
+                  | kubectl apply -f -
+              }
+
+              set -- \
+                "$(printenv GARAGE_NAMESPACE)" \
+                "$(printenv ENDPOINT_URL)" \
+                "$(printenv REGION)" \
+                "$(printenv GARAGE_LABEL_SELECTOR)" \
+                "$(printenv REFLECTION_NAMESPACES)"
+
+              kubectl wait \
+                --namespace "$1" \
+                --for=condition=ready pod \
+                --selector "$4" \
+                --timeout=600s
+
+              set -- \
+                "$1" \
+                "$2" \
+                "$3" \
+                "$4" \
+                "$5" \
+                "$(kubectl get pod \
+                  --namespace "$1" \
+                  --selector "$4" \
+                  --output jsonpath='{.items[0].metadata.name}')"
+
+              if [ -z "$6" ]; then
+                echo "Garage pod not found" >&2
+                exit 1
+              fi
+
+              set -- "$1" "$2" "$3" "$4" "$5" "$6" "$(ensure_key "$1" "$6" "loki-garage-s3" "loki-garage-key")"
+              wait_for_key "$1" "$6" "$7"
+              ensure_bucket "$1" "$6" "loki-chunks" "$7"
+              ensure_bucket "$1" "$6" "loki-ruler" "$7"
+              ensure_bucket "$1" "$6" "loki-admin" "$7"
+              write_secret "$1" "$6" "$7" "loki-garage-s3" "$2" "$3" "loki-chunks,loki-ruler,loki-admin" "$5"
+
+              set -- "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$(ensure_key "$1" "$6" "tempo-garage-s3" "tempo-garage-key")"
+              wait_for_key "$1" "$6" "$8"
+              ensure_bucket "$1" "$6" "tempo-traces" "$8"
+              write_secret "$1" "$6" "$8" "tempo-garage-s3" "$2" "$3" "tempo-traces" "$5"
+
+              set -- "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$(ensure_key "$1" "$6" "mimir-garage-s3" "mimir-garage-key")"
+              wait_for_key "$1" "$6" "$9"
+              ensure_bucket "$1" "$6" "mimir-blocks" "$9"
+              ensure_bucket "$1" "$6" "mimir-ruler" "$9"
+              ensure_bucket "$1" "$6" "mimir-alertmanager" "$9"
+              write_secret "$1" "$6" "$9" "mimir-garage-s3" "$2" "$3" "mimir-blocks,mimir-ruler,mimir-alertmanager" "$5"

@@ -95,6 +95,16 @@ spec:
           value: "${stateful_resources_pxc_replicas}"
         - name: stateful_resources_haproxy_replicas
           value: "${stateful_resources_haproxy_replicas}"
+        - name: mimir_version
+          value: "${mimir_version}"
+        - name: loki_version
+          value: "${loki_version}"
+        - name: tempo_version
+          value: "${tempo_version}"
+        - name: opentelemetry_version
+          value: "${opentelemetry_version}"
+        - name: grafana_version
+          value: "${grafana_version}"
 %{ for name, value in resource_env ~}
         - name: ${name}
           value: "${value}"

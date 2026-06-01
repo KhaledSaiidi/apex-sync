@@ -69,5 +69,11 @@ resource "local_file" "argocd_root_app" {
     stateful_resources_pxc_replicas        = var.stateful_resources_pxc_replicas
     stateful_resources_haproxy_replicas    = var.stateful_resources_haproxy_replicas
     resource_env                           = var.resource_env
+    mimir_version                          = var.mimir_version
+    loki_version                           = var.loki_version
+    tempo_version                          = var.tempo_version
+    opentelemetry_version                  = var.opentelemetry_version
+    grafana_version                        = var.grafana_version
+
   })
 }

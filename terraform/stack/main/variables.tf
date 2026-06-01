@@ -216,3 +216,19 @@ variable "stateful_resources_pxc_replicas" {
 variable "stateful_resources_haproxy_replicas" {
   type = string
 }
+
+variable "mimir_version" {
+  type = string
+}
+variable "loki_version" {
+  type = string
+}
+variable "tempo_version" {
+  type = string
+}
+variable "opentelemetry_version" {
+  type = string
+}
+variable "grafana_version" {
+  type = string
+}
