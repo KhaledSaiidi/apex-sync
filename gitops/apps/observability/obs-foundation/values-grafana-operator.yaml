@@ -1,1 +1,66 @@
-# Intentionally empty until operator-specific values are needed.
+namespaceScope: true
+leaderElect: true
+replicas: ${ARGOCD_ENV_grafana_operator_replicas}
+revisionHistoryLimit: 3
+
+enforceCacheLabels: "safe"
+defaultResyncPeriod: 10m
+maxConcurrentReconciles: 2
+
+logging:
+  encoder: json
+  level: info
+  time: rfc3339
+
+rbac:
+  create: true
+  useClusterRole: false
+
+serviceAccount:
+  create: true
+
+kubeAuth:
+  audience: "operator.grafana.com"
+  expirationSeconds: 3600
+
+metricsService:
+  type: ClusterIP
+
+serviceMonitor:
+  enabled: true
+  interval: 1m
+  scrapeTimeout: 10s
+
+dashboard:
+  enabled: false
+
+resources:
+  requests:
+    cpu: "${ARGOCD_ENV_resource_grafana_operator_requests_cpu}"
+    memory: "${ARGOCD_ENV_resource_grafana_operator_requests_memory}"
+  limits:
+    cpu: "${ARGOCD_ENV_resource_grafana_operator_limits_cpu}"
+    memory: "${ARGOCD_ENV_resource_grafana_operator_limits_memory}"
+
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: grafana-operator
+          topologyKey: kubernetes.io/hostname

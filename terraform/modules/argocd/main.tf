@@ -68,6 +68,8 @@ resource "local_file" "argocd_root_app" {
     kiali_replicas                         = var.kiali_replicas
     stateful_resources_pxc_replicas        = var.stateful_resources_pxc_replicas
     stateful_resources_haproxy_replicas    = var.stateful_resources_haproxy_replicas
+    grafana_operator_replicas              = var.grafana_operator_replicas
+    opentelemetry_operator_replicas        = var.opentelemetry_operator_replicas
     resource_env                           = var.resource_env
     mimir_version                          = var.mimir_version
     loki_version                           = var.loki_version

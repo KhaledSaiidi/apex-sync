@@ -1,1 +1,75 @@
-# Intentionally empty until operator-specific values are needed.
+replicaCount: ${ARGOCD_ENV_opentelemetry_operator_replicas}
+revisionHistoryLimit: 3
+minReadySeconds: 10
+
+pdb:
+  create: true
+  minAvailable: 1
+
+manager:
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_opentelemetry_operator_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_opentelemetry_operator_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_opentelemetry_operator_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_opentelemetry_operator_limits_memory}"
+  env:
+    ENABLE_WEBHOOKS: "true"
+  leaderElection:
+    enabled: true
+  serviceMonitor:
+    enabled: true
+    metricsEndpoints:
+      - port: metrics
+        scheme: https
+        bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tlsConfig:
+          insecureSkipVerify: true
+  prometheusRule:
+    enabled: true
+    defaultRules:
+      enabled: true
+      duration: 5m
+  createRbacPermissions: false
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+admissionWebhooks:
+  create: true
+  failurePolicy: Fail
+  timeoutSeconds: 10
+  certManager:
+    enabled: true
+  autoGenerateCert:
+    enabled: false
+
+crds:
+  create: true
+
+securityContext:
+  runAsGroup: 65532
+  runAsNonRoot: true
+  runAsUser: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: opentelemetry-operator
+          topologyKey: kubernetes.io/hostname
+
+nodeSelector:
+  kubernetes.io/os: linux

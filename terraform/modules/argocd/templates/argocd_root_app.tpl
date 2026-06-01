@@ -95,6 +95,10 @@ spec:
           value: "${stateful_resources_pxc_replicas}"
         - name: stateful_resources_haproxy_replicas
           value: "${stateful_resources_haproxy_replicas}"
+        - name: grafana_operator_replicas
+          value: "${grafana_operator_replicas}"
+        - name: opentelemetry_operator_replicas
+          value: "${opentelemetry_operator_replicas}"
         - name: mimir_version
           value: "${mimir_version}"
         - name: loki_version

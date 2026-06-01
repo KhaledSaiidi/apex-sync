@@ -35,6 +35,42 @@ spec:
           value: "${ARGOCD_ENV_grafana_operator_version}"
         - name: opentelemetry_operator_version
           value: "${ARGOCD_ENV_opentelemetry_operator_version}"
+        - name: grafana_operator_replicas
+          value: "${ARGOCD_ENV_grafana_operator_replicas}"
+        - name: opentelemetry_operator_replicas
+          value: "${ARGOCD_ENV_opentelemetry_operator_replicas}"
+        - name: resource_prometheus_operator_requests_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_operator_requests_cpu}"
+        - name: resource_prometheus_operator_requests_memory
+          value: "${ARGOCD_ENV_resource_prometheus_operator_requests_memory}"
+        - name: resource_prometheus_operator_limits_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_operator_limits_cpu}"
+        - name: resource_prometheus_operator_limits_memory
+          value: "${ARGOCD_ENV_resource_prometheus_operator_limits_memory}"
+        - name: resource_prometheus_operator_webhook_patch_requests_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_requests_cpu}"
+        - name: resource_prometheus_operator_webhook_patch_requests_memory
+          value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_requests_memory}"
+        - name: resource_prometheus_operator_webhook_patch_limits_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_limits_cpu}"
+        - name: resource_prometheus_operator_webhook_patch_limits_memory
+          value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_limits_memory}"
+        - name: resource_grafana_operator_requests_cpu
+          value: "${ARGOCD_ENV_resource_grafana_operator_requests_cpu}"
+        - name: resource_grafana_operator_requests_memory
+          value: "${ARGOCD_ENV_resource_grafana_operator_requests_memory}"
+        - name: resource_grafana_operator_limits_cpu
+          value: "${ARGOCD_ENV_resource_grafana_operator_limits_cpu}"
+        - name: resource_grafana_operator_limits_memory
+          value: "${ARGOCD_ENV_resource_grafana_operator_limits_memory}"
+        - name: resource_opentelemetry_operator_requests_cpu
+          value: "${ARGOCD_ENV_resource_opentelemetry_operator_requests_cpu}"
+        - name: resource_opentelemetry_operator_requests_memory
+          value: "${ARGOCD_ENV_resource_opentelemetry_operator_requests_memory}"
+        - name: resource_opentelemetry_operator_limits_cpu
+          value: "${ARGOCD_ENV_resource_opentelemetry_operator_limits_cpu}"
+        - name: resource_opentelemetry_operator_limits_memory
+          value: "${ARGOCD_ENV_resource_opentelemetry_operator_limits_memory}"
 
   destination:
     namespace: observability

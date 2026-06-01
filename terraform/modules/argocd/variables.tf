@@ -187,6 +187,13 @@ variable "stateful_resources_haproxy_replicas" {
   type = string
 }
 
+variable "grafana_operator_replicas" {
+  type = string
+}
+variable "opentelemetry_operator_replicas" {
+  type = string
+}
+
 variable "resource_env" {
   type = map(string)
 }
