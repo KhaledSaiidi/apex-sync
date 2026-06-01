@@ -1,44 +1,39 @@
 variable "project_name" {
-  type    = string
-  default = "platform"
+  type = string
 }
 
 variable "argocd_reconciliation_timeout" {
-  type    = string
-  default = "180s"
+  type = string
 }
 
 variable "argocd_exec_timeout" {
-  type    = string
-  default = "180s"
+  type = string
+}
+
+variable "argocd_server_service_type" {
+  type = string
 }
 
 variable "argocd_repo_server_timeout_secs" {
-  type    = string
-  default = "300"
+  type = string
 }
 
 variable "gitops_root_app_repo_url" {
-  type    = string
-  default = "https://github.com/KhaledSaiidi/kube-signal.git"
+  type = string
 }
 variable "gitops_root_app_target_revision" {
-  type    = string
-  default = "test/platform-stateful-resources"
+  type = string
 }
 variable "gitops_root_app_path" {
-  type    = string
-  default = "gitops/argo-apps"
+  type = string
 }
 
 variable "ansible_python_interpreter" {
-  type    = string
-  default = "/usr/bin/python3"
+  type = string
 }
 
 variable "kubeconfig_path" {
-  type    = string
-  default = "../../../kind-kubeconfig.yaml"
+  type = string
 }
 
 
@@ -62,102 +57,162 @@ variable "aws_secret_access_key" {
 }
 
 variable "metallb_addresses_start" {
-  type    = string
-  default = "172.18.255.200"
+  type = string
 }
 
 variable "metallb_addresses_end" {
-  type    = string
-  default = "172.18.255.230"
+  type = string
 
 }
 
 variable "argocd_cmp_image" {
-  type    = string
-  default = "ghcr.io/khaledsaiidi/kube-signal/argocd-cmp-envsubst:1.2.0"
+  type = string
 }
 
 variable "argocd_chart_version" {
-  type    = string
-  default = "9.5.15"
+  type = string
 }
 
 variable "cert_manager_acme_email" {
-  type    = string
-  default = "khaled.saiidi@outlook.com"
+  type = string
 }
 
 variable "cert_manager_route53_region" {
-  type    = string
-  default = "us-east-1"
+  type = string
 }
 
 variable "cert_manager_route53_hosted_zone_id" {
-  type    = string
-  default = "Z032863786J0OF6PKT1D"
+  type = string
 }
 
 variable "base_domain" {
-  type    = string
-  default = "kube-forge.com"
+  type = string
 }
 
 variable "cert_manager_version" {
-  type    = string
-  default = "v1.20.2"
+  type = string
 }
 
 variable "external_dns_version" {
-  type    = string
-  default = "1.21.1"
+  type = string
 }
 
 variable "external_dns_txt_owner_id" {
-  type    = string
-  default = "kube-signal"
+  type = string
 }
 
 variable "istio_main_version" {
-  type    = string
-  default = "1.29.2"
+  type = string
 }
 
 variable "gateway_api_version" {
-  type    = string
-  default = "v1.5.1"
+  type = string
 }
 
 variable "kiali_version" {
-  type    = string
-  default = "2.26.0"
+  type = string
 }
 
 variable "kyverno_version" {
-  type    = string
-  default = "3.8.0"
+  type = string
 }
 
 variable "metallb_version" {
-  type    = string
-  default = "0.15.3"
+  type = string
 }
 
 variable "openebs_version" {
-  type    = string
-  default = "4.4.0"
+  type = string
 }
 
 variable "reflector_version" {
-  type    = string
-  default = "10.0.45"
+  type = string
 }
 
 variable "percona_version" {
-  type    = string
-  default = "1.19.1"
+  type = string
 }
 
 variable "garage_version" {
-  type    = string
-  default = "2.3.1"
+  type = string
+}
+
+variable "kyverno_admission_controller_replicas" {
+  type = string
+}
+
+variable "kyverno_background_controller_replicas" {
+  type = string
+}
+
+variable "kyverno_cleanup_controller_replicas" {
+  type = string
+}
+
+variable "kyverno_reports_controller_replicas" {
+  type = string
+}
+
+variable "reflector_min_replicas" {
+  type = string
+}
+
+variable "reflector_max_replicas" {
+  type = string
+}
+
+variable "stateful_operator_replicas" {
+  type = string
+}
+
+variable "garage_replication_factor" {
+  type = string
+}
+
+variable "garage_replicas" {
+  type = string
+}
+
+variable "istiod_replicas" {
+  type = string
+}
+
+variable "openebs_localpv_replicas" {
+  type = string
+}
+
+variable "public_gateway_replicas" {
+  type = string
+}
+
+variable "public_gateway_min_replicas" {
+  type = string
+}
+
+variable "public_gateway_max_replicas" {
+  type = string
+}
+
+variable "cert_manager_replicas" {
+  type = string
+}
+
+variable "cert_manager_webhook_replicas" {
+  type = string
+}
+
+variable "cert_manager_cainjector_replicas" {
+  type = string
+}
+
+variable "kiali_replicas" {
+  type = string
+}
+
+variable "stateful_resources_pxc_replicas" {
+  type = string
+}
+
+variable "stateful_resources_haproxy_replicas" {
+  type = string
 }

@@ -1,12 +1,12 @@
 deployment:
-  replicas: 1
+  replicas: ${ARGOCD_ENV_kiali_replicas}
   resources:
     requests:
-      cpu: 50m
-      memory: 128Mi
+      cpu: "${ARGOCD_ENV_resource_kiali_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_kiali_requests_memory}"
     limits:
-      cpu: 300m
-      memory: 512Mi
+      cpu: "${ARGOCD_ENV_resource_kiali_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_kiali_limits_memory}"
   security_context:
     allowPrivilegeEscalation: false
     capabilities:

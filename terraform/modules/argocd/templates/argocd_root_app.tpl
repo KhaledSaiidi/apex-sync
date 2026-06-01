@@ -55,9 +55,59 @@ spec:
           value: "${percona_version}"
         - name: garage_version
           value: "${garage_version}"
+        - name: kyverno_admission_controller_replicas
+          value: "${kyverno_admission_controller_replicas}"
+        - name: kyverno_background_controller_replicas
+          value: "${kyverno_background_controller_replicas}"
+        - name: kyverno_cleanup_controller_replicas
+          value: "${kyverno_cleanup_controller_replicas}"
+        - name: kyverno_reports_controller_replicas
+          value: "${kyverno_reports_controller_replicas}"
+        - name: reflector_min_replicas
+          value: "${reflector_min_replicas}"
+        - name: reflector_max_replicas
+          value: "${reflector_max_replicas}"
+        - name: stateful_operator_replicas
+          value: "${stateful_operator_replicas}"
+        - name: garage_replication_factor
+          value: "${garage_replication_factor}"
+        - name: garage_replicas
+          value: "${garage_replicas}"
+        - name: istiod_replicas
+          value: "${istiod_replicas}"
+        - name: openebs_localpv_replicas
+          value: "${openebs_localpv_replicas}"
+        - name: public_gateway_replicas
+          value: "${public_gateway_replicas}"
+        - name: public_gateway_min_replicas
+          value: "${public_gateway_min_replicas}"
+        - name: public_gateway_max_replicas
+          value: "${public_gateway_max_replicas}"
+        - name: cert_manager_replicas
+          value: "${cert_manager_replicas}"
+        - name: cert_manager_webhook_replicas
+          value: "${cert_manager_webhook_replicas}"
+        - name: cert_manager_cainjector_replicas
+          value: "${cert_manager_cainjector_replicas}"
+        - name: kiali_replicas
+          value: "${kiali_replicas}"
+        - name: stateful_resources_pxc_replicas
+          value: "${stateful_resources_pxc_replicas}"
+        - name: stateful_resources_haproxy_replicas
+          value: "${stateful_resources_haproxy_replicas}"
+%{ for name, value in resource_env ~}
+        - name: ${name}
+          value: "${value}"
+%{ endfor ~}
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}
+  ignoreDifferences:
+    - group: argoproj.io
+      kind: Application
+      name: kyverno
+      jsonPointers:
+        - /metadata/finalizers
   syncPolicy:
     automated:
       prune: true

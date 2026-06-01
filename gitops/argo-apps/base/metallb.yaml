@@ -25,6 +25,70 @@ spec:
           value: "${ARGOCD_ENV_metallb_config_addresses_end}"
         - name: metallb_version
           value: "${ARGOCD_ENV_metallb_version}"
+        - name: resource_metallb_controller_requests_cpu
+          value: "${ARGOCD_ENV_resource_metallb_controller_requests_cpu}"
+        - name: resource_metallb_controller_requests_memory
+          value: "${ARGOCD_ENV_resource_metallb_controller_requests_memory}"
+        - name: resource_metallb_controller_limits_cpu
+          value: "${ARGOCD_ENV_resource_metallb_controller_limits_cpu}"
+        - name: resource_metallb_controller_limits_memory
+          value: "${ARGOCD_ENV_resource_metallb_controller_limits_memory}"
+        - name: resource_metallb_speaker_requests_cpu
+          value: "${ARGOCD_ENV_resource_metallb_speaker_requests_cpu}"
+        - name: resource_metallb_speaker_requests_memory
+          value: "${ARGOCD_ENV_resource_metallb_speaker_requests_memory}"
+        - name: resource_metallb_speaker_limits_cpu
+          value: "${ARGOCD_ENV_resource_metallb_speaker_limits_cpu}"
+        - name: resource_metallb_speaker_limits_memory
+          value: "${ARGOCD_ENV_resource_metallb_speaker_limits_memory}"
+        - name: resource_metallb_frr_requests_cpu
+          value: "${ARGOCD_ENV_resource_metallb_frr_requests_cpu}"
+        - name: resource_metallb_frr_requests_memory
+          value: "${ARGOCD_ENV_resource_metallb_frr_requests_memory}"
+        - name: resource_metallb_frr_limits_cpu
+          value: "${ARGOCD_ENV_resource_metallb_frr_limits_cpu}"
+        - name: resource_metallb_frr_limits_memory
+          value: "${ARGOCD_ENV_resource_metallb_frr_limits_memory}"
+        - name: resource_metallb_reloader_requests_cpu
+          value: "${ARGOCD_ENV_resource_metallb_reloader_requests_cpu}"
+        - name: resource_metallb_reloader_requests_memory
+          value: "${ARGOCD_ENV_resource_metallb_reloader_requests_memory}"
+        - name: resource_metallb_reloader_limits_cpu
+          value: "${ARGOCD_ENV_resource_metallb_reloader_limits_cpu}"
+        - name: resource_metallb_reloader_limits_memory
+          value: "${ARGOCD_ENV_resource_metallb_reloader_limits_memory}"
+        - name: resource_metallb_frr_metrics_requests_cpu
+          value: "${ARGOCD_ENV_resource_metallb_frr_metrics_requests_cpu}"
+        - name: resource_metallb_frr_metrics_requests_memory
+          value: "${ARGOCD_ENV_resource_metallb_frr_metrics_requests_memory}"
+        - name: resource_metallb_frr_metrics_limits_cpu
+          value: "${ARGOCD_ENV_resource_metallb_frr_metrics_limits_cpu}"
+        - name: resource_metallb_frr_metrics_limits_memory
+          value: "${ARGOCD_ENV_resource_metallb_frr_metrics_limits_memory}"
+        - name: resource_metallb_cp_frr_files_requests_cpu
+          value: "${ARGOCD_ENV_resource_metallb_cp_frr_files_requests_cpu}"
+        - name: resource_metallb_cp_frr_files_requests_memory
+          value: "${ARGOCD_ENV_resource_metallb_cp_frr_files_requests_memory}"
+        - name: resource_metallb_cp_frr_files_limits_cpu
+          value: "${ARGOCD_ENV_resource_metallb_cp_frr_files_limits_cpu}"
+        - name: resource_metallb_cp_frr_files_limits_memory
+          value: "${ARGOCD_ENV_resource_metallb_cp_frr_files_limits_memory}"
+        - name: resource_metallb_cp_reloader_requests_cpu
+          value: "${ARGOCD_ENV_resource_metallb_cp_reloader_requests_cpu}"
+        - name: resource_metallb_cp_reloader_requests_memory
+          value: "${ARGOCD_ENV_resource_metallb_cp_reloader_requests_memory}"
+        - name: resource_metallb_cp_reloader_limits_cpu
+          value: "${ARGOCD_ENV_resource_metallb_cp_reloader_limits_cpu}"
+        - name: resource_metallb_cp_reloader_limits_memory
+          value: "${ARGOCD_ENV_resource_metallb_cp_reloader_limits_memory}"
+        - name: resource_metallb_cp_metrics_requests_cpu
+          value: "${ARGOCD_ENV_resource_metallb_cp_metrics_requests_cpu}"
+        - name: resource_metallb_cp_metrics_requests_memory
+          value: "${ARGOCD_ENV_resource_metallb_cp_metrics_requests_memory}"
+        - name: resource_metallb_cp_metrics_limits_cpu
+          value: "${ARGOCD_ENV_resource_metallb_cp_metrics_limits_cpu}"
+        - name: resource_metallb_cp_metrics_limits_memory
+          value: "${ARGOCD_ENV_resource_metallb_cp_metrics_limits_memory}"
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system

@@ -19,6 +19,16 @@ spec:
           value: "${ARGOCD_ENV_istio_main_version}"
         - name: gateway_api_version
           value: "${ARGOCD_ENV_gateway_api_version}"
+        - name: istiod_replicas
+          value: "${ARGOCD_ENV_istiod_replicas}"
+        - name: resource_istiod_requests_cpu
+          value: "${ARGOCD_ENV_resource_istiod_requests_cpu}"
+        - name: resource_istiod_requests_memory
+          value: "${ARGOCD_ENV_resource_istiod_requests_memory}"
+        - name: resource_istiod_limits_cpu
+          value: "${ARGOCD_ENV_resource_istiod_limits_cpu}"
+        - name: resource_istiod_limits_memory
+          value: "${ARGOCD_ENV_resource_istiod_limits_memory}"
   destination:
     namespace: istio-system
     server: https://kubernetes.default.svc

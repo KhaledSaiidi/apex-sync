@@ -1,7 +1,7 @@
 crds:
   enabled: true
 
-replicaCount: 2
+replicaCount: ${ARGOCD_ENV_cert_manager_replicas}
 
 podDisruptionBudget:
   enabled: true
@@ -12,11 +12,11 @@ prometheus:
 
 resources:
   requests:
-    cpu: 20m
-    memory: 64Mi
+    cpu: "${ARGOCD_ENV_resource_cert_manager_requests_cpu}"
+    memory: "${ARGOCD_ENV_resource_cert_manager_requests_memory}"
   limits:
-    cpu: 200m
-    memory: 256Mi
+    cpu: "${ARGOCD_ENV_resource_cert_manager_limits_cpu}"
+    memory: "${ARGOCD_ENV_resource_cert_manager_limits_memory}"
 
 securityContext:
   runAsNonRoot: true
@@ -35,17 +35,17 @@ global:
     namespace: cert-manager
 
 webhook:
-  replicaCount: 2
+  replicaCount: ${ARGOCD_ENV_cert_manager_webhook_replicas}
   podDisruptionBudget:
     enabled: true
     minAvailable: 1
   resources:
     requests:
-      cpu: 20m
-      memory: 64Mi
+      cpu: "${ARGOCD_ENV_resource_cert_manager_webhook_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_cert_manager_webhook_requests_memory}"
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: "${ARGOCD_ENV_resource_cert_manager_webhook_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_cert_manager_webhook_limits_memory}"
   securityContext:
     runAsNonRoot: true
     seccompProfile:
@@ -58,17 +58,17 @@ webhook:
     readOnlyRootFilesystem: true
 
 cainjector:
-  replicaCount: 2
+  replicaCount: ${ARGOCD_ENV_cert_manager_cainjector_replicas}
   podDisruptionBudget:
     enabled: true
     minAvailable: 1
   resources:
     requests:
-      cpu: 20m
-      memory: 64Mi
+      cpu: "${ARGOCD_ENV_resource_cert_manager_cainjector_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_cert_manager_cainjector_requests_memory}"
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: "${ARGOCD_ENV_resource_cert_manager_cainjector_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_cert_manager_cainjector_limits_memory}"
   securityContext:
     runAsNonRoot: true
     seccompProfile:
@@ -83,8 +83,8 @@ cainjector:
 startupapicheck:
   resources:
     requests:
-      cpu: 10m
-      memory: 32Mi
+      cpu: "${ARGOCD_ENV_resource_cert_manager_startupapicheck_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_cert_manager_startupapicheck_requests_memory}"
     limits:
-      cpu: 100m
-      memory: 64Mi
+      cpu: "${ARGOCD_ENV_resource_cert_manager_startupapicheck_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_cert_manager_startupapicheck_limits_memory}"

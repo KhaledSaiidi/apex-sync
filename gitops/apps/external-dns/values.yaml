@@ -33,11 +33,11 @@ serviceAccount:
 
 resources:
   requests:
-    cpu: 10m
-    memory: 64Mi
+    cpu: "${ARGOCD_ENV_resource_external_dns_requests_cpu}"
+    memory: "${ARGOCD_ENV_resource_external_dns_requests_memory}"
   limits:
-    cpu: 200m
-    memory: 128Mi
+    cpu: "${ARGOCD_ENV_resource_external_dns_limits_cpu}"
+    memory: "${ARGOCD_ENV_resource_external_dns_limits_memory}"
 
 securityContext:
   runAsNonRoot: true

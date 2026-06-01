@@ -1,0 +1,5 @@
+## ansible:
+kubeconfig_path: "../../../kind-kubeconfig.yaml"
+gitops_root_app_repo_url: "https://github.com/KhaledSaiidi/kube-signal.git"
+argocd_chart_version: "9.5.15"
+ansible_python_interpreter: "/usr/bin/python3"

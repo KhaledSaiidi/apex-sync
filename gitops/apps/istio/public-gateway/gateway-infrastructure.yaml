@@ -12,7 +12,7 @@ data:
       externalTrafficPolicy: Cluster
   deployment: |
     spec:
-      replicas: 3
+      replicas: ${ARGOCD_ENV_public_gateway_replicas}
       template:
         metadata:
           labels:
@@ -37,15 +37,15 @@ data:
             - name: istio-proxy
               resources:
                 requests:
-                  cpu: 50m
-                  memory: 128Mi
+                  cpu: "${ARGOCD_ENV_resource_public_gateway_requests_cpu}"
+                  memory: "${ARGOCD_ENV_resource_public_gateway_requests_memory}"
                 limits:
-                  cpu: 1000m
-                  memory: 512Mi
+                  cpu: "${ARGOCD_ENV_resource_public_gateway_limits_cpu}"
+                  memory: "${ARGOCD_ENV_resource_public_gateway_limits_memory}"
   horizontalPodAutoscaler: |
     spec:
-      minReplicas: 3
-      maxReplicas: 5
+      minReplicas: ${ARGOCD_ENV_public_gateway_min_replicas}
+      maxReplicas: ${ARGOCD_ENV_public_gateway_max_replicas}
       metrics:
         - type: Resource
           resource:

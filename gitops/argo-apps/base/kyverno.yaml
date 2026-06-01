@@ -21,6 +21,46 @@ spec:
       env:
         - name: kyverno_version
           value: "${ARGOCD_ENV_kyverno_version}"
+        - name: kyverno_admission_controller_replicas
+          value: "${ARGOCD_ENV_kyverno_admission_controller_replicas}"
+        - name: kyverno_background_controller_replicas
+          value: "${ARGOCD_ENV_kyverno_background_controller_replicas}"
+        - name: kyverno_cleanup_controller_replicas
+          value: "${ARGOCD_ENV_kyverno_cleanup_controller_replicas}"
+        - name: kyverno_reports_controller_replicas
+          value: "${ARGOCD_ENV_kyverno_reports_controller_replicas}"
+        - name: resource_kyverno_admission_controller_requests_cpu
+          value: "${ARGOCD_ENV_resource_kyverno_admission_controller_requests_cpu}"
+        - name: resource_kyverno_admission_controller_requests_memory
+          value: "${ARGOCD_ENV_resource_kyverno_admission_controller_requests_memory}"
+        - name: resource_kyverno_admission_controller_limits_cpu
+          value: "${ARGOCD_ENV_resource_kyverno_admission_controller_limits_cpu}"
+        - name: resource_kyverno_admission_controller_limits_memory
+          value: "${ARGOCD_ENV_resource_kyverno_admission_controller_limits_memory}"
+        - name: resource_kyverno_background_controller_requests_cpu
+          value: "${ARGOCD_ENV_resource_kyverno_background_controller_requests_cpu}"
+        - name: resource_kyverno_background_controller_requests_memory
+          value: "${ARGOCD_ENV_resource_kyverno_background_controller_requests_memory}"
+        - name: resource_kyverno_background_controller_limits_cpu
+          value: "${ARGOCD_ENV_resource_kyverno_background_controller_limits_cpu}"
+        - name: resource_kyverno_background_controller_limits_memory
+          value: "${ARGOCD_ENV_resource_kyverno_background_controller_limits_memory}"
+        - name: resource_kyverno_cleanup_controller_requests_cpu
+          value: "${ARGOCD_ENV_resource_kyverno_cleanup_controller_requests_cpu}"
+        - name: resource_kyverno_cleanup_controller_requests_memory
+          value: "${ARGOCD_ENV_resource_kyverno_cleanup_controller_requests_memory}"
+        - name: resource_kyverno_cleanup_controller_limits_cpu
+          value: "${ARGOCD_ENV_resource_kyverno_cleanup_controller_limits_cpu}"
+        - name: resource_kyverno_cleanup_controller_limits_memory
+          value: "${ARGOCD_ENV_resource_kyverno_cleanup_controller_limits_memory}"
+        - name: resource_kyverno_reports_controller_requests_cpu
+          value: "${ARGOCD_ENV_resource_kyverno_reports_controller_requests_cpu}"
+        - name: resource_kyverno_reports_controller_requests_memory
+          value: "${ARGOCD_ENV_resource_kyverno_reports_controller_requests_memory}"
+        - name: resource_kyverno_reports_controller_limits_cpu
+          value: "${ARGOCD_ENV_resource_kyverno_reports_controller_limits_cpu}"
+        - name: resource_kyverno_reports_controller_limits_memory
+          value: "${ARGOCD_ENV_resource_kyverno_reports_controller_limits_memory}"
   destination:
     server: https://kubernetes.default.svc
     namespace: kyverno

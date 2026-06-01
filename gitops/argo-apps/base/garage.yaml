@@ -19,6 +19,34 @@ spec:
           value: "${ARGOCD_ENV_garage_version}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
+        - name: garage_replication_factor
+          value: "${ARGOCD_ENV_garage_replication_factor}"
+        - name: garage_replicas
+          value: "${ARGOCD_ENV_garage_replicas}"
+        - name: resource_garage_requests_cpu
+          value: "${ARGOCD_ENV_resource_garage_requests_cpu}"
+        - name: resource_garage_requests_memory
+          value: "${ARGOCD_ENV_resource_garage_requests_memory}"
+        - name: resource_garage_limits_cpu
+          value: "${ARGOCD_ENV_resource_garage_limits_cpu}"
+        - name: resource_garage_limits_memory
+          value: "${ARGOCD_ENV_resource_garage_limits_memory}"
+        - name: resource_garage_bootstrap_job_requests_cpu
+          value: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_cpu}"
+        - name: resource_garage_bootstrap_job_requests_memory
+          value: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_memory}"
+        - name: resource_garage_bootstrap_job_limits_cpu
+          value: "${ARGOCD_ENV_resource_garage_bootstrap_job_limits_cpu}"
+        - name: resource_garage_bootstrap_job_limits_memory
+          value: "${ARGOCD_ENV_resource_garage_bootstrap_job_limits_memory}"
+        - name: resource_garage_backup_lifecycle_job_requests_cpu
+          value: "${ARGOCD_ENV_resource_garage_backup_lifecycle_job_requests_cpu}"
+        - name: resource_garage_backup_lifecycle_job_requests_memory
+          value: "${ARGOCD_ENV_resource_garage_backup_lifecycle_job_requests_memory}"
+        - name: resource_garage_backup_lifecycle_job_limits_cpu
+          value: "${ARGOCD_ENV_resource_garage_backup_lifecycle_job_limits_cpu}"
+        - name: resource_garage_backup_lifecycle_job_limits_memory
+          value: "${ARGOCD_ENV_resource_garage_backup_lifecycle_job_limits_memory}"
   destination:
     namespace: garage
     server: https://kubernetes.default.svc
