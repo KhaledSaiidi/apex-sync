@@ -9,7 +9,7 @@ metadata:
       - name: StorageType
         value: hostpath
       - name: BasePath
-        value: /var/openebs/kube-signal
+        value: /var/openebs/apex-sync
 provisioner: openebs.io/local
 reclaimPolicy: Retain
 allowVolumeExpansion: true

@@ -2,5 +2,5 @@
 argocd_server_service_type: "LoadBalancer"
 argocd_reconciliation_timeout: "180s"
 argocd_repo_server_timeout_secs: "300"
-argocd_cmp_image: "ghcr.io/khaledsaiidi/kube-signal/argocd-cmp-envsubst:1.2.0"
+argocd_cmp_image: "ghcr.io/khaledsaiidi/apex-sync/argocd-cmp-envsubst:1.2.0"
 argocd_exec_timeout: "180s"

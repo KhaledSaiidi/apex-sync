@@ -6,13 +6,13 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 CONFIG_DIR="$SCRIPT_DIR/override-config"
 ENV_FILE="$SCRIPT_DIR/.env.bootstrap"
-LOCKFILE="/tmp/kube-signal-terraform.lock"
+LOCKFILE="/tmp/apex-sync-terraform.lock"
 
 TERRAFORM_DIR="$SCRIPT_DIR/terraform/stack/main"
 ARTIFACTS_DIR="$TERRAFORM_DIR/artifacts"
 ANSIBLE_DIR="$SCRIPT_DIR/.ansible"
 
-LOG_DIR="${TMPDIR:-/tmp}/kube-signal"
+LOG_DIR="${TMPDIR:-/tmp}/apex-sync"
 LOG_TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
 LOG_FILE="$LOG_DIR/terraform-destroy-$LOG_TIMESTAMP.log"
 
