@@ -1,7 +1,7 @@
 locals {
   artifacts_dir            = abspath("${path.root}/artifacts")
   repo_root                = abspath("${path.root}/../../../")
-  custom_config_files      = sort(fileset(local.repo_root, "custom-config/*.y*ml"))
+  custom_config_files      = sort(fileset(local.repo_root, "override-config/*.y*ml"))
   custom_config            = merge([for file in local.custom_config_files : yamldecode(file("${local.repo_root}/${file}"))]...)
   resource_env             = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "resource_") }
   kubeconfig_path          = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
@@ -71,12 +71,18 @@ module "argocd" {
   stateful_resources_haproxy_replicas    = var.stateful_resources_haproxy_replicas
   grafana_operator_replicas              = var.grafana_operator_replicas
   opentelemetry_operator_replicas        = var.opentelemetry_operator_replicas
+  grafana_replicas                       = var.grafana_replicas
+  otel_gateway_replicas                  = var.otel_gateway_replicas
+  prometheus_replicas                    = var.prometheus_replicas
+  prometheus_alertmanager_replicas       = var.prometheus_alertmanager_replicas
+  kube_state_metrics_replicas            = var.kube_state_metrics_replicas
   loki_backend_replicas                  = var.loki_backend_replicas
   loki_chunks_cache_replicas             = var.loki_chunks_cache_replicas
   loki_gateway_replicas                  = var.loki_gateway_replicas
   loki_read_replicas                     = var.loki_read_replicas
   loki_results_cache_replicas            = var.loki_results_cache_replicas
   loki_write_replicas                    = var.loki_write_replicas
+  loki_single_binary_replicas            = var.loki_single_binary_replicas
   mimir_alertmanager_replicas            = var.mimir_alertmanager_replicas
   mimir_chunks_cache_replicas            = var.mimir_chunks_cache_replicas
   mimir_compactor_replicas               = var.mimir_compactor_replicas

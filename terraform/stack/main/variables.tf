@@ -224,6 +224,26 @@ variable "opentelemetry_operator_replicas" {
   type = string
 }
 
+variable "grafana_replicas" {
+  type = string
+}
+
+variable "otel_gateway_replicas" {
+  type = string
+}
+
+variable "prometheus_replicas" {
+  type = string
+}
+
+variable "prometheus_alertmanager_replicas" {
+  type = string
+}
+
+variable "kube_state_metrics_replicas" {
+  type = string
+}
+
 variable "loki_backend_replicas" {
   type = string
 }
@@ -245,6 +265,10 @@ variable "loki_results_cache_replicas" {
 }
 
 variable "loki_write_replicas" {
+  type = string
+}
+
+variable "loki_single_binary_replicas" {
   type = string
 }
 

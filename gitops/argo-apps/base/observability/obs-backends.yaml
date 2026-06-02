@@ -29,6 +29,16 @@ spec:
           value: "${ARGOCD_ENV_tempo_version}"
         - name: prometheus_operator_version
           value: "${ARGOCD_ENV_prometheus_operator_version}"
+        - name: grafana_replicas
+          value: "${ARGOCD_ENV_grafana_replicas}"
+        - name: otel_gateway_replicas
+          value: "${ARGOCD_ENV_otel_gateway_replicas}"
+        - name: prometheus_replicas
+          value: "${ARGOCD_ENV_prometheus_replicas}"
+        - name: prometheus_alertmanager_replicas
+          value: "${ARGOCD_ENV_prometheus_alertmanager_replicas}"
+        - name: kube_state_metrics_replicas
+          value: "${ARGOCD_ENV_kube_state_metrics_replicas}"
         - name: loki_backend_replicas
           value: "${ARGOCD_ENV_loki_backend_replicas}"
         - name: loki_chunks_cache_replicas
@@ -41,6 +51,8 @@ spec:
           value: "${ARGOCD_ENV_loki_results_cache_replicas}"
         - name: loki_write_replicas
           value: "${ARGOCD_ENV_loki_write_replicas}"
+        - name: loki_single_binary_replicas
+          value: "${ARGOCD_ENV_loki_single_binary_replicas}"
         - name: mimir_alertmanager_replicas
           value: "${ARGOCD_ENV_mimir_alertmanager_replicas}"
         - name: mimir_chunks_cache_replicas
@@ -151,6 +163,54 @@ spec:
           value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_limits_cpu}"
         - name: resource_prometheus_operator_webhook_patch_limits_memory
           value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_limits_memory}"
+        - name: resource_prometheus_requests_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_requests_cpu}"
+        - name: resource_prometheus_requests_memory
+          value: "${ARGOCD_ENV_resource_prometheus_requests_memory}"
+        - name: resource_prometheus_limits_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_limits_cpu}"
+        - name: resource_prometheus_limits_memory
+          value: "${ARGOCD_ENV_resource_prometheus_limits_memory}"
+        - name: resource_prometheus_alertmanager_requests_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_alertmanager_requests_cpu}"
+        - name: resource_prometheus_alertmanager_requests_memory
+          value: "${ARGOCD_ENV_resource_prometheus_alertmanager_requests_memory}"
+        - name: resource_prometheus_alertmanager_limits_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_alertmanager_limits_cpu}"
+        - name: resource_prometheus_alertmanager_limits_memory
+          value: "${ARGOCD_ENV_resource_prometheus_alertmanager_limits_memory}"
+        - name: resource_kube_state_metrics_requests_cpu
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_requests_cpu}"
+        - name: resource_kube_state_metrics_requests_memory
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_requests_memory}"
+        - name: resource_kube_state_metrics_limits_cpu
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_limits_cpu}"
+        - name: resource_kube_state_metrics_limits_memory
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_limits_memory}"
+        - name: resource_grafana_requests_cpu
+          value: "${ARGOCD_ENV_resource_grafana_requests_cpu}"
+        - name: resource_grafana_requests_memory
+          value: "${ARGOCD_ENV_resource_grafana_requests_memory}"
+        - name: resource_grafana_limits_cpu
+          value: "${ARGOCD_ENV_resource_grafana_limits_cpu}"
+        - name: resource_grafana_limits_memory
+          value: "${ARGOCD_ENV_resource_grafana_limits_memory}"
+        - name: resource_otel_gateway_requests_cpu
+          value: "${ARGOCD_ENV_resource_otel_gateway_requests_cpu}"
+        - name: resource_otel_gateway_requests_memory
+          value: "${ARGOCD_ENV_resource_otel_gateway_requests_memory}"
+        - name: resource_otel_gateway_limits_cpu
+          value: "${ARGOCD_ENV_resource_otel_gateway_limits_cpu}"
+        - name: resource_otel_gateway_limits_memory
+          value: "${ARGOCD_ENV_resource_otel_gateway_limits_memory}"
+        - name: resource_otel_daemonset_requests_cpu
+          value: "${ARGOCD_ENV_resource_otel_daemonset_requests_cpu}"
+        - name: resource_otel_daemonset_requests_memory
+          value: "${ARGOCD_ENV_resource_otel_daemonset_requests_memory}"
+        - name: resource_otel_daemonset_limits_cpu
+          value: "${ARGOCD_ENV_resource_otel_daemonset_limits_cpu}"
+        - name: resource_otel_daemonset_limits_memory
+          value: "${ARGOCD_ENV_resource_otel_daemonset_limits_memory}"
         - name: resource_mimir_alertmanager_limits_cpu
           value: "${ARGOCD_ENV_resource_mimir_alertmanager_limits_cpu}"
         - name: resource_mimir_alertmanager_limits_memory

@@ -60,7 +60,7 @@ loki:
       insecure: false
 
 singleBinary:
-  replicas: 0
+  replicas: ${ARGOCD_ENV_loki_single_binary_replicas}
 
 read:
   replicas: ${ARGOCD_ENV_loki_read_replicas}

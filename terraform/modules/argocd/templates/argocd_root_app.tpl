@@ -99,6 +99,16 @@ spec:
           value: "${grafana_operator_replicas}"
         - name: opentelemetry_operator_replicas
           value: "${opentelemetry_operator_replicas}"
+        - name: grafana_replicas
+          value: "${grafana_replicas}"
+        - name: otel_gateway_replicas
+          value: "${otel_gateway_replicas}"
+        - name: prometheus_replicas
+          value: "${prometheus_replicas}"
+        - name: prometheus_alertmanager_replicas
+          value: "${prometheus_alertmanager_replicas}"
+        - name: kube_state_metrics_replicas
+          value: "${kube_state_metrics_replicas}"
         - name: loki_backend_replicas
           value: "${loki_backend_replicas}"
         - name: loki_chunks_cache_replicas
@@ -111,6 +121,8 @@ spec:
           value: "${loki_results_cache_replicas}"
         - name: loki_write_replicas
           value: "${loki_write_replicas}"
+        - name: loki_single_binary_replicas
+          value: "${loki_single_binary_replicas}"
         - name: mimir_alertmanager_replicas
           value: "${mimir_alertmanager_replicas}"
         - name: mimir_chunks_cache_replicas

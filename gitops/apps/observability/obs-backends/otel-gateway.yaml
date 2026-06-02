@@ -5,16 +5,16 @@ metadata:
   namespace: observability
 spec:
   mode: deployment
-  replicas: 2
+  replicas: ${ARGOCD_ENV_otel_gateway_replicas}
   image: otel/opentelemetry-collector-contrib:0.114.0
   serviceAccount: otel-collector
   resources:
     requests:
-      cpu: 200m
-      memory: 256Mi
+      cpu: "${ARGOCD_ENV_resource_otel_gateway_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_otel_gateway_requests_memory}"
     limits:
-      cpu: "1"
-      memory: 1Gi
+      cpu: "${ARGOCD_ENV_resource_otel_gateway_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_otel_gateway_limits_memory}"
   config:
     receivers:
       otlp:
