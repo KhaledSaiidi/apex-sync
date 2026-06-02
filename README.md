@@ -8,7 +8,7 @@ The repo is organized around a short bootstrap phase and a longer GitOps phase:
 1. Provide a kubeconfig for an existing Kubernetes cluster.
 2. Review the tracked baseline values in `override-config/`.
 3. Create `.env.bootstrap` for sensitive bootstrap inputs.
-4. Run `bootstrap.sh`.
+4. Run `scripts/bootstrap.sh`.
 5. Terraform renders Argo CD and Ansible artifacts.
 6. Ansible installs Cilium, installs Argo CD, creates bootstrap secrets, and
    applies the root Argo CD application.
@@ -54,8 +54,8 @@ GitOps then manages:
 
 ## Repository Layout
 
-- `bootstrap.sh`: main bootstrap entrypoint; runs Terraform apply.
-- `destroy.sh`: Terraform destroy helper and generated-file cleanup.
+- `scripts/bootstrap.sh`: main bootstrap entrypoint; runs Terraform apply.
+- `scripts/destroy.sh`: Terraform destroy helper and generated-file cleanup.
 - `override-config/`: tracked baseline configuration values used by bootstrap.
 - `terraform/stack/main`: Terraform entrypoint.
 - `terraform/modules/argocd`: renders Argo CD Helm values and root app.
@@ -178,7 +178,7 @@ passed through Terraform as `resource_*` environment values.
 
 ## Bootstrap Flow
 
-`bootstrap.sh` does the following:
+`scripts/bootstrap.sh` does the following:
 
 1. Checks for Terraform and `yq`.
 2. Requires `.env.bootstrap`.
@@ -317,7 +317,7 @@ cp example.env.bootstrap .env.bootstrap
 Edit `override-config/*.yaml` and `.env.bootstrap`, then bootstrap:
 
 ```bash
-./bootstrap.sh
+./scripts/bootstrap.sh
 ```
 
 Typical checks:
@@ -347,7 +347,7 @@ These are runtime artifacts and are not part of the desired GitOps state.
 To destroy Terraform-managed bootstrap resources:
 
 ```bash
-./destroy.sh
+./scripts/destroy.sh
 ```
 
 When destroy succeeds, the script removes generated Terraform, Ansible, and log
