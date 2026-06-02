@@ -11,6 +11,7 @@ global:
 
 mimir:
   structuredConfig:
+    multitenancy_enabled: false
     blocks_storage:
       s3:
         bucket_name: mimir-blocks

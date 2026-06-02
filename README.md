@@ -1,4 +1,4 @@
-# kube-signal
+# Apex-Sync
 
 `kube-signal` bootstraps a production-like Kubernetes platform on a local
 `kind` cluster, then hands steady-state management to Argo CD.

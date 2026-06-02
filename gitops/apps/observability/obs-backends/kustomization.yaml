@@ -1,6 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: observability
+resources:
+  - otel-collector-rbac.yaml
+  - otel-gateway.yaml
+  - otel-daemonset.yaml
+  - grafana.yaml
+  - grafana-datasources.yaml
 helmCharts:
   - name: mimir-distributed
     repo: https://grafana.github.io/helm-charts
@@ -20,3 +26,9 @@ helmCharts:
     releaseName: tempo
     namespace: observability
     valuesFile: values-tempo.yaml
+  - name: kube-prometheus-stack
+    repo: https://prometheus-community.github.io/helm-charts
+    version: ${ARGOCD_ENV_prometheus_operator_version}
+    releaseName: kube-prometheus-stack
+    namespace: observability
+    valuesFile: values-kube-prometheus-stack.yaml

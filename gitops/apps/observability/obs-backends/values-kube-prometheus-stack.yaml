@@ -1,50 +1,32 @@
 crds:
   enabled: false
 
-defaultRules:
-  create: false
-
-alertmanager:
-  enabled: false
-
 grafana:
-  enabled: false
-
-kubeApiServer:
-  enabled: false
-
-kubelet:
-  enabled: false
-
-kubeControllerManager:
-  enabled: false
-
-coreDns:
-  enabled: false
-
-kubeDns:
-  enabled: false
-
-kubeEtcd:
-  enabled: false
-
-kubeScheduler:
-  enabled: false
-
-kubeProxy:
-  enabled: false
-
-kubeStateMetrics:
   enabled: false
 
 nodeExporter:
   enabled: false
 
-prometheus:
+kubelet:
   enabled: false
 
-thanosRuler:
-  enabled: false
+kubeStateMetrics:
+  enabled: true
+
+defaultRules:
+  create: true
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
 
 prometheusOperator:
   enabled: true
@@ -94,3 +76,18 @@ prometheusOperator:
     capabilities:
       drop:
         - ALL
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    replicas: 2
+    retention: 12h
+    remoteWrite:
+      - url: http://mimir-distributed-gateway.observability.svc.cluster.local/api/v1/push
+    resources:
+      requests:
+        cpu: 300m
+        memory: 768Mi
+      limits:
+        cpu: "1"
+        memory: 2Gi

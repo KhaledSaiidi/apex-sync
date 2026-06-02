@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: obs-core-stack
+  name: obs-backends
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: '25'
   labels:
-    app.kubernetes.io/name: obs-core-stack
+    app.kubernetes.io/name: obs-backends
     app.kubernetes.io/part-of: platform-baseline
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
-    path: gitops/apps/observability/obs-core-stack
+    path: gitops/apps/observability/obs-backends
     plugin:
       name: envsubst
       env:
@@ -27,6 +27,8 @@ spec:
           value: "${ARGOCD_ENV_loki_version}"
         - name: tempo_version
           value: "${ARGOCD_ENV_tempo_version}"
+        - name: prometheus_operator_version
+          value: "${ARGOCD_ENV_prometheus_operator_version}"
         - name: loki_backend_replicas
           value: "${ARGOCD_ENV_loki_backend_replicas}"
         - name: loki_chunks_cache_replicas
@@ -133,6 +135,22 @@ spec:
           value: "${ARGOCD_ENV_resource_loki_write_requests_cpu}"
         - name: resource_loki_write_requests_memory
           value: "${ARGOCD_ENV_resource_loki_write_requests_memory}"
+        - name: resource_prometheus_operator_requests_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_operator_requests_cpu}"
+        - name: resource_prometheus_operator_requests_memory
+          value: "${ARGOCD_ENV_resource_prometheus_operator_requests_memory}"
+        - name: resource_prometheus_operator_limits_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_operator_limits_cpu}"
+        - name: resource_prometheus_operator_limits_memory
+          value: "${ARGOCD_ENV_resource_prometheus_operator_limits_memory}"
+        - name: resource_prometheus_operator_webhook_patch_requests_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_requests_cpu}"
+        - name: resource_prometheus_operator_webhook_patch_requests_memory
+          value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_requests_memory}"
+        - name: resource_prometheus_operator_webhook_patch_limits_cpu
+          value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_limits_cpu}"
+        - name: resource_prometheus_operator_webhook_patch_limits_memory
+          value: "${ARGOCD_ENV_resource_prometheus_operator_webhook_patch_limits_memory}"
         - name: resource_mimir_alertmanager_limits_cpu
           value: "${ARGOCD_ENV_resource_mimir_alertmanager_limits_cpu}"
         - name: resource_mimir_alertmanager_limits_memory

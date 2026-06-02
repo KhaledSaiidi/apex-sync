@@ -1,0 +1,115 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: mimir
+  namespace: observability
+spec:
+  allowCrossNamespaceImport: false
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: true
+    jsonData:
+      timeInterval: 1m
+    name: Mimir
+    type: prometheus
+    uid: Mimir
+    url: http://mimir-distributed-gateway.observability.svc.cluster.local/prometheus
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  resyncPeriod: 10m0s
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus
+  namespace: observability
+spec:
+  allowCrossNamespaceImport: false
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: false
+    jsonData:
+      timeInterval: 1m
+    name: Prometheus
+    type: prometheus
+    uid: Prometheus
+    url: http://prometheus-operated.observability.svc.cluster.local:9090
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  resyncPeriod: 10m0s
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: loki
+  namespace: observability
+spec:
+  allowCrossNamespaceImport: false
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: false
+    jsonData:
+      timeout: 60
+    name: Loki
+    type: loki
+    uid: Loki
+    url: http://loki-gateway.observability.svc.cluster.local
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  resyncPeriod: 10m0s
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: tempo
+  namespace: observability
+spec:
+  allowCrossNamespaceImport: false
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: false
+    jsonData:
+      lokiSearch:
+        datasourceUid: Loki
+      nodeGraph:
+        enabled: true
+      search:
+        hide: false
+      serviceMap:
+        datasourceUid: Mimir
+      spanBar:
+        tag: http.path
+        type: Tag
+      traceQuery:
+        spanEndTimeShift: 1h
+        spanStartTimeShift: -1h
+        timeShiftEnabled: true
+      tracesToLogsV2:
+        customQuery: true
+        datasourceUid: Loki
+        filterBySpanID: false
+        filterByTraceID: false
+        spanEndTimeShift: 1h
+        spanStartTimeShift: -1h
+        tags:
+          - k8s.namespace.name
+          - k8s.pod.name
+          - service.name
+    name: Tempo
+    type: tempo
+    uid: Tempo
+    url: http://tempo-grafana-tempo-query-frontend.observability.svc.cluster.local:3200
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  plugins:
+    - name: grafana-exploretraces-app
+      version: 2.0.3
+  resyncPeriod: 10m0s
