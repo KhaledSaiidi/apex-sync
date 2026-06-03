@@ -324,6 +324,10 @@ variable "resource_env" {
   type = map(string)
 }
 
+variable "observability_env" {
+  type = map(string)
+}
+
 variable "mimir_version" {
   type = string
 }
@@ -338,6 +342,9 @@ variable "prometheus_operator_crds_version" {
 }
 
 variable "alloy_version" {
+  type = string
+}
+variable "grafana_exploretraces_plugin_version" {
   type = string
 }
 variable "grafana_operator_version" {

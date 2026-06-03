@@ -1,16 +1,16 @@
 namespaceScope: true
 leaderElect: true
 replicas: ${ARGOCD_ENV_grafana_operator_replicas}
-revisionHistoryLimit: 3
+revisionHistoryLimit: ${ARGOCD_ENV_observability_grafana_operator_revision_history_limit}
 
 enforceCacheLabels: "safe"
-defaultResyncPeriod: 10m
-maxConcurrentReconciles: 2
+defaultResyncPeriod: ${ARGOCD_ENV_observability_grafana_operator_default_resync_period}
+maxConcurrentReconciles: ${ARGOCD_ENV_observability_grafana_operator_max_concurrent_reconciles}
 
 logging:
-  encoder: json
-  level: info
-  time: rfc3339
+  encoder: ${ARGOCD_ENV_observability_grafana_operator_log_encoder}
+  level: ${ARGOCD_ENV_observability_grafana_operator_log_level}
+  time: ${ARGOCD_ENV_observability_grafana_operator_log_time}
 
 rbac:
   create: true
@@ -21,15 +21,15 @@ serviceAccount:
 
 kubeAuth:
   audience: "operator.grafana.com"
-  expirationSeconds: 3600
+  expirationSeconds: ${ARGOCD_ENV_observability_grafana_operator_kube_auth_expiration_seconds}
 
 metricsService:
   type: ClusterIP
 
 serviceMonitor:
   enabled: true
-  interval: 1m
-  scrapeTimeout: 10s
+  interval: ${ARGOCD_ENV_observability_grafana_operator_service_monitor_interval}
+  scrapeTimeout: ${ARGOCD_ENV_observability_grafana_operator_service_monitor_scrape_timeout}
 
 dashboard:
   enabled: false

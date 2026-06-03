@@ -29,6 +29,32 @@ spec:
           value: "${ARGOCD_ENV_grafana_operator_replicas}"
         - name: opentelemetry_operator_replicas
           value: "${ARGOCD_ENV_opentelemetry_operator_replicas}"
+        - name: observability_grafana_operator_revision_history_limit
+          value: "${ARGOCD_ENV_observability_grafana_operator_revision_history_limit}"
+        - name: observability_grafana_operator_default_resync_period
+          value: "${ARGOCD_ENV_observability_grafana_operator_default_resync_period}"
+        - name: observability_grafana_operator_max_concurrent_reconciles
+          value: "${ARGOCD_ENV_observability_grafana_operator_max_concurrent_reconciles}"
+        - name: observability_grafana_operator_log_encoder
+          value: "${ARGOCD_ENV_observability_grafana_operator_log_encoder}"
+        - name: observability_grafana_operator_log_level
+          value: "${ARGOCD_ENV_observability_grafana_operator_log_level}"
+        - name: observability_grafana_operator_log_time
+          value: "${ARGOCD_ENV_observability_grafana_operator_log_time}"
+        - name: observability_grafana_operator_kube_auth_expiration_seconds
+          value: "${ARGOCD_ENV_observability_grafana_operator_kube_auth_expiration_seconds}"
+        - name: observability_grafana_operator_service_monitor_interval
+          value: "${ARGOCD_ENV_observability_grafana_operator_service_monitor_interval}"
+        - name: observability_grafana_operator_service_monitor_scrape_timeout
+          value: "${ARGOCD_ENV_observability_grafana_operator_service_monitor_scrape_timeout}"
+        - name: observability_opentelemetry_operator_revision_history_limit
+          value: "${ARGOCD_ENV_observability_opentelemetry_operator_revision_history_limit}"
+        - name: observability_opentelemetry_operator_min_ready_seconds
+          value: "${ARGOCD_ENV_observability_opentelemetry_operator_min_ready_seconds}"
+        - name: observability_opentelemetry_operator_prometheus_rule_duration
+          value: "${ARGOCD_ENV_observability_opentelemetry_operator_prometheus_rule_duration}"
+        - name: observability_opentelemetry_operator_webhook_timeout_seconds
+          value: "${ARGOCD_ENV_observability_opentelemetry_operator_webhook_timeout_seconds}"
         - name: resource_grafana_operator_requests_cpu
           value: "${ARGOCD_ENV_resource_grafana_operator_requests_cpu}"
         - name: resource_grafana_operator_requests_memory

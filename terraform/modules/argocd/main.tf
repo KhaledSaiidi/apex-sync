@@ -102,14 +102,16 @@ resource "local_file" "argocd_root_app" {
     tempo_querier_replicas                 = var.tempo_querier_replicas
     tempo_query_frontend_replicas          = var.tempo_query_frontend_replicas
 
-    resource_env                     = var.resource_env
-    mimir_version                    = var.mimir_version
-    loki_version                     = var.loki_version
-    tempo_version                    = var.tempo_version
-    prometheus_operator_crds_version = var.prometheus_operator_crds_version
-    alloy_version                    = var.alloy_version
-    grafana_operator_version         = var.grafana_operator_version
-    opentelemetry_operator_version   = var.opentelemetry_operator_version
+    resource_env                         = var.resource_env
+    observability_env                    = var.observability_env
+    mimir_version                        = var.mimir_version
+    loki_version                         = var.loki_version
+    tempo_version                        = var.tempo_version
+    prometheus_operator_crds_version     = var.prometheus_operator_crds_version
+    alloy_version                        = var.alloy_version
+    grafana_exploretraces_plugin_version = var.grafana_exploretraces_plugin_version
+    grafana_operator_version             = var.grafana_operator_version
+    opentelemetry_operator_version       = var.opentelemetry_operator_version
 
   })
 }

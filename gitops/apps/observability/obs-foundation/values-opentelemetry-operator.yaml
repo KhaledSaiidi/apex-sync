@@ -1,6 +1,6 @@
 replicaCount: ${ARGOCD_ENV_opentelemetry_operator_replicas}
-revisionHistoryLimit: 3
-minReadySeconds: 10
+revisionHistoryLimit: ${ARGOCD_ENV_observability_opentelemetry_operator_revision_history_limit}
+minReadySeconds: ${ARGOCD_ENV_observability_opentelemetry_operator_min_ready_seconds}
 
 pdb:
   create: true
@@ -30,7 +30,7 @@ manager:
     enabled: true
     defaultRules:
       enabled: true
-      duration: 5m
+      duration: ${ARGOCD_ENV_observability_opentelemetry_operator_prometheus_rule_duration}
   createRbacPermissions: false
   securityContext:
     allowPrivilegeEscalation: false
@@ -44,7 +44,7 @@ manager:
 admissionWebhooks:
   create: true
   failurePolicy: Fail
-  timeoutSeconds: 10
+  timeoutSeconds: ${ARGOCD_ENV_observability_opentelemetry_operator_webhook_timeout_seconds}
   certManager:
     enabled: true
   autoGenerateCert:

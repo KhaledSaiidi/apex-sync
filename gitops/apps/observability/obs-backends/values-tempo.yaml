@@ -32,11 +32,11 @@ storage:
 ingester:
   replicas: ${ARGOCD_ENV_tempo_ingester_replicas}
   config:
-    replication_factor: 3
-    trace_idle_period: 10s
-    max_block_bytes: 1073741824
-    max_block_duration: 30m
-    complete_block_timeout: 15m
+    replication_factor: ${ARGOCD_ENV_observability_tempo_ingester_replication_factor}
+    trace_idle_period: ${ARGOCD_ENV_observability_tempo_trace_idle_period}
+    max_block_bytes: ${ARGOCD_ENV_observability_tempo_max_block_bytes}
+    max_block_duration: ${ARGOCD_ENV_observability_tempo_max_block_duration}
+    complete_block_timeout: ${ARGOCD_ENV_observability_tempo_complete_block_timeout}
     flush_all_on_shutdown: true
   persistence:
     enabled: true

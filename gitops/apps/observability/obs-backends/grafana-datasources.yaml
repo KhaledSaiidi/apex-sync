@@ -10,7 +10,7 @@ spec:
     editable: true
     isDefault: true
     jsonData:
-      timeInterval: 1m
+      timeInterval: ${ARGOCD_ENV_observability_grafana_datasource_time_interval}
     name: Mimir
     type: prometheus
     uid: Mimir
@@ -18,7 +18,7 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  resyncPeriod: 10m0s
+  resyncPeriod: ${ARGOCD_ENV_observability_grafana_datasource_resync_period}
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
@@ -32,7 +32,7 @@ spec:
     editable: true
     isDefault: false
     jsonData:
-      timeout: 60
+      timeout: ${ARGOCD_ENV_observability_grafana_loki_timeout}
     name: Loki
     type: loki
     uid: Loki
@@ -40,7 +40,7 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  resyncPeriod: 10m0s
+  resyncPeriod: ${ARGOCD_ENV_observability_grafana_datasource_resync_period}
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
@@ -66,16 +66,16 @@ spec:
         tag: http.path
         type: Tag
       traceQuery:
-        spanEndTimeShift: 1h
-        spanStartTimeShift: -1h
+        spanEndTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_end_time_shift}
+        spanStartTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_start_time_shift}
         timeShiftEnabled: true
       tracesToLogsV2:
         customQuery: true
         datasourceUid: Loki
         filterBySpanID: false
         filterByTraceID: false
-        spanEndTimeShift: 1h
-        spanStartTimeShift: -1h
+        spanEndTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_end_time_shift}
+        spanStartTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_start_time_shift}
         tags:
           - k8s.namespace.name
           - k8s.pod.name
@@ -89,5 +89,5 @@ spec:
       dashboards: grafana
   plugins:
     - name: grafana-exploretraces-app
-      version: 2.0.3
-  resyncPeriod: 10m0s
+      version: ${ARGOCD_ENV_grafana_exploretraces_plugin_version}
+  resyncPeriod: ${ARGOCD_ENV_observability_grafana_datasource_resync_period}

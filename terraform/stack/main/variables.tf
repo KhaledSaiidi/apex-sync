@@ -366,6 +366,9 @@ variable "prometheus_operator_crds_version" {
 variable "alloy_version" {
   type = string
 }
+variable "grafana_exploretraces_plugin_version" {
+  type = string
+}
 variable "grafana_operator_version" {
   type = string
 }

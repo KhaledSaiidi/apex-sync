@@ -171,11 +171,17 @@ spec:
           value: "${prometheus_operator_crds_version}"
         - name: alloy_version
           value: "${alloy_version}"
+        - name: grafana_exploretraces_plugin_version
+          value: "${grafana_exploretraces_plugin_version}"
         - name: grafana_operator_version
           value: "${grafana_operator_version}"
         - name: opentelemetry_operator_version
           value: "${opentelemetry_operator_version}"
 %{ for name, value in resource_env ~}
+        - name: ${name}
+          value: "${value}"
+%{ endfor ~}
+%{ for name, value in observability_env ~}
         - name: ${name}
           value: "${value}"
 %{ endfor ~}

@@ -4,6 +4,7 @@ locals {
   custom_config_files      = sort(fileset(local.repo_root, "override-config/*.y*ml"))
   custom_config            = merge([for file in local.custom_config_files : yamldecode(file("${local.repo_root}/${file}"))]...)
   resource_env             = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "resource_") }
+  observability_env        = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "observability_") }
   kubeconfig_path          = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
   bootstrap_sources_files  = sort(concat(["ansible.cfg"], tolist(fileset(local.repo_root, "ansible/**/*.yml")), tolist(fileset(local.repo_root, "ansible/**/*.yaml"))))
   bootstrap_sources_sha256 = sha256(join("", [for file in local.bootstrap_sources_files : filesha256("${local.repo_root}/${file}")]))
@@ -103,14 +104,16 @@ module "argocd" {
   tempo_querier_replicas                 = var.tempo_querier_replicas
   tempo_query_frontend_replicas          = var.tempo_query_frontend_replicas
 
-  resource_env                     = local.resource_env
-  mimir_version                    = var.mimir_version
-  loki_version                     = var.loki_version
-  tempo_version                    = var.tempo_version
-  prometheus_operator_crds_version = var.prometheus_operator_crds_version
-  alloy_version                    = var.alloy_version
-  grafana_operator_version         = var.grafana_operator_version
-  opentelemetry_operator_version   = var.opentelemetry_operator_version
+  resource_env                         = local.resource_env
+  observability_env                    = local.observability_env
+  mimir_version                        = var.mimir_version
+  loki_version                         = var.loki_version
+  tempo_version                        = var.tempo_version
+  prometheus_operator_crds_version     = var.prometheus_operator_crds_version
+  alloy_version                        = var.alloy_version
+  grafana_exploretraces_plugin_version = var.grafana_exploretraces_plugin_version
+  grafana_operator_version             = var.grafana_operator_version
+  opentelemetry_operator_version       = var.opentelemetry_operator_version
 
   depends_on = [
     null_resource.artifacts_dir

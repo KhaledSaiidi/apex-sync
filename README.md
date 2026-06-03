@@ -100,6 +100,7 @@ Review and edit:
 - `override-config/ansible.yaml`
 - `override-config/argocd.yaml`
 - `override-config/gitops.yaml`
+- `override-config/observability.yaml`
 - `override-config/replication.yaml`
 - `override-config/resources.yaml`
 
@@ -168,12 +169,17 @@ including:
 - `percona_version`
 - `prometheus_operator_crds_version`
 - `alloy_version`
+- `grafana_exploretraces_plugin_version`
 - `reflector_version`
 - `tempo_version`
 
 Replication and sizing values live in `override-config/replication.yaml`.
 Resource requests and limits live in `override-config/resources.yaml` and are
 passed through Terraform as `resource_*` environment values.
+Observability runtime tuning, such as datasource refresh periods, scrape
+intervals, retention windows, and collector batch settings, lives in
+`override-config/observability.yaml` and is passed through Terraform as
+`observability_*` environment values.
 
 ## Bootstrap Flow
 

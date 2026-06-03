@@ -29,6 +29,66 @@ spec:
           value: "${ARGOCD_ENV_tempo_version}"
         - name: alloy_version
           value: "${ARGOCD_ENV_alloy_version}"
+        - name: grafana_exploretraces_plugin_version
+          value: "${ARGOCD_ENV_grafana_exploretraces_plugin_version}"
+        - name: observability_grafana_datasource_time_interval
+          value: "${ARGOCD_ENV_observability_grafana_datasource_time_interval}"
+        - name: observability_grafana_datasource_resync_period
+          value: "${ARGOCD_ENV_observability_grafana_datasource_resync_period}"
+        - name: observability_grafana_loki_timeout
+          value: "${ARGOCD_ENV_observability_grafana_loki_timeout}"
+        - name: observability_grafana_tempo_trace_start_time_shift
+          value: "${ARGOCD_ENV_observability_grafana_tempo_trace_start_time_shift}"
+        - name: observability_grafana_tempo_trace_end_time_shift
+          value: "${ARGOCD_ENV_observability_grafana_tempo_trace_end_time_shift}"
+        - name: observability_alloy_log_level
+          value: "${ARGOCD_ENV_observability_alloy_log_level}"
+        - name: observability_alloy_log_format
+          value: "${ARGOCD_ENV_observability_alloy_log_format}"
+        - name: observability_alloy_gateway_batch_timeout
+          value: "${ARGOCD_ENV_observability_alloy_gateway_batch_timeout}"
+        - name: observability_alloy_gateway_batch_send_size
+          value: "${ARGOCD_ENV_observability_alloy_gateway_batch_send_size}"
+        - name: observability_alloy_node_scrape_interval
+          value: "${ARGOCD_ENV_observability_alloy_node_scrape_interval}"
+        - name: observability_alloy_service_monitor_interval
+          value: "${ARGOCD_ENV_observability_alloy_service_monitor_interval}"
+        - name: observability_alloy_events_log_format
+          value: "${ARGOCD_ENV_observability_alloy_events_log_format}"
+        - name: observability_loki_schema_period
+          value: "${ARGOCD_ENV_observability_loki_schema_period}"
+        - name: observability_loki_replication_factor
+          value: "${ARGOCD_ENV_observability_loki_replication_factor}"
+        - name: observability_loki_retention_period
+          value: "${ARGOCD_ENV_observability_loki_retention_period}"
+        - name: observability_loki_ingestion_rate_mb
+          value: "${ARGOCD_ENV_observability_loki_ingestion_rate_mb}"
+        - name: observability_loki_ingestion_burst_size_mb
+          value: "${ARGOCD_ENV_observability_loki_ingestion_burst_size_mb}"
+        - name: observability_loki_max_query_parallelism
+          value: "${ARGOCD_ENV_observability_loki_max_query_parallelism}"
+        - name: observability_loki_split_queries_by_interval
+          value: "${ARGOCD_ENV_observability_loki_split_queries_by_interval}"
+        - name: observability_mimir_ingestion_rate
+          value: "${ARGOCD_ENV_observability_mimir_ingestion_rate}"
+        - name: observability_mimir_ingestion_burst_size
+          value: "${ARGOCD_ENV_observability_mimir_ingestion_burst_size}"
+        - name: observability_mimir_max_global_series_per_user
+          value: "${ARGOCD_ENV_observability_mimir_max_global_series_per_user}"
+        - name: observability_mimir_max_query_parallelism
+          value: "${ARGOCD_ENV_observability_mimir_max_query_parallelism}"
+        - name: observability_mimir_max_total_query_length
+          value: "${ARGOCD_ENV_observability_mimir_max_total_query_length}"
+        - name: observability_tempo_trace_idle_period
+          value: "${ARGOCD_ENV_observability_tempo_trace_idle_period}"
+        - name: observability_tempo_ingester_replication_factor
+          value: "${ARGOCD_ENV_observability_tempo_ingester_replication_factor}"
+        - name: observability_tempo_max_block_bytes
+          value: "${ARGOCD_ENV_observability_tempo_max_block_bytes}"
+        - name: observability_tempo_max_block_duration
+          value: "${ARGOCD_ENV_observability_tempo_max_block_duration}"
+        - name: observability_tempo_complete_block_timeout
+          value: "${ARGOCD_ENV_observability_tempo_complete_block_timeout}"
         - name: grafana_replicas
           value: "${ARGOCD_ENV_grafana_replicas}"
         - name: alloy_gateway_replicas

@@ -42,11 +42,11 @@ mimir:
     ingester:
       push_grpc_method_enabled: true
     limits:
-      ingestion_rate: 20000
-      ingestion_burst_size: 400000
-      max_global_series_per_user: 1500000
-      max_query_parallelism: 64
-      max_total_query_length: 12000h
+      ingestion_rate: ${ARGOCD_ENV_observability_mimir_ingestion_rate}
+      ingestion_burst_size: ${ARGOCD_ENV_observability_mimir_ingestion_burst_size}
+      max_global_series_per_user: ${ARGOCD_ENV_observability_mimir_max_global_series_per_user}
+      max_query_parallelism: ${ARGOCD_ENV_observability_mimir_max_query_parallelism}
+      max_total_query_length: ${ARGOCD_ENV_observability_mimir_max_total_query_length}
 
 minio:
   enabled: false
