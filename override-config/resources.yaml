@@ -1,4 +1,4 @@
-## Resources:
+## CPU and memory requests/limits for platform workloads.
 resource_kyverno_admission_controller_requests_cpu: "50m"
 resource_kyverno_admission_controller_requests_memory: "256Mi"
 resource_kyverno_admission_controller_limits_cpu: "500m"

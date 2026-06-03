@@ -1,5 +1,5 @@
-## ansible:
-kubeconfig_path: "../../../kind-kubeconfig.yaml"
+## Bootstrap inputs used by Ansible before Argo CD takes over.
+kubeconfig_path: "../../../kind-kubeconfig.yaml" # Local kubeconfig used by bootstrap and destroy scripts.
 gitops_root_app_repo_url: "https://github.com/KhaledSaiidi/apex-sync.git"
 argocd_chart_version: "9.5.15"
 ansible_python_interpreter: "/usr/bin/python3"

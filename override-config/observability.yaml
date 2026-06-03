@@ -1,49 +1,49 @@
 ## Observability runtime configuration:
-observability_grafana_datasource_time_interval: "1m"
-observability_grafana_datasource_resync_period: "10m0s"
-observability_grafana_loki_timeout: "60"
-observability_grafana_tempo_trace_start_time_shift: "-1h"
-observability_grafana_tempo_trace_end_time_shift: "1h"
+observability_grafana_datasource_time_interval: "1m" # Default query step shown by Grafana datasources for metric queries.
+observability_grafana_datasource_resync_period: "10m0s" # How often the Grafana Operator reconciles datasource CRs.
+observability_grafana_loki_timeout: "60" # Grafana datasource request timeout for Loki, in seconds.
+observability_grafana_tempo_trace_start_time_shift: "-1h" # Time shift applied before a trace span when opening related logs.
+observability_grafana_tempo_trace_end_time_shift: "1h" # Time shift applied after a trace span when opening related logs.
 
-observability_alloy_log_level: "info"
-observability_alloy_log_format: "logfmt"
-observability_alloy_gateway_batch_timeout: "5s"
-observability_alloy_gateway_batch_send_size: "8192"
-observability_alloy_node_scrape_interval: "30s"
-observability_alloy_service_monitor_interval: "30s"
-observability_alloy_events_log_format: "logfmt"
+observability_alloy_log_level: "info" # Log verbosity for Alloy collectors.
+observability_alloy_log_format: "logfmt" # Log output format for Alloy collectors.
+observability_alloy_gateway_batch_timeout: "5s" # Maximum time Alloy waits before flushing a telemetry batch.
+observability_alloy_gateway_batch_send_size: "8192" # Target number of telemetry items Alloy sends per batch.
+observability_alloy_node_scrape_interval: "30s" # How often the Alloy daemonset scrapes node-local metrics.
+observability_alloy_service_monitor_interval: "30s" # How often Alloy self-metrics are scraped by ServiceMonitor.
+observability_alloy_events_log_format: "logfmt" # Format used when Alloy converts Kubernetes events into logs.
 
-observability_loki_schema_period: "24h"
-observability_loki_replication_factor: "3"
-observability_loki_retention_period: "30d"
-observability_loki_ingestion_rate_mb: "32"
-observability_loki_ingestion_burst_size_mb: "64"
-observability_loki_max_query_parallelism: "64"
-observability_loki_split_queries_by_interval: "15m"
+observability_loki_schema_period: "24h" # Loki index period used by the TSDB schema.
+observability_loki_replication_factor: "3" # Number of Loki replicas that should store each log stream.
+observability_loki_retention_period: "30d" # How long Loki keeps logs before compaction removes them.
+observability_loki_ingestion_rate_mb: "32" # Per-tenant steady log ingestion limit in MB per second.
+observability_loki_ingestion_burst_size_mb: "64" # Per-tenant burst log ingestion limit in MB.
+observability_loki_max_query_parallelism: "64" # Maximum parallelism Loki may use for a single query.
+observability_loki_split_queries_by_interval: "15m" # Time range Loki uses when splitting large queries.
 
-observability_mimir_ingestion_rate: "20000"
-observability_mimir_ingestion_burst_size: "400000"
-observability_mimir_max_global_series_per_user: "1500000"
-observability_mimir_max_query_parallelism: "64"
-observability_mimir_max_total_query_length: "12000h"
+observability_mimir_ingestion_rate: "20000" # Per-tenant steady metric sample ingestion limit.
+observability_mimir_ingestion_burst_size: "400000" # Per-tenant burst metric sample ingestion limit.
+observability_mimir_max_global_series_per_user: "1500000" # Maximum active metric series allowed per tenant.
+observability_mimir_max_query_parallelism: "64" # Maximum parallelism Mimir may use for a single query.
+observability_mimir_max_total_query_length: "12000h" # Largest total time range Mimir allows for one query.
 
-observability_tempo_trace_idle_period: "10s"
-observability_tempo_ingester_replication_factor: "3"
-observability_tempo_max_block_bytes: "1073741824"
-observability_tempo_max_block_duration: "30m"
-observability_tempo_complete_block_timeout: "15m"
+observability_tempo_trace_idle_period: "10s" # How long Tempo waits before cutting an idle trace block.
+observability_tempo_ingester_replication_factor: "3" # Number of Tempo ingesters that should receive each trace.
+observability_tempo_max_block_bytes: "1073741824" # Maximum Tempo ingester block size before flushing, in bytes.
+observability_tempo_max_block_duration: "30m" # Maximum Tempo ingester block age before flushing.
+observability_tempo_complete_block_timeout: "15m" # How long Tempo waits for a complete block before shipping it.
 
-observability_grafana_operator_revision_history_limit: "3"
-observability_grafana_operator_default_resync_period: "10m"
-observability_grafana_operator_max_concurrent_reconciles: "2"
-observability_grafana_operator_log_encoder: "json"
-observability_grafana_operator_log_level: "info"
-observability_grafana_operator_log_time: "rfc3339"
-observability_grafana_operator_kube_auth_expiration_seconds: "3600"
-observability_grafana_operator_service_monitor_interval: "1m"
-observability_grafana_operator_service_monitor_scrape_timeout: "10s"
+observability_grafana_operator_revision_history_limit: "3" # Number of old Grafana Operator ReplicaSets Kubernetes keeps.
+observability_grafana_operator_default_resync_period: "10m" # Default reconciliation interval for Grafana Operator resources.
+observability_grafana_operator_max_concurrent_reconciles: "2" # Maximum Grafana Operator reconcile loops running at once.
+observability_grafana_operator_log_encoder: "json" # Log encoding format used by the Grafana Operator.
+observability_grafana_operator_log_level: "info" # Log verbosity for the Grafana Operator.
+observability_grafana_operator_log_time: "rfc3339" # Timestamp format used in Grafana Operator logs.
+observability_grafana_operator_kube_auth_expiration_seconds: "3600" # Lifetime of Kubernetes auth tokens requested by the operator.
+observability_grafana_operator_service_monitor_interval: "1m" # How often Grafana Operator metrics are scraped.
+observability_grafana_operator_service_monitor_scrape_timeout: "10s" # Timeout for each Grafana Operator metrics scrape.
 
-observability_opentelemetry_operator_revision_history_limit: "3"
-observability_opentelemetry_operator_min_ready_seconds: "10"
-observability_opentelemetry_operator_prometheus_rule_duration: "5m"
-observability_opentelemetry_operator_webhook_timeout_seconds: "10"
+observability_opentelemetry_operator_revision_history_limit: "3" # Number of old OpenTelemetry Operator ReplicaSets Kubernetes keeps.
+observability_opentelemetry_operator_min_ready_seconds: "10" # Minimum ready time before operator pods are considered available.
+observability_opentelemetry_operator_prometheus_rule_duration: "5m" # Alert duration used by default OpenTelemetry Operator rules.
+observability_opentelemetry_operator_webhook_timeout_seconds: "10" # Timeout for OpenTelemetry Operator admission webhook calls.

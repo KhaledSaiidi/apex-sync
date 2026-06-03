@@ -1,4 +1,4 @@
-## Replication:
+## Replica counts and scaling bounds for platform workloads.
 kyverno_admission_controller_replicas: "2"
 kyverno_background_controller_replicas: "1"
 kyverno_cleanup_controller_replicas: "1"
