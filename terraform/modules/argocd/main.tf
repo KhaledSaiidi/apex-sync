@@ -71,10 +71,7 @@ resource "local_file" "argocd_root_app" {
     grafana_operator_replicas              = var.grafana_operator_replicas
     opentelemetry_operator_replicas        = var.opentelemetry_operator_replicas
     grafana_replicas                       = var.grafana_replicas
-    otel_gateway_replicas                  = var.otel_gateway_replicas
-    prometheus_replicas                    = var.prometheus_replicas
-    prometheus_alertmanager_replicas       = var.prometheus_alertmanager_replicas
-    kube_state_metrics_replicas            = var.kube_state_metrics_replicas
+    alloy_gateway_replicas                 = var.alloy_gateway_replicas
     loki_backend_replicas                  = var.loki_backend_replicas
     loki_chunks_cache_replicas             = var.loki_chunks_cache_replicas
     loki_gateway_replicas                  = var.loki_gateway_replicas
@@ -110,7 +107,7 @@ resource "local_file" "argocd_root_app" {
     loki_version                     = var.loki_version
     tempo_version                    = var.tempo_version
     prometheus_operator_crds_version = var.prometheus_operator_crds_version
-    prometheus_operator_version      = var.prometheus_operator_version
+    alloy_version                    = var.alloy_version
     grafana_operator_version         = var.grafana_operator_version
     opentelemetry_operator_version   = var.opentelemetry_operator_version
 

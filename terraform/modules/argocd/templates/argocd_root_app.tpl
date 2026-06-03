@@ -101,14 +101,8 @@ spec:
           value: "${opentelemetry_operator_replicas}"
         - name: grafana_replicas
           value: "${grafana_replicas}"
-        - name: otel_gateway_replicas
-          value: "${otel_gateway_replicas}"
-        - name: prometheus_replicas
-          value: "${prometheus_replicas}"
-        - name: prometheus_alertmanager_replicas
-          value: "${prometheus_alertmanager_replicas}"
-        - name: kube_state_metrics_replicas
-          value: "${kube_state_metrics_replicas}"
+        - name: alloy_gateway_replicas
+          value: "${alloy_gateway_replicas}"
         - name: loki_backend_replicas
           value: "${loki_backend_replicas}"
         - name: loki_chunks_cache_replicas
@@ -175,8 +169,8 @@ spec:
           value: "${tempo_version}"
         - name: prometheus_operator_crds_version
           value: "${prometheus_operator_crds_version}"
-        - name: prometheus_operator_version
-          value: "${prometheus_operator_version}"
+        - name: alloy_version
+          value: "${alloy_version}"
         - name: grafana_operator_version
           value: "${grafana_operator_version}"
         - name: opentelemetry_operator_version

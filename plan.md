@@ -233,7 +233,7 @@ Deploy:
 * `GrafanaFolder`
 * `GrafanaDatasource`
 * `Instrumentation`
-* optional `OpenTelemetryCollector` only for special use cases
+* `Instrumentation`
 
 This wave should not deploy infrastructure. It should only deploy observability configuration.
 
@@ -386,7 +386,6 @@ Remove the following assumptions:
 
 * OpenTelemetry Collector is the main collector for app telemetry, container logs, and node metrics.
 * Alloy is not deployed.
-* Observability should stay limited to two Argo CD child apps.
 * `kube-prometheus-stack` is required as the main infrastructure metrics runtime.
 * Prometheus remote-write to Mimir is the preferred long-term path if Alloy can scrape `ServiceMonitor` and `PodMonitor` directly.
 * Alertmanager should automatically stay inside `kube-prometheus-stack`.
@@ -414,26 +413,10 @@ Do not deploy `kube-prometheus-stack` by default.
 Use this instead:
 
 * Prometheus Operator CRDs only
-* kube-state-metrics chart
-* prometheus-node-exporter chart
 * ServiceMonitor/PodMonitor resources
-* Alloy Gateway scraping these resources
+* Alloy gateway scraping these resources
+* Alloy daemonset for node-local telemetry
 * Mimir as the long-term metrics backend
-
-Only keep `kube-prometheus-stack` if there is a clear reason to run a local Prometheus and Alertmanager, such as:
-
-* temporary migration
-* local rule evaluation
-* compatibility with existing alerts
-* debugging during rollout
-
-If kept temporarily:
-
-* disable Grafana
-* disable CRDs
-* remote-write to Mimir
-* document it as transitional
-* define a later migration plan to Alloy-native scraping and Mimir ruler/alerting
 
 ## Decision: Alerting
 
@@ -446,12 +429,6 @@ Preferred long-term model:
 * Alertmanager-compatible alert routing
 * Grafana dashboards and optional Grafana-managed alerts only where useful
 
-Temporary model:
-
-* Prometheus from kube-prometheus-stack evaluates `PrometheusRule`
-* Alertmanager from kube-prometheus-stack handles routing
-* Prometheus remote-writes metrics to Mimir
-
 Do not leave alerting undecided permanently.
 
 ## Decision: OpenTelemetry Collector
@@ -462,16 +439,8 @@ Use OpenTelemetry Operator for:
 
 * `Instrumentation` CRs
 * auto-instrumentation
-* optional `OpenTelemetryCollector` CRs for specific advanced pipelines
 
-Examples where an OpenTelemetryCollector may be justified:
-
-* vendor-specific exporter not handled by Alloy
-* complex processor chain needed temporarily
-* migration from existing OTel Collector config
-* team already owns an OTel pipeline that cannot be replaced immediately
-
-Otherwise, use Alloy.
+Use Alloy for the default metrics, logs, and traces pipelines.
 
 ## Decision: Grafana
 
@@ -688,4 +657,4 @@ OpenTelemetry Operator injects instrumentation.
 Prometheus Operator CRDs provide the monitoring API.
 ```
 
-OpenTelemetry Collector and kube-prometheus-stack are not the default backbone of this design. They are optional transitional or special-purpose components only.
+OpenTelemetry Collector and kube-prometheus-stack are not part of the default runtime backbone of this design.

@@ -47,9 +47,8 @@ GitOps then manages:
   - Prometheus Operator CRDs
   - Grafana Operator
   - OpenTelemetry Operator
-  - kube-prometheus-stack runtime with Prometheus and Alertmanager
   - Mimir, Loki, and Tempo
-  - OpenTelemetry Collector gateway and daemonset
+  - Grafana Alloy gateway and daemonset collectors
   - Grafana instance and datasources
 
 ## Repository Layout
@@ -168,7 +167,7 @@ including:
 - `opentelemetry_operator_version`
 - `percona_version`
 - `prometheus_operator_crds_version`
-- `prometheus_operator_version`
+- `alloy_version`
 - `reflector_version`
 - `tempo_version`
 
@@ -249,11 +248,10 @@ The base applications are synced in waves:
   - `grafana-operator`
   - `opentelemetry-operator`
 - `obs-backends` at wave 25:
-  - `kube-prometheus-stack` with CRDs disabled, Grafana disabled, and node-exporter disabled
   - Mimir
   - Loki
   - Tempo
-  - OpenTelemetry Collector gateway and daemonset
+  - Grafana Alloy gateway and daemonset collectors
   - Grafana instance and datasources
 
 Most child applications use the `envsubst` CMP plugin, then run

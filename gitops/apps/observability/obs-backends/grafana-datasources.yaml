@@ -23,28 +23,6 @@ spec:
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
 metadata:
-  name: prometheus
-  namespace: observability
-spec:
-  allowCrossNamespaceImport: false
-  datasource:
-    access: proxy
-    editable: true
-    isDefault: false
-    jsonData:
-      timeInterval: 1m
-    name: Prometheus
-    type: prometheus
-    uid: Prometheus
-    url: http://prometheus-operated.observability.svc.cluster.local:9090
-  instanceSelector:
-    matchLabels:
-      dashboards: grafana
-  resyncPeriod: 10m0s
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDatasource
-metadata:
   name: loki
   namespace: observability
 spec:

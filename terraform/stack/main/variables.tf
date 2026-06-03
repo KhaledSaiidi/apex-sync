@@ -228,19 +228,7 @@ variable "grafana_replicas" {
   type = string
 }
 
-variable "otel_gateway_replicas" {
-  type = string
-}
-
-variable "prometheus_replicas" {
-  type = string
-}
-
-variable "prometheus_alertmanager_replicas" {
-  type = string
-}
-
-variable "kube_state_metrics_replicas" {
+variable "alloy_gateway_replicas" {
   type = string
 }
 
@@ -375,7 +363,7 @@ variable "prometheus_operator_crds_version" {
   type = string
 }
 
-variable "prometheus_operator_version" {
+variable "alloy_version" {
   type = string
 }
 variable "grafana_operator_version" {
