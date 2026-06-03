@@ -4,6 +4,7 @@ namespace: observability
 resources:
   - grafana.yaml
   - grafana-datasources.yaml
+  - grafana-httproute.yaml
 helmCharts:
   - name: mimir-distributed
     repo: https://grafana.github.io/helm-charts
