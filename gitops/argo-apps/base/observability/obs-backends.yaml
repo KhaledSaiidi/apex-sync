@@ -4,7 +4,7 @@ metadata:
   name: obs-backends
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: '25'
+    argocd.argoproj.io/sync-wave: '26'
   labels:
     app.kubernetes.io/name: obs-backends
     app.kubernetes.io/part-of: platform-baseline

@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: obs-config
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '29'
+  labels:
+    app.kubernetes.io/name: obs-config
+    app.kubernetes.io/part-of: platform-baseline
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  source:
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    path: gitops/apps/observability/obs-config
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ServerSideApply=true
