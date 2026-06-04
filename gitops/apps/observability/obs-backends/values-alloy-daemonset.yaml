@@ -51,6 +51,56 @@ alloy:
         forward_to      = [prometheus.remote_write.mimir.receiver]
       }
 
+      discovery.kubernetes "node" {
+        role = "node"
+        selectors {
+          role  = "node"
+          field = "metadata.name=" + sys.env("K8S_NODE_NAME")
+        }
+      }
+
+      prometheus.scrape "kubelet" {
+        targets           = discovery.kubernetes.node.targets
+        scheme            = "https"
+        metrics_path      = "/metrics"
+        scrape_interval   = "${ARGOCD_ENV_observability_alloy_kubelet_scrape_interval}"
+        scrape_timeout    = "${ARGOCD_ENV_observability_alloy_kubelet_scrape_timeout}"
+        bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        tls_config {
+          ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+          insecure_skip_verify = true
+        }
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "cadvisor" {
+        targets           = discovery.kubernetes.node.targets
+        scheme            = "https"
+        metrics_path      = "/metrics/cadvisor"
+        scrape_interval   = "${ARGOCD_ENV_observability_alloy_cadvisor_scrape_interval}"
+        scrape_timeout    = "${ARGOCD_ENV_observability_alloy_cadvisor_scrape_timeout}"
+        bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        tls_config {
+          ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+          insecure_skip_verify = true
+        }
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "resource" {
+        targets           = discovery.kubernetes.node.targets
+        scheme            = "https"
+        metrics_path      = "/metrics/resource"
+        scrape_interval   = "${ARGOCD_ENV_observability_alloy_resource_scrape_interval}"
+        scrape_timeout    = "${ARGOCD_ENV_observability_alloy_resource_scrape_timeout}"
+        bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        tls_config {
+          ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+          insecure_skip_verify = true
+        }
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
       discovery.kubernetes "pod" {
         role = "pod"
         selectors {

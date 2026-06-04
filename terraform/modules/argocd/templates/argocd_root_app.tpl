@@ -103,6 +103,8 @@ spec:
           value: "${grafana_replicas}"
         - name: alloy_gateway_replicas
           value: "${alloy_gateway_replicas}"
+        - name: kube_state_metrics_replicas
+          value: "${kube_state_metrics_replicas}"
         - name: loki_backend_replicas
           value: "${loki_backend_replicas}"
         - name: loki_chunks_cache_replicas
@@ -171,6 +173,8 @@ spec:
           value: "${prometheus_operator_crds_version}"
         - name: alloy_version
           value: "${alloy_version}"
+        - name: kube_state_metrics_version
+          value: "${kube_state_metrics_version}"
         - name: grafana_exploretraces_plugin_version
           value: "${grafana_exploretraces_plugin_version}"
         - name: grafana_operator_version

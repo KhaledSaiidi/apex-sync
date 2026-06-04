@@ -70,16 +70,19 @@ spec:
         spanStartTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_start_time_shift}
         timeShiftEnabled: true
       tracesToLogsV2:
-        customQuery: true
+        customQuery: false
         datasourceUid: Loki
         filterBySpanID: false
-        filterByTraceID: false
+        filterByTraceID: true
         spanEndTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_end_time_shift}
         spanStartTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_start_time_shift}
         tags:
-          - k8s.namespace.name
-          - k8s.pod.name
-          - service.name
+          - key: k8s.namespace.name
+            value: namespace
+          - key: k8s.pod.name
+            value: pod
+          - key: service.name
+            value: app
     name: Tempo
     type: tempo
     uid: Tempo

@@ -232,6 +232,10 @@ variable "alloy_gateway_replicas" {
   type = string
 }
 
+variable "kube_state_metrics_replicas" {
+  type = string
+}
+
 variable "loki_backend_replicas" {
   type = string
 }
@@ -364,6 +368,9 @@ variable "prometheus_operator_crds_version" {
 }
 
 variable "alloy_version" {
+  type = string
+}
+variable "kube_state_metrics_version" {
   type = string
 }
 variable "grafana_exploretraces_plugin_version" {

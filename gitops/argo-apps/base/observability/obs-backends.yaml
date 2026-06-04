@@ -27,6 +27,8 @@ spec:
           value: "${ARGOCD_ENV_loki_version}"
         - name: tempo_version
           value: "${ARGOCD_ENV_tempo_version}"
+        - name: kube_state_metrics_version
+          value: "${ARGOCD_ENV_kube_state_metrics_version}"
         - name: alloy_version
           value: "${ARGOCD_ENV_alloy_version}"
         - name: grafana_exploretraces_plugin_version
@@ -51,6 +53,22 @@ spec:
           value: "${ARGOCD_ENV_observability_alloy_gateway_batch_send_size}"
         - name: observability_alloy_node_scrape_interval
           value: "${ARGOCD_ENV_observability_alloy_node_scrape_interval}"
+        - name: observability_alloy_kubelet_scrape_interval
+          value: "${ARGOCD_ENV_observability_alloy_kubelet_scrape_interval}"
+        - name: observability_alloy_kubelet_scrape_timeout
+          value: "${ARGOCD_ENV_observability_alloy_kubelet_scrape_timeout}"
+        - name: observability_alloy_cadvisor_scrape_interval
+          value: "${ARGOCD_ENV_observability_alloy_cadvisor_scrape_interval}"
+        - name: observability_alloy_cadvisor_scrape_timeout
+          value: "${ARGOCD_ENV_observability_alloy_cadvisor_scrape_timeout}"
+        - name: observability_alloy_resource_scrape_interval
+          value: "${ARGOCD_ENV_observability_alloy_resource_scrape_interval}"
+        - name: observability_alloy_resource_scrape_timeout
+          value: "${ARGOCD_ENV_observability_alloy_resource_scrape_timeout}"
+        - name: observability_kube_state_metrics_scrape_interval
+          value: "${ARGOCD_ENV_observability_kube_state_metrics_scrape_interval}"
+        - name: observability_kube_state_metrics_scrape_timeout
+          value: "${ARGOCD_ENV_observability_kube_state_metrics_scrape_timeout}"
         - name: observability_alloy_service_monitor_interval
           value: "${ARGOCD_ENV_observability_alloy_service_monitor_interval}"
         - name: observability_alloy_events_log_format
@@ -93,6 +111,8 @@ spec:
           value: "${ARGOCD_ENV_grafana_replicas}"
         - name: alloy_gateway_replicas
           value: "${ARGOCD_ENV_alloy_gateway_replicas}"
+        - name: kube_state_metrics_replicas
+          value: "${ARGOCD_ENV_kube_state_metrics_replicas}"
         - name: loki_backend_replicas
           value: "${ARGOCD_ENV_loki_backend_replicas}"
         - name: loki_chunks_cache_replicas
@@ -225,6 +245,14 @@ spec:
           value: "${ARGOCD_ENV_resource_alloy_daemonset_limits_cpu}"
         - name: resource_alloy_daemonset_limits_memory
           value: "${ARGOCD_ENV_resource_alloy_daemonset_limits_memory}"
+        - name: resource_kube_state_metrics_requests_cpu
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_requests_cpu}"
+        - name: resource_kube_state_metrics_requests_memory
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_requests_memory}"
+        - name: resource_kube_state_metrics_limits_cpu
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_limits_cpu}"
+        - name: resource_kube_state_metrics_limits_memory
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_limits_memory}"
         - name: resource_mimir_alertmanager_limits_cpu
           value: "${ARGOCD_ENV_resource_mimir_alertmanager_limits_cpu}"
         - name: resource_mimir_alertmanager_limits_memory

@@ -10,6 +10,14 @@ observability_alloy_log_format: "logfmt" # Log output format for Alloy collector
 observability_alloy_gateway_batch_timeout: "5s" # Maximum time Alloy waits before flushing a telemetry batch.
 observability_alloy_gateway_batch_send_size: "8192" # Target number of telemetry items Alloy sends per batch.
 observability_alloy_node_scrape_interval: "30s" # How often the Alloy daemonset scrapes node-local metrics.
+observability_alloy_kubelet_scrape_interval: "30s" # How often Alloy scrapes kubelet metrics from each node.
+observability_alloy_kubelet_scrape_timeout: "10s" # Timeout for kubelet metrics scrapes.
+observability_alloy_cadvisor_scrape_interval: "30s" # How often Alloy scrapes cAdvisor container metrics from each node.
+observability_alloy_cadvisor_scrape_timeout: "10s" # Timeout for cAdvisor metrics scrapes.
+observability_alloy_resource_scrape_interval: "30s" # How often Alloy scrapes kubelet resource metrics from each node.
+observability_alloy_resource_scrape_timeout: "10s" # Timeout for kubelet resource metrics scrapes.
+observability_kube_state_metrics_scrape_interval: "30s" # How often kube-state-metrics is scraped.
+observability_kube_state_metrics_scrape_timeout: "10s" # Timeout for kube-state-metrics scrapes.
 observability_alloy_service_monitor_interval: "30s" # How often Alloy self-metrics are scraped by ServiceMonitor.
 observability_alloy_events_log_format: "logfmt" # Format used when Alloy converts Kubernetes events into logs.
 

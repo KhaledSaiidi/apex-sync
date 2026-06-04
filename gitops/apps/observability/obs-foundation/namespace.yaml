@@ -6,3 +6,4 @@ metadata:
     app.kubernetes.io/name: observability
     app.kubernetes.io/part-of: observability
     ingress.apex-sync.io/public-gateway-access: "true"
+    istio-injection: enabled

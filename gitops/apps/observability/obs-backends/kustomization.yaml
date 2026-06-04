@@ -24,6 +24,12 @@ helmCharts:
     releaseName: tempo
     namespace: observability
     valuesFile: values-tempo.yaml
+  - name: kube-state-metrics
+    repo: https://prometheus-community.github.io/helm-charts
+    version: ${ARGOCD_ENV_kube_state_metrics_version}
+    releaseName: kube-state-metrics
+    namespace: observability
+    valuesFile: values-kube-state-metrics.yaml
   - name: alloy
     repo: https://grafana.github.io/helm-charts
     version: ${ARGOCD_ENV_alloy_version}
