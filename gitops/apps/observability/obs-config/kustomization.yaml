@@ -13,3 +13,8 @@ resources:
   - servicemonitors/openebs-servicemonitor.yaml
   - servicemonitors/reflector-servicemonitor.yaml
   - servicemonitors/stateful-operator-servicemonitor.yaml
+  - grafana/folder/grafana-kubernetes.yaml
+  - grafana/folder/grafana-istio.yaml
+  - grafana/folder/grafana-observability.yaml
+  - grafana/folder/grafana-storage.yaml
+  - grafana/dashboards/istio-mesh.yaml
