@@ -9,4 +9,5 @@ helmCharts:
     namespace: metallb-system
     valuesFile: values.yaml
 resources:
+  - metallb-monitor-services.yaml
   - metallb-pool.yaml

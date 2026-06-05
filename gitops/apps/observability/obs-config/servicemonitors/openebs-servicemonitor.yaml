@@ -1,25 +1,25 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: garage
+  name: openebs-lvm-localpv-node
   labels:
-    app.kubernetes.io/name: garage
-    app.kubernetes.io/instance: garage
-    app.kubernetes.io/component: metrics
+    app.kubernetes.io/name: openebs-lvm-localpv
+    app.kubernetes.io/instance: openebs
+    app.kubernetes.io/component: node
     app.kubernetes.io/part-of: observability
 spec:
-  jobLabel: app.kubernetes.io/name
+  jobLabel: name
   namespaceSelector:
     matchNames:
-      - garage
+      - openebs
   selector:
     matchLabels:
-      app.kubernetes.io/name: garage
-      app.kubernetes.io/instance: garage
+      role: openebs-lvm
+      name: openebs-lvm-node
+      release: openebs
   endpoints:
     - port: metrics
       path: /metrics
       scheme: http
       interval: 30s
       scrapeTimeout: 10s
-      honorLabels: true

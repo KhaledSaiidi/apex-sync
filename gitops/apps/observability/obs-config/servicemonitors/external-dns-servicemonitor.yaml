@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: external-dns
+  labels:
+    app.kubernetes.io/name: external-dns
+    app.kubernetes.io/instance: external-dns
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: observability
+spec:
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+      - external-dns
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: external-dns
+      app.kubernetes.io/instance: external-dns
+  endpoints:
+    - port: http
+      path: /metrics
+      scheme: http
+      interval: 30s
+      scrapeTimeout: 10s
