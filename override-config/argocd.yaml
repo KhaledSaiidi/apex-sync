@@ -3,4 +3,4 @@ argocd_reconciliation_timeout: "180s" # How often Argo CD checks applications fo
 argocd_repo_server_timeout_secs: "300" # Repo-server request timeout for manifest generation.
 argocd_exec_timeout: "180s" # Maximum runtime for Argo CD plugin commands.
 argocd_server_service_type: "LoadBalancer"
-argocd_cmp_image: "ghcr.io/khaledsaiidi/apex-sync/argocd-cmp-envsubst:1.3.1"
+argocd_cmp_image: "ghcr.io/khaledsaiidi/apex-sync/argocd-cmp-envsubst:sha-a5680f1405968ce1baf630479fbfe647254b4e3d"
