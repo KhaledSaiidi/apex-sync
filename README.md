@@ -47,9 +47,11 @@ GitOps then manages:
   - Prometheus Operator CRDs
   - Grafana Operator
   - OpenTelemetry Operator
+  - kube-state-metrics
   - Mimir, Loki, and Tempo
   - Grafana Alloy gateway and daemonset collectors
   - Grafana instance and datasources
+  - Declarative ServiceMonitors, Grafana folders, and Grafana dashboards
 
 ## Repository Layout
 
@@ -63,11 +65,14 @@ GitOps then manages:
 - `ansible/roles/`: Cilium, Argo CD, tooling, and root-app bootstrap roles.
 - `gitops/argo-apps`: Argo CD app-of-apps definitions.
 - `gitops/apps`: rendered application content.
+- `gitops/apps/observability/obs-foundation`: observability CRDs and operators.
+- `gitops/apps/observability/obs-backends`: observability storage, collectors,
+  Grafana, and datasources.
+- `gitops/apps/observability/obs-config`: declarative ServiceMonitors and
+  Grafana folder/dashboard resources.
 - `cmp-build/`: custom Argo CD CMP image source.
 - `.github/workflows/build-cmp-envsubst.yml`: GHCR image publish workflow.
 - `example.env.bootstrap`: example secret bootstrap env file.
-- `demo-app-ui.yaml`: standalone demo manifest, not part of the app-of-apps tree.
-- `plan.md`: current observability implementation plan and follow-up list.
 
 ## Prerequisites
 
@@ -160,6 +165,7 @@ including:
 - `grafana_operator_version`
 - `istio_main_version`
 - `kiali_version`
+- `kube_state_metrics_version`
 - `kyverno_version`
 - `loki_version`
 - `metallb_version`
@@ -253,19 +259,24 @@ The base applications are synced in waves:
   - `prometheus-operator-crds`
   - `grafana-operator`
   - `opentelemetry-operator`
-- `obs-backends` at wave 25:
+- `obs-backends` at wave 26:
   - Mimir
   - Loki
   - Tempo
+  - kube-state-metrics
   - Grafana Alloy gateway and daemonset collectors
   - Grafana instance and datasources
+- `obs-config` at wave 29:
+  - ServiceMonitors for platform workloads and observability targets
+  - Grafana folders for Kubernetes, Istio, storage, and observability dashboards
+  - Grafana dashboards, starting with the Istio mesh dashboard
 
 Most child applications use the `envsubst` CMP plugin, then run
 `kustomize build --enable-helm`.
 
 ## Observability Model
 
-The observability stack uses two layers:
+The observability stack uses three layers:
 
 ```text
 obs-foundation
@@ -273,25 +284,63 @@ obs-foundation
 
 obs-backends
   real observability systems, collectors, Grafana, and datasource config
+
+obs-config
+  declarative scrape config, Grafana folders, and Grafana dashboards
 ```
 
 Data flow:
 
-- Applications send OTLP metrics, logs, and traces to the OpenTelemetry gateway.
-- The OpenTelemetry daemonset collects host metrics, kubelet stats, and container logs.
-- The daemonset forwards telemetry to the gateway.
-- The gateway exports metrics to Mimir, logs to Loki, and traces to Tempo.
-- Prometheus remote-writes metrics to Mimir.
+- Applications can send OTLP metrics, logs, and traces to the Alloy gateway.
+- The Alloy daemonset collects host metrics, kubelet stats, cAdvisor metrics,
+  resource metrics, and container logs.
+- The Alloy gateway discovers `ServiceMonitor` and `PodMonitor` resources and
+  remote-writes scraped metrics to Mimir.
+- The Alloy gateway exports OTLP metrics to Mimir, logs to Loki, and traces to
+  Tempo.
+- Kubernetes events are converted into logs and written to Loki.
 - Grafana uses Mimir as the default metrics datasource.
-- Prometheus remains available as a local/debug datasource.
 - Loki and Tempo are configured for trace/log correlation.
 
 Collector choices:
 
 - No Promtail.
-- No Grafana Alloy.
 - No node-exporter.
-- OpenTelemetry Collector is the main telemetry collection path.
+- Grafana Alloy is the main telemetry collection path.
+- OpenTelemetry Operator is installed for OpenTelemetry CRDs and future
+  application instrumentation, while the current collection pipeline is Alloy.
+
+ServiceMonitor model:
+
+- Chart-created ServiceMonitors are disabled where practical.
+- `obs-config` owns ServiceMonitors declaratively so scrape intent lives in one
+  GitOps layer.
+- Argo CD, Kyverno, and cert-manager monitors are split by component to avoid
+  collapsing jobs under one generic label.
+- ServiceMonitors avoid blanket `honorLabels` so target labels do not override
+  collector labels unexpectedly.
+- MetalLB monitor Services are declared alongside the MetalLB app because the
+  chart normally creates them only when chart-managed ServiceMonitors are
+  enabled.
+
+Grafana model:
+
+- The Grafana instance is selected by the `dashboards: grafana` label.
+- Datasources are managed by `GrafanaDatasource` resources in `obs-backends`.
+- Folders and dashboards are managed by `GrafanaFolder` and
+  `GrafanaDashboard` resources in `obs-config`.
+- The initial managed folders are `kubernetes`, `istio`, `observability`, and
+  `storage`.
+- The first managed dashboard is the Istio mesh dashboard, placed in the
+  `istio` folder and mapped to the `Mimir` datasource.
+
+Loki mode:
+
+- Loki runs in `SimpleScalable` mode.
+- `loki_read_replicas`, `loki_write_replicas`, and `loki_backend_replicas`
+  define the active Loki topology.
+- `loki_single_binary_replicas` stays `0` in this mode so the monolithic Loki
+  deployment is not mixed with the read/write/backend deployment.
 
 ## Argo CD CMP Model
 
@@ -359,11 +408,8 @@ artifacts. It does not delete the Kubernetes cluster.
 
 ## Current Caveats
 
-- `example.env.bootstrap` only shows the GitHub App values. Add the AWS Route53
-  `TF_VAR_*` values before bootstrapping.
 - The default GitOps target revision in `override-config/gitops.yaml` points to
   the current development branch. Change it if you want Argo CD to follow another
   branch or tag.
-- Service names for the observability backends should be confirmed after the
-  first full Argo CD sync, then datasource and collector endpoints should be
-  adjusted if chart output differs.
+- Grafana dashboards currently use `grafanaCom` references. For stricter
+  offline GitOps, vendor dashboard JSON into the repo later.

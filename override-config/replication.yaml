@@ -45,7 +45,7 @@ loki_backend_replicas: "3"
 loki_gateway_replicas: "2"
 loki_chunks_cache_replicas: "2"
 loki_results_cache_replicas: "2"
-loki_single_binary_replicas: "0"
+loki_single_binary_replicas: "0" # Must stay 0 in SimpleScalable mode; read/write/backend run Loki.
 tempo_ingester_replicas: "3"
 tempo_distributor_replicas: "2"
 tempo_querier_replicas: "2"

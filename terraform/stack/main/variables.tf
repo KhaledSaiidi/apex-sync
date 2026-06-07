@@ -46,7 +46,8 @@ variable "github_app_installation_id" {
 }
 
 variable "github_app_private_key" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "aws_access_key_id" {
