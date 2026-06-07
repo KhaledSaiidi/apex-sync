@@ -1,7 +1,7 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: label-default-namespace-for-istio
+  name: label-platform-namespaces-for-istio
   annotations:
     argocd.argoproj.io/sync-wave: "10"
 spec:
@@ -29,11 +29,29 @@ spec:
           metadata:
             labels:
               istio-injection: enabled
+    - name: add-istio-injection-label-to-observability
+      skipBackgroundRequests: true
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - observability
+      mutate:
+        targets:
+          - apiVersion: v1
+            kind: Namespace
+            name: observability
+        patchStrategicMerge:
+          metadata:
+            labels:
+              istio-injection: enabled
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restart-default-deployments-after-istio-label
+  name: restart-platform-workloads-after-istio-label
   annotations:
     argocd.argoproj.io/sync-wave: "10"
 spec:
@@ -61,6 +79,93 @@ spec:
           - apiVersion: apps/v1
             kind: Deployment
             namespace: default
+        patchStrategicMerge:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  ops.corp.com/triggerrestart: "{{ request.object.metadata.resourceVersion }}"
+    - name: restart-deployments-when-observability-namespace-is-labeled
+      skipBackgroundRequests: false
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - observability
+              operations:
+                - CREATE
+                - UPDATE
+      preconditions:
+        all:
+          - key: "{{ request.object.metadata.labels.\"istio-injection\" || '' }}"
+            operator: Equals
+            value: enabled
+      mutate:
+        mutateExistingOnPolicyUpdate: false
+        targets:
+          - apiVersion: apps/v1
+            kind: Deployment
+            namespace: observability
+        patchStrategicMerge:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  ops.corp.com/triggerrestart: "{{ request.object.metadata.resourceVersion }}"
+    - name: restart-statefulsets-when-observability-namespace-is-labeled
+      skipBackgroundRequests: false
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - observability
+              operations:
+                - CREATE
+                - UPDATE
+      preconditions:
+        all:
+          - key: "{{ request.object.metadata.labels.\"istio-injection\" || '' }}"
+            operator: Equals
+            value: enabled
+      mutate:
+        mutateExistingOnPolicyUpdate: false
+        targets:
+          - apiVersion: apps/v1
+            kind: StatefulSet
+            namespace: observability
+        patchStrategicMerge:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  ops.corp.com/triggerrestart: "{{ request.object.metadata.resourceVersion }}"
+    - name: restart-daemonsets-when-observability-namespace-is-labeled
+      skipBackgroundRequests: false
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - observability
+              operations:
+                - CREATE
+                - UPDATE
+      preconditions:
+        all:
+          - key: "{{ request.object.metadata.labels.\"istio-injection\" || '' }}"
+            operator: Equals
+            value: enabled
+      mutate:
+        mutateExistingOnPolicyUpdate: false
+        targets:
+          - apiVersion: apps/v1
+            kind: DaemonSet
+            namespace: observability
         patchStrategicMerge:
           spec:
             template:

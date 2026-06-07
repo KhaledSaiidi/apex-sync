@@ -187,6 +187,176 @@ variable "stateful_resources_haproxy_replicas" {
   type = string
 }
 
+variable "grafana_operator_replicas" {
+  type = string
+}
+variable "opentelemetry_operator_replicas" {
+  type = string
+}
+
+variable "grafana_replicas" {
+  type = string
+}
+
+variable "alloy_gateway_replicas" {
+  type = string
+}
+
+variable "kube_state_metrics_replicas" {
+  type = string
+}
+
+variable "loki_backend_replicas" {
+  type = string
+}
+
+variable "loki_chunks_cache_replicas" {
+  type = string
+}
+
+variable "loki_gateway_replicas" {
+  type = string
+}
+
+variable "loki_read_replicas" {
+  type = string
+}
+
+variable "loki_results_cache_replicas" {
+  type = string
+}
+
+variable "loki_write_replicas" {
+  type = string
+}
+
+variable "loki_single_binary_replicas" {
+  type = string
+}
+
+variable "mimir_alertmanager_replicas" {
+  type = string
+}
+
+variable "mimir_chunks_cache_replicas" {
+  type = string
+}
+
+variable "mimir_compactor_replicas" {
+  type = string
+}
+
+variable "mimir_distributor_replicas" {
+  type = string
+}
+
+variable "mimir_gateway_replicas" {
+  type = string
+}
+
+variable "mimir_index_cache_replicas" {
+  type = string
+}
+
+variable "mimir_ingester_replicas" {
+  type = string
+}
+
+variable "mimir_metadata_cache_replicas" {
+  type = string
+}
+
+variable "mimir_overrides_exporter_replicas" {
+  type = string
+}
+
+variable "mimir_querier_replicas" {
+  type = string
+}
+
+variable "mimir_query_frontend_replicas" {
+  type = string
+}
+
+variable "mimir_query_scheduler_replicas" {
+  type = string
+}
+
+variable "mimir_results_cache_replicas" {
+  type = string
+}
+
+variable "mimir_ruler_replicas" {
+  type = string
+}
+
+variable "mimir_store_gateway_replicas" {
+  type = string
+}
+
+variable "tempo_compactor_replicas" {
+  type = string
+}
+
+variable "tempo_distributor_replicas" {
+  type = string
+}
+
+variable "tempo_gateway_replicas" {
+  type = string
+}
+
+variable "tempo_ingester_replicas" {
+  type = string
+}
+
+variable "tempo_memcached_replicas" {
+  type = string
+}
+
+variable "tempo_querier_replicas" {
+  type = string
+}
+
+variable "tempo_query_frontend_replicas" {
+  type = string
+}
+
+
+
 variable "resource_env" {
   type = map(string)
+}
+
+variable "observability_env" {
+  type = map(string)
+}
+
+variable "mimir_version" {
+  type = string
+}
+variable "loki_version" {
+  type = string
+}
+variable "tempo_version" {
+  type = string
+}
+variable "prometheus_operator_crds_version" {
+  type = string
+}
+
+variable "alloy_version" {
+  type = string
+}
+variable "kube_state_metrics_version" {
+  type = string
+}
+variable "grafana_exploretraces_plugin_version" {
+  type = string
+}
+variable "grafana_operator_version" {
+  type = string
+}
+variable "opentelemetry_operator_version" {
+  type = string
 }

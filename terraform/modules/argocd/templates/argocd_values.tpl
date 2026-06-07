@@ -2,6 +2,10 @@ server:
   service:
     type: ${argocd_server_service_type}
     annotations: {}
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
 
 configs:
   cm:
@@ -59,6 +63,11 @@ configs:
             - /home/argocd/cmp-server/scripts/envsubst.sh
 
 repoServer:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+
   extraContainers:
     - name: cmp-envsubstappofapp
       image: ${argocd_cmp_image}
@@ -129,3 +138,21 @@ repoServer:
         name: argocd-cmp-cm
     - name: cmp-tmp
       emptyDir: {}
+
+controller:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+
+applicationSet:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+
+notifications:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false

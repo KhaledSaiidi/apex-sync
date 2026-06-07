@@ -1,0 +1,44 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: observability
+resources:
+  - grafana.yaml
+  - grafana-datasources.yaml
+  - grafana-httproute.yaml
+helmCharts:
+  - name: mimir-distributed
+    repo: https://grafana.github.io/helm-charts
+    version: ${ARGOCD_ENV_mimir_version}
+    releaseName: mimir-distributed
+    namespace: observability
+    valuesFile: values-mimir.yaml
+  - name: loki
+    repo: https://grafana-community.github.io/helm-charts
+    version: ${ARGOCD_ENV_loki_version}
+    releaseName: loki
+    namespace: observability
+    valuesFile: values-loki.yaml
+  - name: tempo-distributed
+    repo: https://grafana.github.io/helm-charts
+    version: ${ARGOCD_ENV_tempo_version}
+    releaseName: tempo
+    namespace: observability
+    valuesFile: values-tempo.yaml
+  - name: kube-state-metrics
+    repo: https://prometheus-community.github.io/helm-charts
+    version: ${ARGOCD_ENV_kube_state_metrics_version}
+    releaseName: kube-state-metrics
+    namespace: observability
+    valuesFile: values-kube-state-metrics.yaml
+  - name: alloy
+    repo: https://grafana.github.io/helm-charts
+    version: ${ARGOCD_ENV_alloy_version}
+    releaseName: alloy-gateway
+    namespace: observability
+    valuesFile: values-alloy-gateway.yaml
+  - name: alloy
+    repo: https://grafana.github.io/helm-charts
+    version: ${ARGOCD_ENV_alloy_version}
+    releaseName: alloy-daemonset
+    namespace: observability
+    valuesFile: values-alloy-daemonset.yaml

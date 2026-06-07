@@ -18,7 +18,7 @@ localpv-provisioner:
     enabled: false
   localpv:
     enabled: true
-    basePath: /var/openebs/kube-signal
+    basePath: /var/openebs/apex-sync
     replicas: ${ARGOCD_ENV_openebs_localpv_replicas}
     resources:
       requests:

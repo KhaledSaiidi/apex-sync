@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: observability
+resources:
+  - servicemonitors/garage-servicemonitor.yaml
+  - servicemonitors/argocd-servicemonitor.yaml
+  - servicemonitors/cert-manager-servicemonitor.yaml
+  - servicemonitors/external-dns-servicemonitor.yaml
+  - servicemonitors/istiod-servicemonitor.yaml
+  - servicemonitors/public-gateway-servicemonitor.yaml
+  - servicemonitors/kyverno-servicemonitor.yaml
+  - servicemonitors/metallb-servicemonitor.yaml
+  - servicemonitors/openebs-servicemonitor.yaml
+  - servicemonitors/reflector-servicemonitor.yaml
+  - servicemonitors/stateful-operator-servicemonitor.yaml
+  - grafana/folder/grafana-kubernetes.yaml
+  - grafana/folder/grafana-istio.yaml
+  - grafana/folder/grafana-observability.yaml
+  - grafana/folder/grafana-storage.yaml
+  - grafana/dashboards/istio-mesh.yaml

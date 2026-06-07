@@ -1,16 +1,16 @@
-## gitops:
-project_name: "platform"
-metallb_addresses_start: "172.18.255.200"
-metallb_addresses_end: "172.18.255.230"
-gitops_root_app_target_revision: "refactor/externalize-gitops-config"
-gitops_root_app_path: "gitops/argo-apps"
+## GitOps root app settings, shared platform values, and chart versions.
+project_name: "platform" # Name prefix used for generated bootstrap artifacts.
+metallb_addresses_start: "172.18.255.200" # First IP address MetalLB may assign to LoadBalancer services.
+metallb_addresses_end: "172.18.255.230" # Last IP address MetalLB may assign to LoadBalancer services.
+gitops_root_app_target_revision: "feat/monitoring-stack" # Git branch, tag, or commit Argo CD tracks for the root app.
+gitops_root_app_path: "gitops/argo-apps" # Repository path containing the root app-of-apps manifests.
+external_dns_txt_owner_id: "apex-sync" # Owner ID external-dns writes into TXT registry records.
+base_domain: "kube-forge.com"
 cert_manager_acme_email: "khaled.saiidi@outlook.com"
 cert_manager_route53_region: "us-east-1"
 cert_manager_route53_hosted_zone_id: "Z032863786J0OF6PKT1D"
-base_domain: "kube-forge.com"
 cert_manager_version: "v1.20.2"
 external_dns_version: "1.21.1"
-external_dns_txt_owner_id: "kube-signal"
 istio_main_version: "1.29.2"
 gateway_api_version: "v1.5.1"
 kiali_version: "2.26.0"
@@ -20,3 +20,12 @@ openebs_version: "4.4.0"
 reflector_version: "10.0.45"
 percona_version: "1.19.1"
 garage_version: "2.3.1"
+mimir_version: "6.0.6"
+loki_version: "17.1.5"
+tempo_version: "1.61.3"
+prometheus_operator_crds_version: "29.0.0"
+alloy_version: "1.8.2"
+kube_state_metrics_version: "7.4.0"
+grafana_exploretraces_plugin_version: "2.0.3"
+grafana_operator_version: "5.23.0"
+opentelemetry_operator_version: "0.114.1"

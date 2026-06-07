@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: reflector
+  labels:
+    app.kubernetes.io/name: reflector
+    app.kubernetes.io/instance: reflector
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: observability
+spec:
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+      - reflector
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: reflector
+      app.kubernetes.io/instance: reflector
+  endpoints:
+    - port: metrics
+      path: /metrics
+      scheme: http
+      interval: 30s
+      scrapeTimeout: 10s

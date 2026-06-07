@@ -1,0 +1,149 @@
+crds:
+  create: false
+
+alloy:
+  clustering:
+    enabled: true
+  extraPorts:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+      protocol: TCP
+      appProtocol: grpc
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+      protocol: TCP
+      appProtocol: http
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_alloy_gateway_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_alloy_gateway_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_alloy_gateway_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_alloy_gateway_limits_memory}"
+  configMap:
+    content: |-
+      logging {
+        level  = "${ARGOCD_ENV_observability_alloy_log_level}"
+        format = "${ARGOCD_ENV_observability_alloy_log_format}"
+      }
+
+      prometheus.remote_write "mimir" {
+        endpoint {
+          url = "http://mimir-distributed-gateway.observability.svc.cluster.local/api/v1/push"
+        }
+      }
+
+      prometheus.operator.servicemonitors "cluster" {
+        forward_to = [prometheus.remote_write.mimir.receiver]
+        clustering {
+          enabled = true
+        }
+      }
+
+      prometheus.operator.podmonitors "cluster" {
+        forward_to = [prometheus.remote_write.mimir.receiver]
+        clustering {
+          enabled = true
+        }
+      }
+
+      otelcol.receiver.otlp "applications" {
+        grpc {
+          endpoint = "0.0.0.0:4317"
+        }
+        http {
+          endpoint = "0.0.0.0:4318"
+        }
+        output {
+          metrics = [otelcol.processor.k8sattributes.default.input]
+          logs    = [otelcol.processor.k8sattributes.default.input]
+          traces  = [otelcol.processor.k8sattributes.default.input]
+        }
+      }
+
+      otelcol.processor.k8sattributes "default" {
+        auth_type = "serviceAccount"
+        extract {
+          deployment_name_from_replicaset = true
+          metadata = [
+            "k8s.namespace.name",
+            "k8s.pod.name",
+            "k8s.pod.uid",
+            "k8s.deployment.name",
+            "k8s.node.name",
+            "service.name",
+            "service.namespace",
+            "service.version",
+          ]
+        }
+        output {
+          metrics = [otelcol.processor.batch.default.input]
+          logs    = [otelcol.processor.batch.default.input]
+          traces  = [otelcol.processor.batch.default.input]
+        }
+      }
+
+      otelcol.processor.batch "default" {
+        timeout         = "${ARGOCD_ENV_observability_alloy_gateway_batch_timeout}"
+        send_batch_size = ${ARGOCD_ENV_observability_alloy_gateway_batch_send_size}
+        output {
+          metrics = [otelcol.exporter.prometheus.mimir.input]
+          logs    = [otelcol.exporter.loki.loki.input]
+          traces  = [otelcol.exporter.otlp.tempo.input]
+        }
+      }
+
+      otelcol.exporter.prometheus "mimir" {
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      loki.write "loki" {
+        endpoint {
+          url = "http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push"
+        }
+      }
+
+      otelcol.exporter.loki "loki" {
+        forward_to = [loki.write.loki.receiver]
+      }
+
+      otelcol.exporter.otlp "tempo" {
+        client {
+          endpoint = "tempo-grafana-tempo-distributor.observability.svc.cluster.local:4317"
+          tls {
+            insecure = true
+          }
+        }
+      }
+
+      loki.source.kubernetes_events "cluster" {
+        job_name   = "integrations/kubernetes/eventhandler"
+        log_format = "${ARGOCD_ENV_observability_alloy_events_log_format}"
+        forward_to = [loki.process.cluster_events.receiver]
+      }
+
+      loki.process "cluster_events" {
+        stage.labels {
+          values = {
+            kubernetes_cluster_events = "job",
+          }
+        }
+        forward_to = [loki.write.loki.receiver]
+      }
+
+controller:
+  type: deployment
+  replicas: ${ARGOCD_ENV_alloy_gateway_replicas}
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
+
+service:
+  enabled: true
+  type: ClusterIP
+
+serviceMonitor:
+  enabled: true
+  interval: ${ARGOCD_ENV_observability_alloy_service_monitor_interval}

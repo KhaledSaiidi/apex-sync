@@ -1,0 +1,15 @@
+replicas: ${ARGOCD_ENV_kube_state_metrics_replicas}
+
+prometheus:
+  monitor:
+    enabled: true
+    interval: ${ARGOCD_ENV_observability_kube_state_metrics_scrape_interval}
+    scrapeTimeout: ${ARGOCD_ENV_observability_kube_state_metrics_scrape_timeout}
+
+resources:
+  requests:
+    cpu: "${ARGOCD_ENV_resource_kube_state_metrics_requests_cpu}"
+    memory: "${ARGOCD_ENV_resource_kube_state_metrics_requests_memory}"
+  limits:
+    cpu: "${ARGOCD_ENV_resource_kube_state_metrics_limits_cpu}"
+    memory: "${ARGOCD_ENV_resource_kube_state_metrics_limits_memory}"

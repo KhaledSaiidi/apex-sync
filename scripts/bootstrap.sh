@@ -2,13 +2,14 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 
-CONFIG_DIR="$SCRIPT_DIR/override-config"
-ENV_FILE="$SCRIPT_DIR/.env.bootstrap"
-LOCKFILE="/tmp/kube-signal-terraform.lock"
-TERRAFORM_DIR="$SCRIPT_DIR/terraform/stack/main"
+CONFIG_DIR="$REPO_ROOT/override-config"
+ENV_FILE="$REPO_ROOT/.env.bootstrap"
+LOCKFILE="/tmp/apex-sync-terraform.lock"
+TERRAFORM_DIR="$REPO_ROOT/terraform/stack/main"
 
-LOG_DIR="${TMPDIR:-/tmp}/kube-signal"
+LOG_DIR="${TMPDIR:-/tmp}/apex-sync"
 LOG_TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
 LOG_FILE="$LOG_DIR/terraform-apply-$LOG_TIMESTAMP.log"
 
@@ -30,7 +31,7 @@ if ! command -v yq >/dev/null 2>&1; then
 fi
 
 if [[ ! -d "$CONFIG_DIR" ]]; then
-  echo "Custom config directory not found: $CONFIG_DIR"
+  echo "Config directory not found: $CONFIG_DIR"
   exit 1
 fi
 
@@ -58,7 +59,7 @@ CONFIG_FILES=("$CONFIG_DIR"/*.yaml "$CONFIG_DIR"/*.yml)
 shopt -u nullglob
 
 if [[ "${#CONFIG_FILES[@]}" -eq 0 ]]; then
-  echo "No custom config YAML files found in: $CONFIG_DIR"
+  echo "No config YAML files found in: $CONFIG_DIR"
   exit 1
 fi
 

@@ -1,0 +1,39 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  namespace: observability
+  labels:
+    dashboards: grafana
+spec:
+  config:
+    auth:
+      disable_login_form: "false"
+    log:
+      mode: console
+    security:
+      admin_user: admin
+  deployment:
+    replicas: ${ARGOCD_ENV_grafana_replicas}
+    spec:
+      template:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: grafana
+              resources:
+                requests:
+                  cpu: "${ARGOCD_ENV_resource_grafana_requests_cpu}"
+                  memory: "${ARGOCD_ENV_resource_grafana_requests_memory}"
+                limits:
+                  cpu: "${ARGOCD_ENV_resource_grafana_limits_cpu}"
+                  memory: "${ARGOCD_ENV_resource_grafana_limits_memory}"
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                runAsNonRoot: true

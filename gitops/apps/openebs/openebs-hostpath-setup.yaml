@@ -59,8 +59,8 @@ spec:
                           - sh
                           - -c
                           - |
-                            mkdir -p /host/var/openebs/kube-signal
-                            chmod 0777 /host/var/openebs/kube-signal
+                            mkdir -p /host/var/openebs/apex-sync
+                            chmod 0777 /host/var/openebs/apex-sync
                         securityContext:
                           runAsUser: 0
                         volumeMounts:

@@ -1,19 +1,24 @@
-# kube-signal
+# Apex-Sync
 
-`kube-signal` bootstraps a production-like Kubernetes platform on a local
-`kind` cluster, then hands steady-state management to Argo CD.
+`apex-sync` bootstraps a Kubernetes platform and hands steady-state management
+to Argo CD.
 
 The repo is organized around a short bootstrap phase and a longer GitOps phase:
 
-1. Create a `kind` cluster with the repo-provided config.
-2. Run `bootstrap.sh`.
-3. Terraform reads local config, renders Argo CD and Ansible artifacts, and
-   runs the local Ansible bootstrap.
-4. Ansible installs Cilium, installs Argo CD, creates bootstrap secrets, and
+1. Provide a kubeconfig for an existing Kubernetes cluster.
+2. Review the tracked baseline values in `override-config/`.
+3. Create `.env.bootstrap` for sensitive bootstrap inputs.
+4. Run `scripts/bootstrap.sh`.
+5. Terraform renders Argo CD and Ansible artifacts.
+6. Ansible installs Cilium, installs Argo CD, creates bootstrap secrets, and
    applies the root Argo CD application.
-5. Argo CD reconciles the platform from `gitops/`.
-6. Argo CD Config Management Plugins render environment-specific values and
+7. Argo CD reconciles the platform from `gitops/`.
+8. Argo CD Config Management Plugins render environment-specific values and
    Helm chart versions during sync.
+
+Cluster provisioning is currently outside this repo's active bootstrap path. A
+future Terraform module can own infrastructure and cluster creation before this
+GitOps bootstrap runs.
 
 ## What This Repo Manages
 
@@ -29,25 +34,30 @@ GitOps then manages:
 
 - cert-manager with a Route53 ACME `ClusterIssuer`
 - Reflector for controlled secret reflection
-- MetalLB with a configurable local address pool
+- MetalLB with a configurable address pool
 - OpenEBS LocalPV hostpath storage and storage class
 - Istio base, Istiod, Gateway API, public gateway, and Kiali
-- Kyverno and baseline policies for the default namespace
+- Kyverno and baseline policies
 - external-dns for Route53 DNS records
 - Garage object storage with S3 routing and bootstrap jobs
 - Percona XtraDB Cluster Operator
 - Percona XtraDB Cluster resources, HAProxy, and S3 backup settings
 - Argo CD HTTPRoute through the Istio public gateway
-
-The `kind` config in `kind-kube-signal.yaml` disables the default CNI and
-kube-proxy because Cilium replaces both.
+- Observability foundation and backends:
+  - Prometheus Operator CRDs
+  - Grafana Operator
+  - OpenTelemetry Operator
+  - kube-state-metrics
+  - Mimir, Loki, and Tempo
+  - Grafana Alloy gateway and daemonset collectors
+  - Grafana instance and datasources
+  - Declarative ServiceMonitors, Grafana folders, and Grafana dashboards
 
 ## Repository Layout
 
-- `bootstrap.sh`: main bootstrap entrypoint; runs Terraform apply.
-- `destroy.sh`: Terraform destroy helper and generated-file cleanup.
-- `override-config/`: tracked baseline configuration values.
-- `custom-config/`: local runtime config directory expected by the scripts.
+- `scripts/bootstrap.sh`: main bootstrap entrypoint; runs Terraform apply.
+- `scripts/destroy.sh`: Terraform destroy helper and generated-file cleanup.
+- `override-config/`: tracked baseline configuration values used by bootstrap.
 - `terraform/stack/main`: Terraform entrypoint.
 - `terraform/modules/argocd`: renders Argo CD Helm values and root app.
 - `terraform/modules/bootstrap_ansible`: renders Ansible inventory/vars and runs Ansible.
@@ -55,21 +65,24 @@ kube-proxy because Cilium replaces both.
 - `ansible/roles/`: Cilium, Argo CD, tooling, and root-app bootstrap roles.
 - `gitops/argo-apps`: Argo CD app-of-apps definitions.
 - `gitops/apps`: rendered application content.
+- `gitops/apps/observability/obs-foundation`: observability CRDs and operators.
+- `gitops/apps/observability/obs-backends`: observability storage, collectors,
+  Grafana, and datasources.
+- `gitops/apps/observability/obs-config`: declarative ServiceMonitors and
+  Grafana folder/dashboard resources.
 - `cmp-build/`: custom Argo CD CMP image source.
 - `.github/workflows/build-cmp-envsubst.yml`: GHCR image publish workflow.
 - `example.env.bootstrap`: example secret bootstrap env file.
-- `demo-app-ui.yaml`: standalone demo manifest, not part of the app-of-apps tree.
 
 ## Prerequisites
 
 Install or have available:
 
-- Docker
-- `kind`
 - Terraform `>= 1.5.0`
 - `yq`
 - `ansible-playbook`
 - `ansible-galaxy`
+- Access to a Kubernetes cluster through `kubeconfig_path`
 
 The Ansible bootstrap can install `kubectl` and Helm when they are missing on
 supported Debian or RedHat hosts. On other OS families, install them manually.
@@ -85,23 +98,16 @@ You also need:
 The scripts load two sources of configuration:
 
 - `.env.bootstrap` for sensitive Terraform variables.
-- `custom-config/*.yaml` for non-secret platform settings.
+- `override-config/*.yaml` for non-secret platform settings.
 
-`override-config/` contains the tracked baseline values, but the current scripts
-read `custom-config/`. Start by copying the baseline:
+Review and edit:
 
-```bash
-mkdir -p custom-config
-cp override-config/*.yaml custom-config/
-```
-
-Then review and edit:
-
-- `custom-config/ansible.yaml`
-- `custom-config/argocd.yaml`
-- `custom-config/gitops.yaml`
-- `custom-config/replication.yaml`
-- `custom-config/resources.yaml`
+- `override-config/ansible.yaml`
+- `override-config/argocd.yaml`
+- `override-config/gitops.yaml`
+- `override-config/observability.yaml`
+- `override-config/replication.yaml`
+- `override-config/resources.yaml`
 
 Create `.env.bootstrap` from the example:
 
@@ -149,39 +155,53 @@ The main values to review before bootstrapping are:
 - `cert_manager_route53_hosted_zone_id`
 - `external_dns_txt_owner_id`
 
-Application chart versions are also externalized:
+Application chart versions are externalized in `override-config/gitops.yaml`,
+including:
 
 - `cert_manager_version`
 - `external_dns_version`
 - `gateway_api_version`
 - `garage_version`
+- `grafana_operator_version`
 - `istio_main_version`
 - `kiali_version`
+- `kube_state_metrics_version`
 - `kyverno_version`
+- `loki_version`
 - `metallb_version`
+- `mimir_version`
 - `openebs_version`
+- `opentelemetry_operator_version`
 - `percona_version`
+- `prometheus_operator_crds_version`
+- `alloy_version`
+- `grafana_exploretraces_plugin_version`
 - `reflector_version`
+- `tempo_version`
 
-Replication and sizing values live in `custom-config/replication.yaml`.
-Resource requests and limits live in `custom-config/resources.yaml` and are
+Replication and sizing values live in `override-config/replication.yaml`.
+Resource requests and limits live in `override-config/resources.yaml` and are
 passed through Terraform as `resource_*` environment values.
+Observability runtime tuning, such as datasource refresh periods, scrape
+intervals, retention windows, and collector batch settings, lives in
+`override-config/observability.yaml` and is passed through Terraform as
+`observability_*` environment values.
 
 ## Bootstrap Flow
 
-`bootstrap.sh` does the following:
+`scripts/bootstrap.sh` does the following:
 
 1. Checks for Terraform and `yq`.
 2. Requires `.env.bootstrap`.
-3. Requires at least one YAML file in `custom-config/`.
+3. Requires at least one YAML file in `override-config/`.
 4. Exports each YAML key as a `TF_VAR_*` variable.
 5. Runs `terraform init` in `terraform/stack/main`.
 6. Runs `terraform apply --auto-approve`.
-7. Writes Terraform logs under `/tmp/kube-signal`.
+7. Writes Terraform logs under the runtime temp log directory.
 
 Terraform then:
 
-1. Reads and merges `custom-config/*.yaml`.
+1. Reads and merges `override-config/*.yaml`.
 2. Renders Argo CD Helm values into `terraform/stack/main/artifacts/`.
 3. Renders the root Argo CD application manifest.
 4. Renders the local Ansible inventory and vars file.
@@ -225,6 +245,7 @@ The base applications are synced in waves:
 | 8 | `external-dns` |
 | 10 | `garage`, `argocd-server-route`, `stateful-operator` |
 | 20 | `stateful-resources` |
+| 23 | `observability` |
 
 `istio-main` is itself a small app-of-apps layer that deploys:
 
@@ -232,8 +253,94 @@ The base applications are synced in waves:
 - `public-gateway`: Istio Gateway API infrastructure, wildcard certificate, Gateway, and Envoy filters.
 - `kiali`: Kiali in `istio-system`.
 
+`observability` is also an app-of-apps layer:
+
+- `obs-foundation` at wave 23:
+  - `prometheus-operator-crds`
+  - `grafana-operator`
+  - `opentelemetry-operator`
+- `obs-backends` at wave 26:
+  - Mimir
+  - Loki
+  - Tempo
+  - kube-state-metrics
+  - Grafana Alloy gateway and daemonset collectors
+  - Grafana instance and datasources
+- `obs-config` at wave 29:
+  - ServiceMonitors for platform workloads and observability targets
+  - Grafana folders for Kubernetes, Istio, storage, and observability dashboards
+  - Grafana dashboards, starting with the Istio mesh dashboard
+
 Most child applications use the `envsubst` CMP plugin, then run
 `kustomize build --enable-helm`.
+
+## Observability Model
+
+The observability stack uses three layers:
+
+```text
+obs-foundation
+  CRDs and operators only
+
+obs-backends
+  real observability systems, collectors, Grafana, and datasource config
+
+obs-config
+  declarative scrape config, Grafana folders, and Grafana dashboards
+```
+
+Data flow:
+
+- Applications can send OTLP metrics, logs, and traces to the Alloy gateway.
+- The Alloy daemonset collects host metrics, kubelet stats, cAdvisor metrics,
+  resource metrics, and container logs.
+- The Alloy gateway discovers `ServiceMonitor` and `PodMonitor` resources and
+  remote-writes scraped metrics to Mimir.
+- The Alloy gateway exports OTLP metrics to Mimir, logs to Loki, and traces to
+  Tempo.
+- Kubernetes events are converted into logs and written to Loki.
+- Grafana uses Mimir as the default metrics datasource.
+- Loki and Tempo are configured for trace/log correlation.
+
+Collector choices:
+
+- No Promtail.
+- No node-exporter.
+- Grafana Alloy is the main telemetry collection path.
+- OpenTelemetry Operator is installed for OpenTelemetry CRDs and future
+  application instrumentation, while the current collection pipeline is Alloy.
+
+ServiceMonitor model:
+
+- Chart-created ServiceMonitors are disabled where practical.
+- `obs-config` owns ServiceMonitors declaratively so scrape intent lives in one
+  GitOps layer.
+- Argo CD, Kyverno, and cert-manager monitors are split by component to avoid
+  collapsing jobs under one generic label.
+- ServiceMonitors avoid blanket `honorLabels` so target labels do not override
+  collector labels unexpectedly.
+- MetalLB monitor Services are declared alongside the MetalLB app because the
+  chart normally creates them only when chart-managed ServiceMonitors are
+  enabled.
+
+Grafana model:
+
+- The Grafana instance is selected by the `dashboards: grafana` label.
+- Datasources are managed by `GrafanaDatasource` resources in `obs-backends`.
+- Folders and dashboards are managed by `GrafanaFolder` and
+  `GrafanaDashboard` resources in `obs-config`.
+- The initial managed folders are `kubernetes`, `istio`, `observability`, and
+  `storage`.
+- The first managed dashboard is the Istio mesh dashboard, placed in the
+  `istio` folder and mapped to the `Mimir` datasource.
+
+Loki mode:
+
+- Loki runs in `SimpleScalable` mode.
+- `loki_read_replicas`, `loki_write_replicas`, and `loki_backend_replicas`
+  define the active Loki topology.
+- `loki_single_binary_replicas` stays `0` in this mode so the monolithic Loki
+  deployment is not mixed with the read/write/backend deployment.
 
 ## Argo CD CMP Model
 
@@ -254,34 +361,24 @@ when the workflow is run manually.
 
 ## How To Run
 
-Create the cluster:
+Prepare local bootstrap inputs:
 
 ```bash
-kind create cluster \
-  --config kind-kube-signal.yaml \
-  --kubeconfig kind-kubeconfig.yaml
-```
-
-Prepare local config:
-
-```bash
-mkdir -p custom-config
-cp override-config/*.yaml custom-config/
 cp example.env.bootstrap .env.bootstrap
 ```
 
-Edit `custom-config/*.yaml` and `.env.bootstrap`, then bootstrap:
+Edit `override-config/*.yaml` and `.env.bootstrap`, then bootstrap:
 
 ```bash
-./bootstrap.sh
+./scripts/bootstrap.sh
 ```
 
 Typical checks:
 
 ```bash
-kubectl --kubeconfig kind-kubeconfig.yaml get nodes
-kubectl --kubeconfig kind-kubeconfig.yaml -n argocd get applications
-kubectl --kubeconfig kind-kubeconfig.yaml -n argocd get pods
+kubectl --kubeconfig <path-from-kubeconfig_path> get nodes
+kubectl --kubeconfig <path-from-kubeconfig_path> -n argocd get applications
+kubectl --kubeconfig <path-from-kubeconfig_path> -n argocd get pods
 ```
 
 ## Generated Files
@@ -294,7 +391,7 @@ Bootstrap creates local generated content:
 - `terraform/stack/main/terraform.tfstate`
 - `terraform/stack/main/terraform.tfstate.backup`
 - `.ansible/`
-- `/tmp/kube-signal/`
+- runtime temp logs
 
 These are runtime artifacts and are not part of the desired GitOps state.
 
@@ -303,25 +400,16 @@ These are runtime artifacts and are not part of the desired GitOps state.
 To destroy Terraform-managed bootstrap resources:
 
 ```bash
-./destroy.sh
+./scripts/destroy.sh
 ```
 
 When destroy succeeds, the script removes generated Terraform, Ansible, and log
-artifacts. It does not delete the `kind` cluster.
-
-Delete the cluster separately:
-
-```bash
-kind delete cluster --name kube-signal
-```
+artifacts. It does not delete the Kubernetes cluster.
 
 ## Current Caveats
 
-- The tracked baseline directory is named `override-config/`, but
-  `bootstrap.sh`, `destroy.sh`, and Terraform currently read `custom-config/`.
-  Copy or create `custom-config/` before running the scripts.
-- `example.env.bootstrap` only shows the GitHub App values. Add the AWS Route53
-  `TF_VAR_*` values before bootstrapping.
 - The default GitOps target revision in `override-config/gitops.yaml` points to
   the current development branch. Change it if you want Argo CD to follow another
   branch or tag.
+- Grafana dashboards currently use `grafanaCom` references. For stricter
+  offline GitOps, vendor dashboard JSON into the repo later.

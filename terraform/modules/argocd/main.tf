@@ -68,6 +68,52 @@ resource "local_file" "argocd_root_app" {
     kiali_replicas                         = var.kiali_replicas
     stateful_resources_pxc_replicas        = var.stateful_resources_pxc_replicas
     stateful_resources_haproxy_replicas    = var.stateful_resources_haproxy_replicas
-    resource_env                           = var.resource_env
+    grafana_operator_replicas              = var.grafana_operator_replicas
+    opentelemetry_operator_replicas        = var.opentelemetry_operator_replicas
+    grafana_replicas                       = var.grafana_replicas
+    alloy_gateway_replicas                 = var.alloy_gateway_replicas
+    kube_state_metrics_replicas            = var.kube_state_metrics_replicas
+    loki_backend_replicas                  = var.loki_backend_replicas
+    loki_chunks_cache_replicas             = var.loki_chunks_cache_replicas
+    loki_gateway_replicas                  = var.loki_gateway_replicas
+    loki_read_replicas                     = var.loki_read_replicas
+    loki_results_cache_replicas            = var.loki_results_cache_replicas
+    loki_write_replicas                    = var.loki_write_replicas
+    loki_single_binary_replicas            = var.loki_single_binary_replicas
+    mimir_alertmanager_replicas            = var.mimir_alertmanager_replicas
+    mimir_chunks_cache_replicas            = var.mimir_chunks_cache_replicas
+    mimir_compactor_replicas               = var.mimir_compactor_replicas
+    mimir_distributor_replicas             = var.mimir_distributor_replicas
+    mimir_gateway_replicas                 = var.mimir_gateway_replicas
+    mimir_index_cache_replicas             = var.mimir_index_cache_replicas
+    mimir_ingester_replicas                = var.mimir_ingester_replicas
+    mimir_metadata_cache_replicas          = var.mimir_metadata_cache_replicas
+    mimir_overrides_exporter_replicas      = var.mimir_overrides_exporter_replicas
+    mimir_querier_replicas                 = var.mimir_querier_replicas
+    mimir_query_frontend_replicas          = var.mimir_query_frontend_replicas
+    mimir_query_scheduler_replicas         = var.mimir_query_scheduler_replicas
+    mimir_results_cache_replicas           = var.mimir_results_cache_replicas
+    mimir_ruler_replicas                   = var.mimir_ruler_replicas
+    mimir_store_gateway_replicas           = var.mimir_store_gateway_replicas
+    tempo_compactor_replicas               = var.tempo_compactor_replicas
+    tempo_distributor_replicas             = var.tempo_distributor_replicas
+    tempo_gateway_replicas                 = var.tempo_gateway_replicas
+    tempo_ingester_replicas                = var.tempo_ingester_replicas
+    tempo_memcached_replicas               = var.tempo_memcached_replicas
+    tempo_querier_replicas                 = var.tempo_querier_replicas
+    tempo_query_frontend_replicas          = var.tempo_query_frontend_replicas
+
+    resource_env                         = var.resource_env
+    observability_env                    = var.observability_env
+    mimir_version                        = var.mimir_version
+    loki_version                         = var.loki_version
+    tempo_version                        = var.tempo_version
+    prometheus_operator_crds_version     = var.prometheus_operator_crds_version
+    alloy_version                        = var.alloy_version
+    kube_state_metrics_version           = var.kube_state_metrics_version
+    grafana_exploretraces_plugin_version = var.grafana_exploretraces_plugin_version
+    grafana_operator_version             = var.grafana_operator_version
+    opentelemetry_operator_version       = var.opentelemetry_operator_version
+
   })
 }

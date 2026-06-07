@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metallb-controller-monitor-service
+  labels:
+    name: metallb-controller-monitor-service
+    app.kubernetes.io/name: metallb
+    app.kubernetes.io/instance: metallb
+    app.kubernetes.io/component: controller
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: metallb
+    app.kubernetes.io/instance: metallb
+    app.kubernetes.io/component: controller
+  ports:
+    - name: metrics
+      port: 7472
+      targetPort: 7472
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metallb-speaker-monitor-service
+  labels:
+    name: metallb-speaker-monitor-service
+    app.kubernetes.io/name: metallb
+    app.kubernetes.io/instance: metallb
+    app.kubernetes.io/component: speaker
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: metallb
+    app.kubernetes.io/instance: metallb
+    app.kubernetes.io/component: speaker
+  ports:
+    - name: metrics
+      port: 7472
+      targetPort: 7472
+    - name: frrmetrics
+      port: 7473
+      targetPort: 7473

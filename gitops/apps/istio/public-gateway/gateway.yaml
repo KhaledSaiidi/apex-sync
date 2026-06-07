@@ -24,7 +24,7 @@ spec:
           from: Selector
           selector:
             matchLabels:
-              ingress.kube-signal.io/public-gateway-access: "true"
+              ingress.apex-sync.io/public-gateway-access: "true"
     - name: https-wildcard
       hostname: "*.${ARGOCD_ENV_base_domain}"
       port: 443
@@ -41,4 +41,4 @@ spec:
           from: Selector
           selector:
             matchLabels:
-              ingress.kube-signal.io/public-gateway-access: "true"
+              ingress.apex-sync.io/public-gateway-access: "true"

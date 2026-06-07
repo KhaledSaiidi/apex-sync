@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: argocd
   labels:
-    ingress.kube-signal.io/public-gateway-access: "true"
+    ingress.apex-sync.io/public-gateway-access: "true"

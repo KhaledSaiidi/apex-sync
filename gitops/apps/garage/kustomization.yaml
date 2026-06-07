@@ -17,4 +17,5 @@ resources:
   - backup-bootstrap-rbac.yaml
   - cluster-layout-bootstrap-job.yaml
   - backup-bootstrap-job.yaml
+  - monitoring-bootstrap-job.yaml
   - backup-lifecycle-job.yaml

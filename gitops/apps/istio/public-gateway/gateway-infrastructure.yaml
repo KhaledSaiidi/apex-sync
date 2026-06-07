@@ -7,6 +7,11 @@ metadata:
     argocd.argoproj.io/sync-wave: "10"
 data:
   service: |
+    metadata:
+      labels:
+        app.kubernetes.io/name: public-gateway
+        app.kubernetes.io/instance: public-gateway
+        app.kubernetes.io/component: gateway
     spec:
       type: LoadBalancer
       externalTrafficPolicy: Cluster

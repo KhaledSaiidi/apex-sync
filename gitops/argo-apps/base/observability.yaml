@@ -1,0 +1,501 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "23"
+  name: observability
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  source:
+    path: gitops/argo-apps/base/observability
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    plugin:
+      name: envsubst
+      env:
+        - name: gitops_root_app_repo_url
+          value: "${ARGOCD_ENV_gitops_root_app_repo_url}"
+        - name: gitops_root_app_target_revision
+          value: "${ARGOCD_ENV_gitops_root_app_target_revision}"
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
+        - name: mimir_version
+          value: "${ARGOCD_ENV_mimir_version}"
+        - name: loki_version
+          value: "${ARGOCD_ENV_loki_version}"
+        - name: tempo_version
+          value: "${ARGOCD_ENV_tempo_version}"
+        - name: kube_state_metrics_version
+          value: "${ARGOCD_ENV_kube_state_metrics_version}"
+        - name: prometheus_operator_crds_version
+          value: "${ARGOCD_ENV_prometheus_operator_crds_version}"
+        - name: alloy_version
+          value: "${ARGOCD_ENV_alloy_version}"
+        - name: grafana_exploretraces_plugin_version
+          value: "${ARGOCD_ENV_grafana_exploretraces_plugin_version}"
+        - name: observability_grafana_datasource_time_interval
+          value: "${ARGOCD_ENV_observability_grafana_datasource_time_interval}"
+        - name: observability_grafana_datasource_resync_period
+          value: "${ARGOCD_ENV_observability_grafana_datasource_resync_period}"
+        - name: observability_grafana_loki_timeout
+          value: "${ARGOCD_ENV_observability_grafana_loki_timeout}"
+        - name: observability_grafana_tempo_trace_start_time_shift
+          value: "${ARGOCD_ENV_observability_grafana_tempo_trace_start_time_shift}"
+        - name: observability_grafana_tempo_trace_end_time_shift
+          value: "${ARGOCD_ENV_observability_grafana_tempo_trace_end_time_shift}"
+        - name: observability_alloy_log_level
+          value: "${ARGOCD_ENV_observability_alloy_log_level}"
+        - name: observability_alloy_log_format
+          value: "${ARGOCD_ENV_observability_alloy_log_format}"
+        - name: observability_alloy_gateway_batch_timeout
+          value: "${ARGOCD_ENV_observability_alloy_gateway_batch_timeout}"
+        - name: observability_alloy_gateway_batch_send_size
+          value: "${ARGOCD_ENV_observability_alloy_gateway_batch_send_size}"
+        - name: observability_alloy_node_scrape_interval
+          value: "${ARGOCD_ENV_observability_alloy_node_scrape_interval}"
+        - name: observability_alloy_kubelet_scrape_interval
+          value: "${ARGOCD_ENV_observability_alloy_kubelet_scrape_interval}"
+        - name: observability_alloy_kubelet_scrape_timeout
+          value: "${ARGOCD_ENV_observability_alloy_kubelet_scrape_timeout}"
+        - name: observability_alloy_cadvisor_scrape_interval
+          value: "${ARGOCD_ENV_observability_alloy_cadvisor_scrape_interval}"
+        - name: observability_alloy_cadvisor_scrape_timeout
+          value: "${ARGOCD_ENV_observability_alloy_cadvisor_scrape_timeout}"
+        - name: observability_alloy_resource_scrape_interval
+          value: "${ARGOCD_ENV_observability_alloy_resource_scrape_interval}"
+        - name: observability_alloy_resource_scrape_timeout
+          value: "${ARGOCD_ENV_observability_alloy_resource_scrape_timeout}"
+        - name: observability_kube_state_metrics_scrape_interval
+          value: "${ARGOCD_ENV_observability_kube_state_metrics_scrape_interval}"
+        - name: observability_kube_state_metrics_scrape_timeout
+          value: "${ARGOCD_ENV_observability_kube_state_metrics_scrape_timeout}"
+        - name: observability_alloy_service_monitor_interval
+          value: "${ARGOCD_ENV_observability_alloy_service_monitor_interval}"
+        - name: observability_alloy_events_log_format
+          value: "${ARGOCD_ENV_observability_alloy_events_log_format}"
+        - name: observability_loki_schema_period
+          value: "${ARGOCD_ENV_observability_loki_schema_period}"
+        - name: observability_loki_replication_factor
+          value: "${ARGOCD_ENV_observability_loki_replication_factor}"
+        - name: observability_loki_retention_period
+          value: "${ARGOCD_ENV_observability_loki_retention_period}"
+        - name: observability_loki_ingestion_rate_mb
+          value: "${ARGOCD_ENV_observability_loki_ingestion_rate_mb}"
+        - name: observability_loki_ingestion_burst_size_mb
+          value: "${ARGOCD_ENV_observability_loki_ingestion_burst_size_mb}"
+        - name: observability_loki_max_query_parallelism
+          value: "${ARGOCD_ENV_observability_loki_max_query_parallelism}"
+        - name: observability_loki_split_queries_by_interval
+          value: "${ARGOCD_ENV_observability_loki_split_queries_by_interval}"
+        - name: observability_mimir_ingestion_rate
+          value: "${ARGOCD_ENV_observability_mimir_ingestion_rate}"
+        - name: observability_mimir_ingestion_burst_size
+          value: "${ARGOCD_ENV_observability_mimir_ingestion_burst_size}"
+        - name: observability_mimir_max_global_series_per_user
+          value: "${ARGOCD_ENV_observability_mimir_max_global_series_per_user}"
+        - name: observability_mimir_max_query_parallelism
+          value: "${ARGOCD_ENV_observability_mimir_max_query_parallelism}"
+        - name: observability_mimir_max_total_query_length
+          value: "${ARGOCD_ENV_observability_mimir_max_total_query_length}"
+        - name: observability_tempo_trace_idle_period
+          value: "${ARGOCD_ENV_observability_tempo_trace_idle_period}"
+        - name: observability_tempo_ingester_replication_factor
+          value: "${ARGOCD_ENV_observability_tempo_ingester_replication_factor}"
+        - name: observability_tempo_max_block_bytes
+          value: "${ARGOCD_ENV_observability_tempo_max_block_bytes}"
+        - name: observability_tempo_max_block_duration
+          value: "${ARGOCD_ENV_observability_tempo_max_block_duration}"
+        - name: observability_tempo_complete_block_timeout
+          value: "${ARGOCD_ENV_observability_tempo_complete_block_timeout}"
+        - name: observability_grafana_operator_revision_history_limit
+          value: "${ARGOCD_ENV_observability_grafana_operator_revision_history_limit}"
+        - name: observability_grafana_operator_default_resync_period
+          value: "${ARGOCD_ENV_observability_grafana_operator_default_resync_period}"
+        - name: observability_grafana_operator_max_concurrent_reconciles
+          value: "${ARGOCD_ENV_observability_grafana_operator_max_concurrent_reconciles}"
+        - name: observability_grafana_operator_log_encoder
+          value: "${ARGOCD_ENV_observability_grafana_operator_log_encoder}"
+        - name: observability_grafana_operator_log_level
+          value: "${ARGOCD_ENV_observability_grafana_operator_log_level}"
+        - name: observability_grafana_operator_log_time
+          value: "${ARGOCD_ENV_observability_grafana_operator_log_time}"
+        - name: observability_grafana_operator_kube_auth_expiration_seconds
+          value: "${ARGOCD_ENV_observability_grafana_operator_kube_auth_expiration_seconds}"
+        - name: observability_grafana_operator_service_monitor_interval
+          value: "${ARGOCD_ENV_observability_grafana_operator_service_monitor_interval}"
+        - name: observability_grafana_operator_service_monitor_scrape_timeout
+          value: "${ARGOCD_ENV_observability_grafana_operator_service_monitor_scrape_timeout}"
+        - name: observability_opentelemetry_operator_revision_history_limit
+          value: "${ARGOCD_ENV_observability_opentelemetry_operator_revision_history_limit}"
+        - name: observability_opentelemetry_operator_min_ready_seconds
+          value: "${ARGOCD_ENV_observability_opentelemetry_operator_min_ready_seconds}"
+        - name: observability_opentelemetry_operator_prometheus_rule_duration
+          value: "${ARGOCD_ENV_observability_opentelemetry_operator_prometheus_rule_duration}"
+        - name: observability_opentelemetry_operator_webhook_timeout_seconds
+          value: "${ARGOCD_ENV_observability_opentelemetry_operator_webhook_timeout_seconds}"
+        - name: grafana_operator_version
+          value: "${ARGOCD_ENV_grafana_operator_version}"
+        - name: opentelemetry_operator_version
+          value: "${ARGOCD_ENV_opentelemetry_operator_version}"
+        - name: grafana_operator_replicas
+          value: "${ARGOCD_ENV_grafana_operator_replicas}"
+        - name: opentelemetry_operator_replicas
+          value: "${ARGOCD_ENV_opentelemetry_operator_replicas}"
+        - name: grafana_replicas
+          value: "${ARGOCD_ENV_grafana_replicas}"
+        - name: alloy_gateway_replicas
+          value: "${ARGOCD_ENV_alloy_gateway_replicas}"
+        - name: kube_state_metrics_replicas
+          value: "${ARGOCD_ENV_kube_state_metrics_replicas}"
+        - name: loki_backend_replicas
+          value: "${ARGOCD_ENV_loki_backend_replicas}"
+        - name: loki_chunks_cache_replicas
+          value: "${ARGOCD_ENV_loki_chunks_cache_replicas}"
+        - name: loki_gateway_replicas
+          value: "${ARGOCD_ENV_loki_gateway_replicas}"
+        - name: loki_read_replicas
+          value: "${ARGOCD_ENV_loki_read_replicas}"
+        - name: loki_results_cache_replicas
+          value: "${ARGOCD_ENV_loki_results_cache_replicas}"
+        - name: loki_write_replicas
+          value: "${ARGOCD_ENV_loki_write_replicas}"
+        - name: loki_single_binary_replicas
+          value: "${ARGOCD_ENV_loki_single_binary_replicas}"
+        - name: mimir_alertmanager_replicas
+          value: "${ARGOCD_ENV_mimir_alertmanager_replicas}"
+        - name: mimir_chunks_cache_replicas
+          value: "${ARGOCD_ENV_mimir_chunks_cache_replicas}"
+        - name: mimir_compactor_replicas
+          value: "${ARGOCD_ENV_mimir_compactor_replicas}"
+        - name: mimir_distributor_replicas
+          value: "${ARGOCD_ENV_mimir_distributor_replicas}"
+        - name: mimir_gateway_replicas
+          value: "${ARGOCD_ENV_mimir_gateway_replicas}"
+        - name: mimir_index_cache_replicas
+          value: "${ARGOCD_ENV_mimir_index_cache_replicas}"
+        - name: mimir_ingester_replicas
+          value: "${ARGOCD_ENV_mimir_ingester_replicas}"
+        - name: mimir_metadata_cache_replicas
+          value: "${ARGOCD_ENV_mimir_metadata_cache_replicas}"
+        - name: mimir_overrides_exporter_replicas
+          value: "${ARGOCD_ENV_mimir_overrides_exporter_replicas}"
+        - name: mimir_querier_replicas
+          value: "${ARGOCD_ENV_mimir_querier_replicas}"
+        - name: mimir_query_frontend_replicas
+          value: "${ARGOCD_ENV_mimir_query_frontend_replicas}"
+        - name: mimir_query_scheduler_replicas
+          value: "${ARGOCD_ENV_mimir_query_scheduler_replicas}"
+        - name: mimir_results_cache_replicas
+          value: "${ARGOCD_ENV_mimir_results_cache_replicas}"
+        - name: mimir_ruler_replicas
+          value: "${ARGOCD_ENV_mimir_ruler_replicas}"
+        - name: mimir_store_gateway_replicas
+          value: "${ARGOCD_ENV_mimir_store_gateway_replicas}"
+        - name: resource_loki_backend_limits_cpu
+          value: "${ARGOCD_ENV_resource_loki_backend_limits_cpu}"
+        - name: resource_loki_backend_limits_memory
+          value: "${ARGOCD_ENV_resource_loki_backend_limits_memory}"
+        - name: resource_loki_backend_requests_cpu
+          value: "${ARGOCD_ENV_resource_loki_backend_requests_cpu}"
+        - name: resource_loki_backend_requests_memory
+          value: "${ARGOCD_ENV_resource_loki_backend_requests_memory}"
+        - name: resource_loki_canary_limits_cpu
+          value: "${ARGOCD_ENV_resource_loki_canary_limits_cpu}"
+        - name: resource_loki_canary_limits_memory
+          value: "${ARGOCD_ENV_resource_loki_canary_limits_memory}"
+        - name: resource_loki_canary_requests_cpu
+          value: "${ARGOCD_ENV_resource_loki_canary_requests_cpu}"
+        - name: resource_loki_canary_requests_memory
+          value: "${ARGOCD_ENV_resource_loki_canary_requests_memory}"
+        - name: resource_loki_chunks_cache_limits_cpu
+          value: "${ARGOCD_ENV_resource_loki_chunks_cache_limits_cpu}"
+        - name: resource_loki_chunks_cache_limits_memory
+          value: "${ARGOCD_ENV_resource_loki_chunks_cache_limits_memory}"
+        - name: resource_loki_chunks_cache_requests_cpu
+          value: "${ARGOCD_ENV_resource_loki_chunks_cache_requests_cpu}"
+        - name: resource_loki_chunks_cache_requests_memory
+          value: "${ARGOCD_ENV_resource_loki_chunks_cache_requests_memory}"
+        - name: resource_loki_gateway_limits_cpu
+          value: "${ARGOCD_ENV_resource_loki_gateway_limits_cpu}"
+        - name: resource_loki_gateway_limits_memory
+          value: "${ARGOCD_ENV_resource_loki_gateway_limits_memory}"
+        - name: resource_loki_gateway_requests_cpu
+          value: "${ARGOCD_ENV_resource_loki_gateway_requests_cpu}"
+        - name: resource_loki_gateway_requests_memory
+          value: "${ARGOCD_ENV_resource_loki_gateway_requests_memory}"
+        - name: resource_loki_memcached_exporter_limits_cpu
+          value: "${ARGOCD_ENV_resource_loki_memcached_exporter_limits_cpu}"
+        - name: resource_loki_memcached_exporter_limits_memory
+          value: "${ARGOCD_ENV_resource_loki_memcached_exporter_limits_memory}"
+        - name: resource_loki_memcached_exporter_requests_cpu
+          value: "${ARGOCD_ENV_resource_loki_memcached_exporter_requests_cpu}"
+        - name: resource_loki_memcached_exporter_requests_memory
+          value: "${ARGOCD_ENV_resource_loki_memcached_exporter_requests_memory}"
+        - name: resource_loki_read_limits_cpu
+          value: "${ARGOCD_ENV_resource_loki_read_limits_cpu}"
+        - name: resource_loki_read_limits_memory
+          value: "${ARGOCD_ENV_resource_loki_read_limits_memory}"
+        - name: resource_loki_read_requests_cpu
+          value: "${ARGOCD_ENV_resource_loki_read_requests_cpu}"
+        - name: resource_loki_read_requests_memory
+          value: "${ARGOCD_ENV_resource_loki_read_requests_memory}"
+        - name: resource_loki_results_cache_limits_cpu
+          value: "${ARGOCD_ENV_resource_loki_results_cache_limits_cpu}"
+        - name: resource_loki_results_cache_limits_memory
+          value: "${ARGOCD_ENV_resource_loki_results_cache_limits_memory}"
+        - name: resource_loki_results_cache_requests_cpu
+          value: "${ARGOCD_ENV_resource_loki_results_cache_requests_cpu}"
+        - name: resource_loki_results_cache_requests_memory
+          value: "${ARGOCD_ENV_resource_loki_results_cache_requests_memory}"
+        - name: resource_loki_write_limits_cpu
+          value: "${ARGOCD_ENV_resource_loki_write_limits_cpu}"
+        - name: resource_loki_write_limits_memory
+          value: "${ARGOCD_ENV_resource_loki_write_limits_memory}"
+        - name: resource_loki_write_requests_cpu
+          value: "${ARGOCD_ENV_resource_loki_write_requests_cpu}"
+        - name: resource_loki_write_requests_memory
+          value: "${ARGOCD_ENV_resource_loki_write_requests_memory}"
+        - name: resource_mimir_alertmanager_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_alertmanager_limits_cpu}"
+        - name: resource_mimir_alertmanager_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_alertmanager_limits_memory}"
+        - name: resource_mimir_alertmanager_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_alertmanager_requests_cpu}"
+        - name: resource_mimir_alertmanager_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_alertmanager_requests_memory}"
+        - name: resource_mimir_cache_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_cache_limits_cpu}"
+        - name: resource_mimir_cache_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_cache_limits_memory}"
+        - name: resource_mimir_cache_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_cache_requests_cpu}"
+        - name: resource_mimir_cache_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_cache_requests_memory}"
+        - name: resource_mimir_compactor_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_compactor_limits_cpu}"
+        - name: resource_mimir_compactor_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_compactor_limits_memory}"
+        - name: resource_mimir_compactor_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_compactor_requests_cpu}"
+        - name: resource_mimir_compactor_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_compactor_requests_memory}"
+        - name: resource_mimir_distributor_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_distributor_limits_cpu}"
+        - name: resource_mimir_distributor_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_distributor_limits_memory}"
+        - name: resource_mimir_distributor_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_distributor_requests_cpu}"
+        - name: resource_mimir_distributor_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_distributor_requests_memory}"
+        - name: resource_mimir_gateway_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_gateway_limits_cpu}"
+        - name: resource_mimir_gateway_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_gateway_limits_memory}"
+        - name: resource_mimir_gateway_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_gateway_requests_cpu}"
+        - name: resource_mimir_gateway_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_gateway_requests_memory}"
+        - name: resource_mimir_ingester_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_ingester_limits_cpu}"
+        - name: resource_mimir_ingester_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_ingester_limits_memory}"
+        - name: resource_mimir_ingester_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_ingester_requests_cpu}"
+        - name: resource_mimir_ingester_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_ingester_requests_memory}"
+        - name: resource_mimir_memcached_exporter_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_memcached_exporter_limits_cpu}"
+        - name: resource_mimir_memcached_exporter_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_memcached_exporter_limits_memory}"
+        - name: resource_mimir_memcached_exporter_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_memcached_exporter_requests_cpu}"
+        - name: resource_mimir_memcached_exporter_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_memcached_exporter_requests_memory}"
+        - name: resource_mimir_overrides_exporter_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_overrides_exporter_limits_cpu}"
+        - name: resource_mimir_overrides_exporter_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_overrides_exporter_limits_memory}"
+        - name: resource_mimir_overrides_exporter_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_overrides_exporter_requests_cpu}"
+        - name: resource_mimir_overrides_exporter_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_overrides_exporter_requests_memory}"
+        - name: resource_mimir_querier_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_querier_limits_cpu}"
+        - name: resource_mimir_querier_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_querier_limits_memory}"
+        - name: resource_mimir_querier_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_querier_requests_cpu}"
+        - name: resource_mimir_querier_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_querier_requests_memory}"
+        - name: resource_mimir_query_frontend_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_query_frontend_limits_cpu}"
+        - name: resource_mimir_query_frontend_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_query_frontend_limits_memory}"
+        - name: resource_mimir_query_frontend_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_query_frontend_requests_cpu}"
+        - name: resource_mimir_query_frontend_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_query_frontend_requests_memory}"
+        - name: resource_mimir_query_scheduler_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_query_scheduler_limits_cpu}"
+        - name: resource_mimir_query_scheduler_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_query_scheduler_limits_memory}"
+        - name: resource_mimir_query_scheduler_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_query_scheduler_requests_cpu}"
+        - name: resource_mimir_query_scheduler_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_query_scheduler_requests_memory}"
+        - name: resource_mimir_ruler_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_ruler_limits_cpu}"
+        - name: resource_mimir_ruler_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_ruler_limits_memory}"
+        - name: resource_mimir_ruler_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_ruler_requests_cpu}"
+        - name: resource_mimir_ruler_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_ruler_requests_memory}"
+        - name: resource_mimir_store_gateway_limits_cpu
+          value: "${ARGOCD_ENV_resource_mimir_store_gateway_limits_cpu}"
+        - name: resource_mimir_store_gateway_limits_memory
+          value: "${ARGOCD_ENV_resource_mimir_store_gateway_limits_memory}"
+        - name: resource_mimir_store_gateway_requests_cpu
+          value: "${ARGOCD_ENV_resource_mimir_store_gateway_requests_cpu}"
+        - name: resource_mimir_store_gateway_requests_memory
+          value: "${ARGOCD_ENV_resource_mimir_store_gateway_requests_memory}"
+        - name: resource_tempo_compactor_limits_cpu
+          value: "${ARGOCD_ENV_resource_tempo_compactor_limits_cpu}"
+        - name: resource_tempo_compactor_limits_memory
+          value: "${ARGOCD_ENV_resource_tempo_compactor_limits_memory}"
+        - name: resource_tempo_compactor_requests_cpu
+          value: "${ARGOCD_ENV_resource_tempo_compactor_requests_cpu}"
+        - name: resource_tempo_compactor_requests_memory
+          value: "${ARGOCD_ENV_resource_tempo_compactor_requests_memory}"
+        - name: resource_tempo_distributor_limits_cpu
+          value: "${ARGOCD_ENV_resource_tempo_distributor_limits_cpu}"
+        - name: resource_tempo_distributor_limits_memory
+          value: "${ARGOCD_ENV_resource_tempo_distributor_limits_memory}"
+        - name: resource_tempo_distributor_requests_cpu
+          value: "${ARGOCD_ENV_resource_tempo_distributor_requests_cpu}"
+        - name: resource_tempo_distributor_requests_memory
+          value: "${ARGOCD_ENV_resource_tempo_distributor_requests_memory}"
+        - name: resource_tempo_gateway_limits_cpu
+          value: "${ARGOCD_ENV_resource_tempo_gateway_limits_cpu}"
+        - name: resource_tempo_gateway_limits_memory
+          value: "${ARGOCD_ENV_resource_tempo_gateway_limits_memory}"
+        - name: resource_tempo_gateway_requests_cpu
+          value: "${ARGOCD_ENV_resource_tempo_gateway_requests_cpu}"
+        - name: resource_tempo_gateway_requests_memory
+          value: "${ARGOCD_ENV_resource_tempo_gateway_requests_memory}"
+        - name: resource_tempo_ingester_limits_cpu
+          value: "${ARGOCD_ENV_resource_tempo_ingester_limits_cpu}"
+        - name: resource_tempo_ingester_limits_memory
+          value: "${ARGOCD_ENV_resource_tempo_ingester_limits_memory}"
+        - name: resource_tempo_ingester_requests_cpu
+          value: "${ARGOCD_ENV_resource_tempo_ingester_requests_cpu}"
+        - name: resource_tempo_ingester_requests_memory
+          value: "${ARGOCD_ENV_resource_tempo_ingester_requests_memory}"
+        - name: resource_tempo_memcached_limits_cpu
+          value: "${ARGOCD_ENV_resource_tempo_memcached_limits_cpu}"
+        - name: resource_tempo_memcached_limits_memory
+          value: "${ARGOCD_ENV_resource_tempo_memcached_limits_memory}"
+        - name: resource_tempo_memcached_requests_cpu
+          value: "${ARGOCD_ENV_resource_tempo_memcached_requests_cpu}"
+        - name: resource_tempo_memcached_requests_memory
+          value: "${ARGOCD_ENV_resource_tempo_memcached_requests_memory}"
+        - name: resource_tempo_querier_limits_cpu
+          value: "${ARGOCD_ENV_resource_tempo_querier_limits_cpu}"
+        - name: resource_tempo_querier_limits_memory
+          value: "${ARGOCD_ENV_resource_tempo_querier_limits_memory}"
+        - name: resource_tempo_querier_requests_cpu
+          value: "${ARGOCD_ENV_resource_tempo_querier_requests_cpu}"
+        - name: resource_tempo_querier_requests_memory
+          value: "${ARGOCD_ENV_resource_tempo_querier_requests_memory}"
+        - name: resource_tempo_query_frontend_limits_cpu
+          value: "${ARGOCD_ENV_resource_tempo_query_frontend_limits_cpu}"
+        - name: resource_tempo_query_frontend_limits_memory
+          value: "${ARGOCD_ENV_resource_tempo_query_frontend_limits_memory}"
+        - name: resource_tempo_query_frontend_requests_cpu
+          value: "${ARGOCD_ENV_resource_tempo_query_frontend_requests_cpu}"
+        - name: resource_tempo_query_frontend_requests_memory
+          value: "${ARGOCD_ENV_resource_tempo_query_frontend_requests_memory}"
+        - name: tempo_compactor_replicas
+          value: "${ARGOCD_ENV_tempo_compactor_replicas}"
+        - name: tempo_distributor_replicas
+          value: "${ARGOCD_ENV_tempo_distributor_replicas}"
+        - name: tempo_gateway_replicas
+          value: "${ARGOCD_ENV_tempo_gateway_replicas}"
+        - name: tempo_ingester_replicas
+          value: "${ARGOCD_ENV_tempo_ingester_replicas}"
+        - name: tempo_memcached_replicas
+          value: "${ARGOCD_ENV_tempo_memcached_replicas}"
+        - name: tempo_querier_replicas
+          value: "${ARGOCD_ENV_tempo_querier_replicas}"
+        - name: tempo_query_frontend_replicas
+          value: "${ARGOCD_ENV_tempo_query_frontend_replicas}"
+
+        - name: resource_grafana_operator_requests_cpu
+          value: "${ARGOCD_ENV_resource_grafana_operator_requests_cpu}"
+        - name: resource_grafana_operator_requests_memory
+          value: "${ARGOCD_ENV_resource_grafana_operator_requests_memory}"
+        - name: resource_grafana_operator_limits_cpu
+          value: "${ARGOCD_ENV_resource_grafana_operator_limits_cpu}"
+        - name: resource_grafana_operator_limits_memory
+          value: "${ARGOCD_ENV_resource_grafana_operator_limits_memory}"
+        - name: resource_grafana_requests_cpu
+          value: "${ARGOCD_ENV_resource_grafana_requests_cpu}"
+        - name: resource_grafana_requests_memory
+          value: "${ARGOCD_ENV_resource_grafana_requests_memory}"
+        - name: resource_grafana_limits_cpu
+          value: "${ARGOCD_ENV_resource_grafana_limits_cpu}"
+        - name: resource_grafana_limits_memory
+          value: "${ARGOCD_ENV_resource_grafana_limits_memory}"
+        - name: resource_opentelemetry_operator_requests_cpu
+          value: "${ARGOCD_ENV_resource_opentelemetry_operator_requests_cpu}"
+        - name: resource_opentelemetry_operator_requests_memory
+          value: "${ARGOCD_ENV_resource_opentelemetry_operator_requests_memory}"
+        - name: resource_opentelemetry_operator_limits_cpu
+          value: "${ARGOCD_ENV_resource_opentelemetry_operator_limits_cpu}"
+        - name: resource_opentelemetry_operator_limits_memory
+          value: "${ARGOCD_ENV_resource_opentelemetry_operator_limits_memory}"
+        - name: resource_alloy_gateway_requests_cpu
+          value: "${ARGOCD_ENV_resource_alloy_gateway_requests_cpu}"
+        - name: resource_alloy_gateway_requests_memory
+          value: "${ARGOCD_ENV_resource_alloy_gateway_requests_memory}"
+        - name: resource_alloy_gateway_limits_cpu
+          value: "${ARGOCD_ENV_resource_alloy_gateway_limits_cpu}"
+        - name: resource_alloy_gateway_limits_memory
+          value: "${ARGOCD_ENV_resource_alloy_gateway_limits_memory}"
+        - name: resource_alloy_daemonset_requests_cpu
+          value: "${ARGOCD_ENV_resource_alloy_daemonset_requests_cpu}"
+        - name: resource_alloy_daemonset_requests_memory
+          value: "${ARGOCD_ENV_resource_alloy_daemonset_requests_memory}"
+        - name: resource_alloy_daemonset_limits_cpu
+          value: "${ARGOCD_ENV_resource_alloy_daemonset_limits_cpu}"
+        - name: resource_alloy_daemonset_limits_memory
+          value: "${ARGOCD_ENV_resource_alloy_daemonset_limits_memory}"
+        - name: resource_kube_state_metrics_requests_cpu
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_requests_cpu}"
+        - name: resource_kube_state_metrics_requests_memory
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_requests_memory}"
+        - name: resource_kube_state_metrics_limits_cpu
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_limits_cpu}"
+        - name: resource_kube_state_metrics_limits_memory
+          value: "${ARGOCD_ENV_resource_kube_state_metrics_limits_memory}"
+
+  destination:
+    namespace: observability
+    server: https://kubernetes.default.svc
+  project: platform
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true

@@ -5,4 +5,4 @@ metadata:
   labels:
     app.kubernetes.io/name: garage
     app.kubernetes.io/part-of: garage
-    ingress.kube-signal.io/public-gateway-access: "true"
+    ingress.apex-sync.io/public-gateway-access: "true"

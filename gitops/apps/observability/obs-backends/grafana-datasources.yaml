@@ -1,0 +1,96 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: mimir
+  namespace: observability
+spec:
+  allowCrossNamespaceImport: false
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: true
+    jsonData:
+      timeInterval: ${ARGOCD_ENV_observability_grafana_datasource_time_interval}
+    name: Mimir
+    type: prometheus
+    uid: Mimir
+    url: http://mimir-distributed-gateway.observability.svc.cluster.local/prometheus
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  resyncPeriod: ${ARGOCD_ENV_observability_grafana_datasource_resync_period}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: loki
+  namespace: observability
+spec:
+  allowCrossNamespaceImport: false
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: false
+    jsonData:
+      timeout: ${ARGOCD_ENV_observability_grafana_loki_timeout}
+    name: Loki
+    type: loki
+    uid: Loki
+    url: http://loki-gateway.observability.svc.cluster.local
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  resyncPeriod: ${ARGOCD_ENV_observability_grafana_datasource_resync_period}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: tempo
+  namespace: observability
+spec:
+  allowCrossNamespaceImport: false
+  datasource:
+    access: proxy
+    editable: true
+    isDefault: false
+    jsonData:
+      lokiSearch:
+        datasourceUid: Loki
+      nodeGraph:
+        enabled: true
+      search:
+        hide: false
+      serviceMap:
+        datasourceUid: Mimir
+      spanBar:
+        tag: http.path
+        type: Tag
+      traceQuery:
+        spanEndTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_end_time_shift}
+        spanStartTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_start_time_shift}
+        timeShiftEnabled: true
+      tracesToLogsV2:
+        customQuery: false
+        datasourceUid: Loki
+        filterBySpanID: false
+        filterByTraceID: true
+        spanEndTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_end_time_shift}
+        spanStartTimeShift: ${ARGOCD_ENV_observability_grafana_tempo_trace_start_time_shift}
+        tags:
+          - key: k8s.namespace.name
+            value: namespace
+          - key: k8s.pod.name
+            value: pod
+          - key: service.name
+            value: app
+    name: Tempo
+    type: tempo
+    uid: Tempo
+    url: http://tempo-grafana-tempo-query-frontend.observability.svc.cluster.local:3200
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  plugins:
+    - name: grafana-exploretraces-app
+      version: ${ARGOCD_ENV_grafana_exploretraces_plugin_version}
+  resyncPeriod: ${ARGOCD_ENV_observability_grafana_datasource_resync_period}
