@@ -3,7 +3,7 @@ name: 🚀 Publish CMP Image Artifacts
 on:
   push:
     branches:
-      - main
+      - test/platform-stateful-resources
     paths:
       - "cmp-build/**"
   workflow_dispatch:
