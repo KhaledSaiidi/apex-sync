@@ -47,6 +47,7 @@ mimir:
       ingestion_rate: ${ARGOCD_ENV_observability_mimir_ingestion_rate}
       ingestion_burst_size: ${ARGOCD_ENV_observability_mimir_ingestion_burst_size}
       max_global_series_per_user: ${ARGOCD_ENV_observability_mimir_max_global_series_per_user}
+      max_label_names_per_series: ${ARGOCD_ENV_observability_mimir_max_label_names_per_series}
       max_query_parallelism: ${ARGOCD_ENV_observability_mimir_max_query_parallelism}
       max_total_query_length: ${ARGOCD_ENV_observability_mimir_max_total_query_length}
 
