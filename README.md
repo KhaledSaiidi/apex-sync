@@ -243,9 +243,10 @@ The base applications are synced in waves:
 | -20 | `cert-manager`, `reflector` |
 | -10 | `metallb`, `openebs` |
 | 0 | `istio-main` |
+| 1 | `argocd` |
 | 5 | `kyverno` |
 | 8 | `external-dns` |
-| 10 | `argocd`, `garage`, `stateful-operator` |
+| 10 | `garage`, `stateful-operator` |
 | 20 | `stateful-resources` |
 | 23 | `observability` |
 
