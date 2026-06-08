@@ -13,7 +13,11 @@ spec:
   hostnames:
     - "grafana.${ARGOCD_ENV_base_domain}"
   rules:
-    - filters:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
         - type: RequestRedirect
           requestRedirect:
             scheme: https
@@ -34,6 +38,13 @@ spec:
   hostnames:
     - "grafana.${ARGOCD_ENV_base_domain}"
   rules:
-    - backendRefs:
-        - name: grafana-service
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: grafana-service
           port: 3000
+          weight: 1
