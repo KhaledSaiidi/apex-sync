@@ -20,16 +20,27 @@ resource "local_file" "ansible_vars" {
   file_permission = "0644"
 
   content = templatefile("${path.module}/templates/ansible_vars.tpl", {
-    kubeconfig_local_path         = var.kubeconfig_path
-    argocd_values_local_path      = var.argocd_values_path
-    gitops_root_app_manifest_path = var.argocd_root_app_path
-    gitops_root_app_repo_url      = var.gitops_root_app_repo_url
-    github_app_id                 = var.github_app_id
-    github_app_installation_id    = var.github_app_installation_id
-    github_app_private_key        = var.github_app_private_key
-    aws_access_key_id             = var.aws_access_key_id
-    aws_secret_access_key         = var.aws_secret_access_key
-    argocd_chart_version          = var.argocd_chart_version
+    kubeconfig_local_path                = var.kubeconfig_path
+    argocd_values_local_path             = var.argocd_values_path
+    gitops_root_app_manifest_path        = var.argocd_root_app_path
+    gitops_root_app_repo_url             = var.gitops_root_app_repo_url
+    github_app_id                        = var.github_app_id
+    github_app_installation_id           = var.github_app_installation_id
+    github_app_private_key               = var.github_app_private_key
+    aws_access_key_id                    = var.aws_access_key_id
+    aws_secret_access_key                = var.aws_secret_access_key
+    argocd_chart_version                 = var.argocd_chart_version
+    cilium_chart_version                 = var.cilium_chart_version
+    cilium_image_pull_policy             = var.cilium_image_pull_policy
+    cilium_ipam_mode                     = var.cilium_ipam_mode
+    cilium_k8s_service_host              = var.cilium_k8s_service_host
+    cilium_k8s_service_port              = var.cilium_k8s_service_port
+    cilium_kube_proxy_replacement        = var.cilium_kube_proxy_replacement
+    cilium_socket_lb_host_namespace_only = var.cilium_socket_lb_host_namespace_only
+    cilium_cni_exclusive                 = var.cilium_cni_exclusive
+    cilium_hubble_enabled                = var.cilium_hubble_enabled
+    cilium_hubble_relay_enabled          = var.cilium_hubble_relay_enabled
+    cilium_hubble_ui_enabled             = var.cilium_hubble_ui_enabled
   })
 }
 resource "null_resource" "requirements" {

@@ -104,6 +104,7 @@ Review and edit:
 
 - `override-config/ansible.yaml`
 - `override-config/argocd.yaml`
+- `override-config/cilium.yaml`
 - `override-config/gitops.yaml`
 - `override-config/observability.yaml`
 - `override-config/replication.yaml`
@@ -212,8 +213,8 @@ Ansible then:
 
 1. Validates the kubeconfig path.
 2. Ensures `kubectl` and Helm are available.
-3. Installs Cilium via Helm.
-4. Installs Argo CD via Helm using Terraform-rendered values.
+3. Installs Cilium via Helm if the release is missing.
+4. Installs Argo CD via Helm using Terraform-rendered values if the release is missing.
 5. Creates the Argo CD GitHub App repository secret.
 6. Creates the `route53-credentials-secret` in `cert-manager`.
 7. Applies the Terraform-rendered root Argo CD application.
@@ -238,6 +239,7 @@ The base applications are synced in waves:
 
 | Wave | Application |
 | ---: | --- |
+| -90 | `cilium` |
 | -20 | `cert-manager`, `reflector` |
 | -10 | `metallb`, `openebs` |
 | 0 | `istio-main` |

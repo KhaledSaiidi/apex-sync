@@ -29,6 +29,17 @@ resource "local_file" "argocd_root_app" {
     argocd_exec_timeout                    = var.argocd_exec_timeout
     argocd_repo_server_timeout_secs        = var.argocd_repo_server_timeout_secs
     argocd_cmp_image                       = var.argocd_cmp_image
+    cilium_chart_version                   = var.cilium_chart_version
+    cilium_image_pull_policy               = var.cilium_image_pull_policy
+    cilium_ipam_mode                       = var.cilium_ipam_mode
+    cilium_k8s_service_host                = var.cilium_k8s_service_host
+    cilium_k8s_service_port                = var.cilium_k8s_service_port
+    cilium_kube_proxy_replacement          = var.cilium_kube_proxy_replacement
+    cilium_socket_lb_host_namespace_only   = var.cilium_socket_lb_host_namespace_only
+    cilium_cni_exclusive                   = var.cilium_cni_exclusive
+    cilium_hubble_enabled                  = var.cilium_hubble_enabled
+    cilium_hubble_relay_enabled            = var.cilium_hubble_relay_enabled
+    cilium_hubble_ui_enabled               = var.cilium_hubble_ui_enabled
     gitops_root_app_name                   = "app-of-apps"
     gitops_root_app_project                = "default"
     gitops_root_app_repo_url               = var.gitops_root_app_repo_url

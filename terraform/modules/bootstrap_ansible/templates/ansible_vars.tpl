@@ -19,3 +19,16 @@ aws:
 
 argocd:
   argocd_chart_version: "${argocd_chart_version}"
+
+cilium:
+  cilium_chart_version: "${cilium_chart_version}"
+  cilium_image_pull_policy: "${cilium_image_pull_policy}"
+  cilium_ipam_mode: "${cilium_ipam_mode}"
+  cilium_k8s_service_host: "${cilium_k8s_service_host}"
+  cilium_k8s_service_port: "${cilium_k8s_service_port}"
+  cilium_kube_proxy_replacement: "${cilium_kube_proxy_replacement}"
+  cilium_socket_lb_host_namespace_only: "${cilium_socket_lb_host_namespace_only}"
+  cilium_cni_exclusive: "${cilium_cni_exclusive}"
+  cilium_hubble_enabled: "${cilium_hubble_enabled}"
+  cilium_hubble_relay_enabled: "${cilium_hubble_relay_enabled}"
+  cilium_hubble_ui_enabled: "${cilium_hubble_ui_enabled}"

@@ -27,6 +27,28 @@ spec:
           value: "${argocd_repo_server_timeout_secs}"
         - name: argocd_cmp_image
           value: "${argocd_cmp_image}"
+        - name: cilium_chart_version
+          value: "${cilium_chart_version}"
+        - name: cilium_image_pull_policy
+          value: "${cilium_image_pull_policy}"
+        - name: cilium_ipam_mode
+          value: "${cilium_ipam_mode}"
+        - name: cilium_k8s_service_host
+          value: "${cilium_k8s_service_host}"
+        - name: cilium_k8s_service_port
+          value: "${cilium_k8s_service_port}"
+        - name: cilium_kube_proxy_replacement
+          value: "${cilium_kube_proxy_replacement}"
+        - name: cilium_socket_lb_host_namespace_only
+          value: "${cilium_socket_lb_host_namespace_only}"
+        - name: cilium_cni_exclusive
+          value: "${cilium_cni_exclusive}"
+        - name: cilium_hubble_enabled
+          value: "${cilium_hubble_enabled}"
+        - name: cilium_hubble_relay_enabled
+          value: "${cilium_hubble_relay_enabled}"
+        - name: cilium_hubble_ui_enabled
+          value: "${cilium_hubble_ui_enabled}"
         - name: metallb_config_addresses_start
           value: "${metallb_addresses_start}"
         - name: metallb_config_addresses_end

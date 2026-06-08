@@ -1,0 +1,22 @@
+image:
+  pullPolicy: ${ARGOCD_ENV_cilium_image_pull_policy}
+
+ipam:
+  mode: ${ARGOCD_ENV_cilium_ipam_mode}
+
+k8sServiceHost: ${ARGOCD_ENV_cilium_k8s_service_host}
+k8sServicePort: ${ARGOCD_ENV_cilium_k8s_service_port}
+kubeProxyReplacement: ${ARGOCD_ENV_cilium_kube_proxy_replacement}
+
+socketLB:
+  hostNamespaceOnly: ${ARGOCD_ENV_cilium_socket_lb_host_namespace_only}
+
+cni:
+  exclusive: ${ARGOCD_ENV_cilium_cni_exclusive}
+
+hubble:
+  enabled: ${ARGOCD_ENV_cilium_hubble_enabled}
+  relay:
+    enabled: ${ARGOCD_ENV_cilium_hubble_relay_enabled}
+  ui:
+    enabled: ${ARGOCD_ENV_cilium_hubble_ui_enabled}
