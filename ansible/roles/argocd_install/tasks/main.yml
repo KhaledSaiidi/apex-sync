@@ -1,7 +1,19 @@
+- name: Check existing Argo CD Helm release
+  ansible.builtin.command:
+    cmd: >
+      helm status {{ argocd_install_release_name }}
+      --namespace {{ argocd_install_namespace }}
+      --kubeconfig {{ argocd_install_kubeconfig }}
+  register: argocd_install_helm_status
+  changed_when: false
+  failed_when: argocd_install_helm_status.rc not in [0, 1]
+  tags: [argocd, prereqs, install]
+
 - name: Pre-reqs
   ansible.builtin.import_tasks: prereqs.yml
+  when: argocd_install_helm_status.rc != 0
   tags: [argocd, prereqs]
 
-- name: Install/Upgrade Argo CD
+- name: Install Argo CD
   ansible.builtin.import_tasks: install.yml
   tags: [argocd, install]

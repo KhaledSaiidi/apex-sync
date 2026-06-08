@@ -22,6 +22,10 @@ variable "argocd_repo_server_timeout_secs" {
   type = string
 }
 
+variable "argocd_chart_version" {
+  type = string
+}
+
 variable "gitops_root_app_repo_url" {
   type = string
 }

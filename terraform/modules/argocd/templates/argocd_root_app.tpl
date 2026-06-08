@@ -15,6 +15,18 @@ spec:
     plugin:
       name: envsubstappofapp
       env:
+        - name: argocd_chart_version
+          value: "${argocd_chart_version}"
+        - name: argocd_server_service_type
+          value: "${argocd_server_service_type}"
+        - name: argocd_reconciliation_timeout
+          value: "${argocd_reconciliation_timeout}"
+        - name: argocd_exec_timeout
+          value: "${argocd_exec_timeout}"
+        - name: argocd_repo_server_timeout_secs
+          value: "${argocd_repo_server_timeout_secs}"
+        - name: argocd_cmp_image
+          value: "${argocd_cmp_image}"
         - name: metallb_config_addresses_start
           value: "${metallb_addresses_start}"
         - name: metallb_config_addresses_end

@@ -18,7 +18,7 @@
       - argocd_install_local_stat.stat.isreg
     fail_msg: "Rendered Argo CD values file not found at {{ argocd_install_values_local_path }}."
 
-- name: Install Upgrade Argo CD via Helm (idempotent)
+- name: Install Argo CD via Helm when missing
   ansible.builtin.command:
     cmd: >
       helm upgrade --install {{ argocd_install_release_name }} {{ argocd_install_chart_name }}
@@ -35,7 +35,22 @@
     ('STATUS: deployed' in argocd_install_helm_apply.stdout) or
     ('STATUS: superseded' in argocd_install_helm_apply.stdout)
   failed_when: argocd_install_helm_apply.rc != 0
+  when: argocd_install_helm_status.rc != 0
   notify: Wait for Argo CD readiness
 
 - name: Flush Argo CD readiness handlers
   ansible.builtin.meta: flush_handlers
+
+- name: Wait for existing Argo CD release readiness
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ argocd_install_kubeconfig }}"
+      -n "{{ argocd_install_namespace }}"
+      rollout status {{ item }}
+      --timeout={{ argocd_install_wait_timeout }}s
+  loop:
+    - deployment/{{ argocd_install_server_deployment_name }}
+    - deployment/{{ argocd_install_repo_server_deployment_name }}
+    - statefulset/{{ argocd_install_application_controller_statefulset_name }}
+  changed_when: false
+  when: argocd_install_helm_status.rc == 0

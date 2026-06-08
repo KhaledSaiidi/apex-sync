@@ -1,10 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd-server-route
+  name: argocd
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app.kubernetes.io/name: argocd
+    app.kubernetes.io/part-of: platform-baseline
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -12,10 +15,22 @@ spec:
   source:
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
-    path: gitops/apps/argocd-server-route
+    path: gitops/apps/argocd
     plugin:
       name: envsubst
       env:
+        - name: argocd_chart_version
+          value: "${ARGOCD_ENV_argocd_chart_version}"
+        - name: argocd_server_service_type
+          value: "${ARGOCD_ENV_argocd_server_service_type}"
+        - name: argocd_reconciliation_timeout
+          value: "${ARGOCD_ENV_argocd_reconciliation_timeout}"
+        - name: argocd_exec_timeout
+          value: "${ARGOCD_ENV_argocd_exec_timeout}"
+        - name: argocd_repo_server_timeout_secs
+          value: "${ARGOCD_ENV_argocd_repo_server_timeout_secs}"
+        - name: argocd_cmp_image
+          value: "${ARGOCD_ENV_argocd_cmp_image}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
   destination:

@@ -23,6 +23,12 @@ resource "local_file" "argocd_root_app" {
   file_permission = "0644"
   content = templatefile("${path.module}/templates/argocd_root_app.tpl", {
     argocd_namespace                       = "argocd"
+    argocd_chart_version                   = var.argocd_chart_version
+    argocd_server_service_type             = var.argocd_server_service_type
+    argocd_reconciliation_timeout          = var.argocd_reconciliation_timeout
+    argocd_exec_timeout                    = var.argocd_exec_timeout
+    argocd_repo_server_timeout_secs        = var.argocd_repo_server_timeout_secs
+    argocd_cmp_image                       = var.argocd_cmp_image
     gitops_root_app_name                   = "app-of-apps"
     gitops_root_app_project                = "default"
     gitops_root_app_repo_url               = var.gitops_root_app_repo_url
