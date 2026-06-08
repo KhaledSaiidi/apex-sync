@@ -9,5 +9,5 @@ rules:
     resources: ["namespaces"]
     verbs: ["get", "list", "watch", "update", "patch"]
   - apiGroups: ["apps"]
-    resources: ["deployments"]
+    resources: ["deployments", "statefulsets", "daemonsets"]
     verbs: ["get", "list", "watch", "update", "patch"]

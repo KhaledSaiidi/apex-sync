@@ -10,6 +10,7 @@
   register: cilium_install_control_plane_node_name
   changed_when: false
   failed_when: cilium_install_control_plane_node_name.rc != 0
+  when: cilium_install_helm_status.rc != 0
 
 - name: Read control-plane InternalIP
   ansible.builtin.command:
@@ -25,6 +26,7 @@
   register: cilium_install_control_plane_internal_ip
   changed_when: false
   failed_when: cilium_install_control_plane_internal_ip.rc != 0
+  when: cilium_install_helm_status.rc != 0
 
 - name: Derive Kubernetes API server host from control-plane InternalIP
   ansible.builtin.set_fact:
@@ -34,6 +36,7 @@
         or
         (cilium_install_control_plane_internal_ip.stdout | default('') | trim)
       }}
+  when: cilium_install_helm_status.rc != 0
 
 - name: Assert Kubernetes API server host is available for Cilium
   ansible.builtin.assert:
@@ -42,8 +45,9 @@
     fail_msg: >-
       Unable to determine the Kubernetes API server host for Cilium.
       Set cilium_install_k8s_service_host explicitly or ensure the cluster has a *-control-plane node with an InternalIP.
+  when: cilium_install_helm_status.rc != 0
 
-- name: Install/Upgrade Cilium via Helm
+- name: Install Cilium via Helm when missing
   ansible.builtin.command:
     cmd: >
       helm upgrade --install {{ cilium_install_release_name }} {{ cilium_install_chart_name }}
@@ -73,7 +77,31 @@
   retries: 3
   delay: 10
   until: cilium_install_helm_apply is succeeded
+  when: cilium_install_helm_status.rc != 0
   notify: Wait for Cilium readiness
 
 - name: Flush Cilium readiness handlers
   ansible.builtin.meta: flush_handlers
+
+- name: Wait for existing Cilium release readiness
+  ansible.builtin.command:
+    cmd: >
+      kubectl --kubeconfig "{{ cilium_install_kubeconfig }}"
+      -n "{{ cilium_install_namespace }}"
+      rollout status {{ item.name }}
+      --timeout={{ cilium_install_wait_timeout }}s
+  loop:
+    - name: daemonset/{{ cilium_install_daemonset_name }}
+      enabled: true
+    - name: deployment/{{ cilium_install_operator_deployment_name }}
+      enabled: true
+    - name: deployment/{{ cilium_install_hubble_relay_deployment_name }}
+      enabled: "{{ cilium_install_hubble_relay_enabled | bool }}"
+    - name: deployment/{{ cilium_install_hubble_ui_deployment_name }}
+      enabled: "{{ cilium_install_hubble_ui_enabled | bool }}"
+  loop_control:
+    label: "{{ item.name }}"
+  changed_when: false
+  when:
+    - cilium_install_helm_status.rc == 0
+    - item.enabled | bool

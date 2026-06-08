@@ -9,6 +9,8 @@ global:
         name: loki-garage-s3
 
 defaults:
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   extraArgs:
     - -config.expand-env=true
   extraEnvFrom:
@@ -17,6 +19,28 @@ defaults:
 
 loki:
   auth_enabled: false
+  structuredConfig:
+    common:
+      storage:
+        s3:
+          bucketnames: loki-chunks
+          endpoint: "http://garage.garage.svc.cluster.local:3900"
+          region: '{{ "$" }}{AWS_REGION}'
+          access_key_id: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
+          secret_access_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
+          s3forcepathstyle: true
+          insecure: true
+    ruler:
+      storage:
+        type: s3
+        s3:
+          bucketnames: loki-ruler
+          endpoint: "http://garage.garage.svc.cluster.local:3900"
+          region: '{{ "$" }}{AWS_REGION}'
+          access_key_id: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
+          secret_access_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
+          s3forcepathstyle: true
+          insecure: true
   commonConfig:
     replication_factor: ${ARGOCD_ENV_observability_loki_replication_factor}
   schemaConfig:
@@ -41,10 +65,6 @@ loki:
     delete_request_store: s3
   ruler:
     enable_api: true
-    storage:
-      type: s3
-      s3:
-        bucketnames: loki-ruler
   storage:
     bucketNames:
       chunks: loki-chunks
@@ -52,12 +72,12 @@ loki:
       admin: loki-admin
     type: s3
     s3:
-      endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
-      region: '{{ "$" }}{AWS_REGION}'
-      accessKeyId: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
-      secretAccessKey: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
+      endpoint: '"http://garage.garage.svc.cluster.local:3900"'
+      region: garage
+      accessKeyId: placeholder
+      secretAccessKey: placeholder
       s3ForcePathStyle: true
-      insecure: false
+      insecure: true
 
 singleBinary:
   replicas: ${ARGOCD_ENV_loki_single_binary_replicas}
@@ -104,6 +124,8 @@ backend:
 
 gateway:
   replicas: ${ARGOCD_ENV_loki_gateway_replicas}
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   resources:
     requests:
       cpu: "${ARGOCD_ENV_resource_loki_gateway_requests_cpu}"
@@ -114,6 +136,8 @@ gateway:
   tolerations: *allTolerations
 
 lokiCanary:
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   tolerations: *allTolerations
   resources:
     requests:
@@ -126,6 +150,8 @@ lokiCanary:
 chunksCache:
   enabled: true
   replicas: ${ARGOCD_ENV_loki_chunks_cache_replicas}
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   allocatedMemory: 512
   resources:
     requests:
@@ -139,6 +165,8 @@ chunksCache:
 resultsCache:
   enabled: true
   replicas: ${ARGOCD_ENV_loki_results_cache_replicas}
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   allocatedMemory: 256
   resources:
     requests:

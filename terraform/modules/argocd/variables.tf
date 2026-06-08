@@ -22,6 +22,54 @@ variable "argocd_repo_server_timeout_secs" {
   type = string
 }
 
+variable "argocd_chart_version" {
+  type = string
+}
+
+variable "cilium_chart_version" {
+  type = string
+}
+
+variable "cilium_image_pull_policy" {
+  type = string
+}
+
+variable "cilium_ipam_mode" {
+  type = string
+}
+
+variable "cilium_k8s_service_host" {
+  type = string
+}
+
+variable "cilium_k8s_service_port" {
+  type = string
+}
+
+variable "cilium_kube_proxy_replacement" {
+  type = string
+}
+
+variable "cilium_socket_lb_host_namespace_only" {
+  type = string
+}
+
+variable "cilium_cni_exclusive" {
+  type = string
+}
+
+variable "cilium_hubble_enabled" {
+  type = string
+}
+
+variable "cilium_hubble_relay_enabled" {
+  type = string
+}
+
+variable "cilium_hubble_ui_enabled" {
+  type = string
+}
+
 variable "gitops_root_app_repo_url" {
   type = string
 }

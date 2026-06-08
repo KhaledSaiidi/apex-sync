@@ -12,6 +12,7 @@ helmCharts:
   - name: grafana-operator
     repo: https://grafana.github.io/helm-charts
     version: ${ARGOCD_ENV_grafana_operator_version}
+    includeCRDs: true
     releaseName: grafana-operator
     namespace: observability
     valuesFile: values-grafana-operator.yaml

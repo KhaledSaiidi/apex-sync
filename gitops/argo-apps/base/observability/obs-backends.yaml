@@ -93,6 +93,8 @@ spec:
           value: "${ARGOCD_ENV_observability_mimir_ingestion_burst_size}"
         - name: observability_mimir_max_global_series_per_user
           value: "${ARGOCD_ENV_observability_mimir_max_global_series_per_user}"
+        - name: observability_mimir_max_label_names_per_series
+          value: "${ARGOCD_ENV_observability_mimir_max_label_names_per_series}"
         - name: observability_mimir_max_query_parallelism
           value: "${ARGOCD_ENV_observability_mimir_max_query_parallelism}"
         - name: observability_mimir_max_total_query_length

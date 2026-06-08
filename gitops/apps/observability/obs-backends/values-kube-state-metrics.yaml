@@ -1,5 +1,8 @@
 replicas: ${ARGOCD_ENV_kube_state_metrics_replicas}
 
+podAnnotations:
+  sidecar.istio.io/inject: "false"
+
 prometheus:
   monitor:
     enabled: true

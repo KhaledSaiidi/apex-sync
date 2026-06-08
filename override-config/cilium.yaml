@@ -1,0 +1,12 @@
+## Cilium settings used by Ansible for first bootstrap and by GitOps afterwards.
+cilium_chart_version: "1.19.2"
+cilium_image_pull_policy: "IfNotPresent"
+cilium_ipam_mode: "kubernetes"
+cilium_k8s_service_host: "apex-sync-control-plane"
+cilium_k8s_service_port: "6443"
+cilium_kube_proxy_replacement: "true"
+cilium_socket_lb_host_namespace_only: "true"
+cilium_cni_exclusive: "false"
+cilium_hubble_enabled: "true"
+cilium_hubble_relay_enabled: "true"
+cilium_hubble_ui_enabled: "true"

@@ -86,7 +86,7 @@ spec:
     name: Tempo
     type: tempo
     uid: Tempo
-    url: http://tempo-grafana-tempo-query-frontend.observability.svc.cluster.local:3200
+    url: http://tempo-query-frontend.observability.svc.cluster.local:3200
   instanceSelector:
     matchLabels:
       dashboards: grafana

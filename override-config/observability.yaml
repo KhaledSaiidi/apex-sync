@@ -32,6 +32,7 @@ observability_loki_split_queries_by_interval: "15m" # Time range Loki uses when 
 observability_mimir_ingestion_rate: "20000" # Per-tenant steady metric sample ingestion limit.
 observability_mimir_ingestion_burst_size: "400000" # Per-tenant burst metric sample ingestion limit.
 observability_mimir_max_global_series_per_user: "1500000" # Maximum active metric series allowed per tenant.
+observability_mimir_max_label_names_per_series: "60" # Maximum labels allowed on one metric series; Istio metrics commonly exceed Mimir's default of 30.
 observability_mimir_max_query_parallelism: "64" # Maximum parallelism Mimir may use for a single query.
 observability_mimir_max_total_query_length: "12000h" # Largest total time range Mimir allows for one query.
 

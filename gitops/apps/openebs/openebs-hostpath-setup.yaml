@@ -49,10 +49,10 @@ spec:
                       - name: hostpath-setup
                         image: docker.io/library/busybox:1.36.1
                         resources:
-                        requests:
+                          requests:
                             cpu: "${ARGOCD_ENV_resource_openebs_hostpath_chown_requests_cpu}"
                             memory: "${ARGOCD_ENV_resource_openebs_hostpath_chown_requests_memory}"
-                        limits:
+                          limits:
                             cpu: "${ARGOCD_ENV_resource_openebs_hostpath_chown_limits_cpu}"
                             memory: "${ARGOCD_ENV_resource_openebs_hostpath_chown_limits_memory}"
                         command:

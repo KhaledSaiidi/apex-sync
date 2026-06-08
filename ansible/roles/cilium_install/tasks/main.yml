@@ -1,7 +1,19 @@
+- name: Check existing Cilium Helm release
+  ansible.builtin.command:
+    cmd: >
+      helm status {{ cilium_install_release_name }}
+      --namespace {{ cilium_install_namespace }}
+      --kubeconfig {{ cilium_install_kubeconfig }}
+  register: cilium_install_helm_status
+  changed_when: false
+  failed_when: cilium_install_helm_status.rc not in [0, 1]
+  tags: [cilium, prereqs, install]
+
 - name: Pre-reqs
   ansible.builtin.import_tasks: prereqs.yml
+  when: cilium_install_helm_status.rc != 0
   tags: [cilium, prereqs]
 
-- name: Install/Upgrade Cilium
+- name: Install Cilium
   ansible.builtin.import_tasks: install.yml
   tags: [cilium, install]

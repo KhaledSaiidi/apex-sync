@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-90"
+  labels:
+    app.kubernetes.io/name: cilium
+    app.kubernetes.io/part-of: platform-baseline
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  source:
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    path: gitops/apps/cilium
+    plugin:
+      name: envsubst
+      env:
+        - name: cilium_chart_version
+          value: "${ARGOCD_ENV_cilium_chart_version}"
+        - name: cilium_image_pull_policy
+          value: "${ARGOCD_ENV_cilium_image_pull_policy}"
+        - name: cilium_ipam_mode
+          value: "${ARGOCD_ENV_cilium_ipam_mode}"
+        - name: cilium_k8s_service_host
+          value: "${ARGOCD_ENV_cilium_k8s_service_host}"
+        - name: cilium_k8s_service_port
+          value: "${ARGOCD_ENV_cilium_k8s_service_port}"
+        - name: cilium_kube_proxy_replacement
+          value: "${ARGOCD_ENV_cilium_kube_proxy_replacement}"
+        - name: cilium_socket_lb_host_namespace_only
+          value: "${ARGOCD_ENV_cilium_socket_lb_host_namespace_only}"
+        - name: cilium_cni_exclusive
+          value: "${ARGOCD_ENV_cilium_cni_exclusive}"
+        - name: cilium_hubble_enabled
+          value: "${ARGOCD_ENV_cilium_hubble_enabled}"
+        - name: cilium_hubble_relay_enabled
+          value: "${ARGOCD_ENV_cilium_hubble_relay_enabled}"
+        - name: cilium_hubble_ui_enabled
+          value: "${ARGOCD_ENV_cilium_hubble_ui_enabled}"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true
