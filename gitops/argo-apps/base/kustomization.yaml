@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - cilium.yaml # sync-wave: -90
-  - argocd.yaml # sync-wave: 10
+  - argocd.yaml # sync-wave: -80
   - cert-manager.yaml # sync-wave: -20
   - reflector.yaml # sync-wave: -20
   - metallb.yaml # sync-wave: -10
@@ -12,5 +12,5 @@ resources:
   - external-dns.yaml # sync-wave: 8
   - garage.yaml # sync-wave: 10
   - stateful-operator.yaml # sync-wave: 10
-  - stateful-resources.yaml # sync-wave: 20
+  # - stateful-resources.yaml # sync-wave: 20
   - observability.yaml # sync-wave: 23
