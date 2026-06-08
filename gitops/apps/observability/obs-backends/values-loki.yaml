@@ -9,6 +9,8 @@ global:
         name: loki-garage-s3
 
 defaults:
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   extraArgs:
     - -config.expand-env=true
   extraEnvFrom:
@@ -122,6 +124,8 @@ backend:
 
 gateway:
   replicas: ${ARGOCD_ENV_loki_gateway_replicas}
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   resources:
     requests:
       cpu: "${ARGOCD_ENV_resource_loki_gateway_requests_cpu}"
@@ -132,6 +136,8 @@ gateway:
   tolerations: *allTolerations
 
 lokiCanary:
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   tolerations: *allTolerations
   resources:
     requests:
@@ -144,6 +150,8 @@ lokiCanary:
 chunksCache:
   enabled: true
   replicas: ${ARGOCD_ENV_loki_chunks_cache_replicas}
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   allocatedMemory: 512
   resources:
     requests:
@@ -157,6 +165,8 @@ chunksCache:
 resultsCache:
   enabled: true
   replicas: ${ARGOCD_ENV_loki_results_cache_replicas}
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   allocatedMemory: 256
   resources:
     requests:

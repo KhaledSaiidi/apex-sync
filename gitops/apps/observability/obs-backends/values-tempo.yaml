@@ -1,12 +1,17 @@
 x-all-tolerations: &allTolerations
   - operator: Exists
 
+x-tempo-extra-args: &tempoExtraArgs
+  - -config.expand-env=true
+
 global:
-  extraArgs:
-    - -config.expand-env=true
   extraEnvFrom:
     - secretRef:
         name: tempo-garage-s3
+
+tempo:
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
 
 multitenancyEnabled: false
 
@@ -31,6 +36,7 @@ storage:
 
 ingester:
   replicas: ${ARGOCD_ENV_tempo_ingester_replicas}
+  extraArgs: *tempoExtraArgs
   config:
     replication_factor: ${ARGOCD_ENV_observability_tempo_ingester_replication_factor}
     trace_idle_period: ${ARGOCD_ENV_observability_tempo_trace_idle_period}
@@ -52,6 +58,7 @@ ingester:
 
 distributor:
   replicas: ${ARGOCD_ENV_tempo_distributor_replicas}
+  extraArgs: *tempoExtraArgs
   resources:
     requests:
       cpu: "${ARGOCD_ENV_resource_tempo_distributor_requests_cpu}"
@@ -63,6 +70,7 @@ distributor:
 
 querier:
   replicas: ${ARGOCD_ENV_tempo_querier_replicas}
+  extraArgs: *tempoExtraArgs
   resources:
     requests:
       cpu: "${ARGOCD_ENV_resource_tempo_querier_requests_cpu}"
@@ -74,6 +82,7 @@ querier:
 
 queryFrontend:
   replicas: ${ARGOCD_ENV_tempo_query_frontend_replicas}
+  extraArgs: *tempoExtraArgs
   resources:
     requests:
       cpu: "${ARGOCD_ENV_resource_tempo_query_frontend_requests_cpu}"
@@ -85,6 +94,7 @@ queryFrontend:
 
 compactor:
   replicas: ${ARGOCD_ENV_tempo_compactor_replicas}
+  extraArgs: *tempoExtraArgs
   resources:
     requests:
       cpu: "${ARGOCD_ENV_resource_tempo_compactor_requests_cpu}"

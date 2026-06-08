@@ -17,6 +17,9 @@ spec:
     spec:
       replicas: ${ARGOCD_ENV_grafana_replicas}
       template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
         spec:
           securityContext:
             runAsNonRoot: true

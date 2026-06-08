@@ -137,6 +137,8 @@ alloy:
 controller:
   type: deployment
   replicas: ${ARGOCD_ENV_alloy_gateway_replicas}
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   podDisruptionBudget:
     enabled: true
     maxUnavailable: 1

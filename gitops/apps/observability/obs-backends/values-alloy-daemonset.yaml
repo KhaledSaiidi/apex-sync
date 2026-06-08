@@ -171,6 +171,8 @@ alloy:
 
 controller:
   type: daemonset
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   tolerations:
     - operator: Exists
   volumes:

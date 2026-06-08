@@ -5,6 +5,8 @@ x-mimir-extra-args: &mimirExtraArgs
   config.expand-env: "true"
 
 global:
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   extraEnvFrom:
     - secretRef:
         name: mimir-garage-s3
