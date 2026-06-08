@@ -2,7 +2,7 @@
 project_name: "platform" # Name prefix used for generated bootstrap artifacts.
 metallb_addresses_start: "172.18.255.200" # First IP address MetalLB may assign to LoadBalancer services.
 metallb_addresses_end: "172.18.255.230" # Last IP address MetalLB may assign to LoadBalancer services.
-gitops_root_app_target_revision: "test/platform-stateful-resources" # Git branch, tag, or commit Argo CD tracks for the root app.
+gitops_root_app_target_revision: "main" # Git branch, tag, or commit Argo CD tracks for the root app.
 gitops_root_app_path: "gitops/argo-apps" # Repository path containing the root app-of-apps manifests.
 external_dns_txt_owner_id: "apex-sync" # Owner ID external-dns writes into TXT registry records.
 base_domain: "kube-forge.com"

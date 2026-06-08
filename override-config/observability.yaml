@@ -22,7 +22,7 @@ observability_alloy_service_monitor_interval: "30s" # How often Alloy self-metri
 observability_alloy_events_log_format: "logfmt" # Format used when Alloy converts Kubernetes events into logs.
 
 observability_loki_schema_period: "24h" # Loki index period used by the TSDB schema.
-observability_loki_replication_factor: "1" # Number of Loki replicas that should store each log stream.
+observability_loki_replication_factor: "3" # Number of Loki replicas that should store each log stream.
 observability_loki_retention_period: "30d" # How long Loki keeps logs before compaction removes them.
 observability_loki_ingestion_rate_mb: "32" # Per-tenant steady log ingestion limit in MB per second.
 observability_loki_ingestion_burst_size_mb: "64" # Per-tenant burst log ingestion limit in MB.
@@ -37,7 +37,7 @@ observability_mimir_max_query_parallelism: "64" # Maximum parallelism Mimir may 
 observability_mimir_max_total_query_length: "12000h" # Largest total time range Mimir allows for one query.
 
 observability_tempo_trace_idle_period: "10s" # How long Tempo waits before cutting an idle trace block.
-observability_tempo_ingester_replication_factor: "1" # Number of Tempo ingesters that should receive each trace.
+observability_tempo_ingester_replication_factor: "3" # Number of Tempo ingesters that should receive each trace.
 observability_tempo_max_block_bytes: "1073741824" # Maximum Tempo ingester block size before flushing, in bytes.
 observability_tempo_max_block_duration: "30m" # Maximum Tempo ingester block age before flushing.
 observability_tempo_complete_block_timeout: "15m" # How long Tempo waits for a complete block before shipping it.
