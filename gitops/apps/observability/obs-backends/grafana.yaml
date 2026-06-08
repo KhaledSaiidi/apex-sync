@@ -14,8 +14,8 @@ spec:
     security:
       admin_user: admin
   deployment:
-    replicas: ${ARGOCD_ENV_grafana_replicas}
     spec:
+      replicas: ${ARGOCD_ENV_grafana_replicas}
       template:
         spec:
           securityContext:

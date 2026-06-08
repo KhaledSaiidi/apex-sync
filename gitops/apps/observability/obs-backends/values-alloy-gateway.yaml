@@ -86,8 +86,9 @@ alloy:
       }
 
       otelcol.processor.batch "default" {
-        timeout         = "${ARGOCD_ENV_observability_alloy_gateway_batch_timeout}"
-        send_batch_size = ${ARGOCD_ENV_observability_alloy_gateway_batch_send_size}
+        timeout             = "${ARGOCD_ENV_observability_alloy_gateway_batch_timeout}"
+        send_batch_size     = ${ARGOCD_ENV_observability_alloy_gateway_batch_send_size}
+        send_batch_max_size = ${ARGOCD_ENV_observability_alloy_gateway_batch_send_size}
         output {
           metrics = [otelcol.exporter.prometheus.mimir.input]
           logs    = [otelcol.exporter.loki.loki.input]
@@ -111,7 +112,7 @@ alloy:
 
       otelcol.exporter.otlp "tempo" {
         client {
-          endpoint = "tempo-grafana-tempo-distributor.observability.svc.cluster.local:4317"
+          endpoint = "tempo-distributor.observability.svc.cluster.local:4317"
           tls {
             insecure = true
           }

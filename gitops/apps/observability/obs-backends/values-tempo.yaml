@@ -22,12 +22,12 @@ storage:
     backend: s3
     s3:
       bucket: tempo-traces
-      endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+      endpoint: garage.garage.svc.cluster.local:3900
       access_key: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
       secret_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
       region: '{{ "$" }}{AWS_REGION}'
       forcepathstyle: true
-      insecure: false
+      insecure: true
 
 ingester:
   replicas: ${ARGOCD_ENV_tempo_ingester_replicas}

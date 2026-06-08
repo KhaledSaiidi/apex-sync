@@ -15,28 +15,28 @@ mimir:
     blocks_storage:
       s3:
         bucket_name: mimir-blocks
-        endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+        endpoint: garage.garage.svc.cluster.local:3900
         access_key_id: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
         secret_access_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
-        insecure: false
+        insecure: true
         http:
-          insecure_skip_verify: false
+          insecure_skip_verify: true
     ruler_storage:
       backend: s3
       s3:
         bucket_name: mimir-ruler
-        endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+        endpoint: garage.garage.svc.cluster.local:3900
         access_key_id: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
         secret_access_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
-        insecure: false
+        insecure: true
     alertmanager_storage:
       backend: s3
       s3:
         bucket_name: mimir-alertmanager
-        endpoint: '{{ "$" }}{AWS_ENDPOINT_URL}'
+        endpoint: garage.garage.svc.cluster.local:3900
         access_key_id: '{{ "$" }}{AWS_ACCESS_KEY_ID}'
         secret_access_key: '{{ "$" }}{AWS_SECRET_ACCESS_KEY}'
-        insecure: false
+        insecure: true
     ingest_storage:
       enabled: false
     ingester:

@@ -2,11 +2,6 @@ crds:
   create: false
 
 alloy:
-  extraEnv:
-    - name: K8S_NODE_NAME
-      valueFrom:
-        fieldRef:
-          fieldPath: spec.nodeName
   mounts:
     varlog: true
     extra:
