@@ -29,3 +29,6 @@ kube_state_metrics_version: "7.4.0"
 grafana_exploretraces_plugin_version: "2.0.3"
 grafana_operator_version: "5.23.0"
 opentelemetry_operator_version: "0.114.1"
+keycloak_operator_version: "26.6.1"
+keycloak_chart_version: "25.2.0"
+

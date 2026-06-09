@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '21'
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/part-of: platform-baseline
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  source:
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    path: gitops/apps/keycloak
+    plugin:
+      name: envsubst
+      env:
+        - name: keycloak_chart_version
+          value: "${ARGOCD_ENV_keycloak_chart_version}"
+        - name: keycloak_operator_version
+          value: "${ARGOCD_ENV_keycloak_operator_version}"
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keycloak
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true
