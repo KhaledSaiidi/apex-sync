@@ -128,7 +128,6 @@ module "argocd" {
   grafana_exploretraces_plugin_version = var.grafana_exploretraces_plugin_version
   grafana_operator_version             = var.grafana_operator_version
   opentelemetry_operator_version       = var.opentelemetry_operator_version
-  keycloak_chart_version               = var.keycloak_chart_version
   keycloak_operator_version            = var.keycloak_operator_version
   depends_on = [
     null_resource.artifacts_dir

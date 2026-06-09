@@ -3,4 +3,5 @@ kind: Namespace
 metadata:
   name: keycloak
   labels:
+    istio-injection: enabled
     ingress.apex-sync.io/public-gateway-access: "true"

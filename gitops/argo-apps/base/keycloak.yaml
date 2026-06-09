@@ -19,8 +19,6 @@ spec:
     plugin:
       name: envsubst
       env:
-        - name: keycloak_chart_version
-          value: "${ARGOCD_ENV_keycloak_chart_version}"
         - name: keycloak_operator_version
           value: "${ARGOCD_ENV_keycloak_operator_version}"
         - name: base_domain

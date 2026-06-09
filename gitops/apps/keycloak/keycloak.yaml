@@ -1,0 +1,32 @@
+apiVersion: k8s.keycloak.org/v2beta1
+kind: Keycloak
+metadata:
+  name: keycloak
+  namespace: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+spec:
+  instances: 1
+  db:
+    vendor: mysql
+    host: mysql-cluster-haproxy.stateful-resources.svc.cluster.local
+    port: 3306
+    database: keycloak
+    usernameSecret:
+      name: keycloak-db-credentials
+      key: username
+    passwordSecret:
+      name: keycloak-db-credentials
+      key: password
+  hostname:
+    hostname: keycloak.${ARGOCD_ENV_base_domain}
+    strict: true
+  http:
+    httpEnabled: true
+    serviceName: keycloak
+    serviceHttpPort: 80
+  ingress:
+    enabled: false
+  additionalOptions:
+    - name: proxy-headers
+      value: xforwarded

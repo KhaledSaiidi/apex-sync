@@ -1,14 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: keycloak
-helmCharts:
-  - name: keycloak
-    repo: oci://registry-1.docker.io/bitnamicharts/keycloak
-    version: ${ARGOCD_ENV_keycloak_chart_version}
-    releaseName: keycloak
-    namespace: keycloak
-    valuesFile: values.yaml
 resources:
   - namespace.yaml
+  - 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${ARGOCD_ENV_keycloak_operator_version}/kubernetes/keycloaks.k8s.keycloak.org-v1.yml'
+  - 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${ARGOCD_ENV_keycloak_operator_version}/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml'
   - 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${ARGOCD_ENV_keycloak_operator_version}/kubernetes/kubernetes.yml'
+  - keycloak-db-bootstrap-rbac.yaml
+  - keycloak-db-bootstrap-job.yaml
+  - keycloak.yaml
   - keycloak-httproute.yaml

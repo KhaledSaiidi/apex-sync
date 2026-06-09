@@ -428,9 +428,6 @@ variable "opentelemetry_operator_version" {
   type = string
 }
 
-variable "keycloak_chart_version" {
-  type = string
-}
 variable "keycloak_operator_version" {
   type = string
 }

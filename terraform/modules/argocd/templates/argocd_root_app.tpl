@@ -215,8 +215,6 @@ spec:
           value: "${grafana_operator_version}"
         - name: opentelemetry_operator_version
           value: "${opentelemetry_operator_version}"
-        - name: keycloak_chart_version
-          value: "${keycloak_chart_version}"
         - name: keycloak_operator_version
           value: "${keycloak_operator_version}"
 %{ for name, value in resource_env ~}

@@ -11,25 +11,7 @@ spec:
   mutateExistingOnPolicyUpdate: true
   validationFailureAction: Audit
   rules:
-    - name: add-istio-injection-label-to-default
-      skipBackgroundRequests: true
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - default
-      mutate:
-        targets:
-          - apiVersion: v1
-            kind: Namespace
-            name: default
-        patchStrategicMerge:
-          metadata:
-            labels:
-              istio-injection: enabled
-    - name: add-istio-injection-label-to-observability
+    - name: add-istio-injection-label-to-platform-namespaces
       skipBackgroundRequests: true
       match:
         any:
@@ -38,11 +20,15 @@ spec:
                 - Namespace
               names:
                 - observability
+                - keycloak
       mutate:
         targets:
           - apiVersion: v1
             kind: Namespace
             name: observability
+          - apiVersion: v1
+            kind: Namespace
+            name: keycloak
         patchStrategicMerge:
           metadata:
             labels:
@@ -56,35 +42,6 @@ metadata:
     argocd.argoproj.io/sync-wave: "10"
 spec:
   rules:
-    - name: restart-deployments-when-default-namespace-is-labeled
-      skipBackgroundRequests: false
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - default
-              operations:
-                - CREATE
-                - UPDATE
-      preconditions:
-        all:
-          - key: "{{ request.object.metadata.labels.\"istio-injection\" || '' }}"
-            operator: Equals
-            value: enabled
-      mutate:
-        mutateExistingOnPolicyUpdate: false
-        targets:
-          - apiVersion: apps/v1
-            kind: Deployment
-            namespace: default
-        patchStrategicMerge:
-          spec:
-            template:
-              metadata:
-                annotations:
-                  ops.corp.com/triggerrestart: "{{ request.object.metadata.resourceVersion }}"
     - name: restart-deployments-when-observability-namespace-is-labeled
       skipBackgroundRequests: false
       match:
@@ -108,6 +65,64 @@ spec:
           - apiVersion: apps/v1
             kind: Deployment
             namespace: observability
+        patchStrategicMerge:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  ops.corp.com/triggerrestart: "{{ request.object.metadata.resourceVersion }}"
+    - name: restart-deployments-when-keycloak-namespace-is-labeled
+      skipBackgroundRequests: false
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - keycloak
+              operations:
+                - CREATE
+                - UPDATE
+      preconditions:
+        all:
+          - key: "{{ request.object.metadata.labels.\"istio-injection\" || '' }}"
+            operator: Equals
+            value: enabled
+      mutate:
+        mutateExistingOnPolicyUpdate: false
+        targets:
+          - apiVersion: apps/v1
+            kind: Deployment
+            namespace: keycloak
+        patchStrategicMerge:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  ops.corp.com/triggerrestart: "{{ request.object.metadata.resourceVersion }}"
+    - name: restart-statefulsets-when-keycloak-namespace-is-labeled
+      skipBackgroundRequests: false
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - keycloak
+              operations:
+                - CREATE
+                - UPDATE
+      preconditions:
+        all:
+          - key: "{{ request.object.metadata.labels.\"istio-injection\" || '' }}"
+            operator: Equals
+            value: enabled
+      mutate:
+        mutateExistingOnPolicyUpdate: false
+        targets:
+          - apiVersion: apps/v1
+            kind: StatefulSet
+            namespace: keycloak
         patchStrategicMerge:
           spec:
             template:

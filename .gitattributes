@@ -1,0 +1,2 @@
+*.tpl linguist-language=HCL
+*.tf.tpl linguist-language=HCL
