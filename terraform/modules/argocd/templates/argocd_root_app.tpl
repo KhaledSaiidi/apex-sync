@@ -197,6 +197,10 @@ spec:
           value: "${tempo_querier_replicas}"
         - name: tempo_query_frontend_replicas
           value: "${tempo_query_frontend_replicas}"
+        - name: keycloak_replicas
+          value: "${keycloak_replicas}"
+        - name: keycloak_operator_replicas
+          value: "${keycloak_operator_replicas}"
         - name: mimir_version
           value: "${mimir_version}"
         - name: loki_version

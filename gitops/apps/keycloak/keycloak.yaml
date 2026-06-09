@@ -6,7 +6,14 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "20"
 spec:
-  instances: 1
+  instances: ${ARGOCD_ENV_keycloak_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_keycloak_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_keycloak_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_keycloak_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_keycloak_limits_memory}"
   db:
     vendor: mysql
     host: mysql-cluster-haproxy.stateful-resources.svc.cluster.local

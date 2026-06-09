@@ -21,8 +21,44 @@ spec:
       env:
         - name: keycloak_operator_version
           value: "${ARGOCD_ENV_keycloak_operator_version}"
+        - name: keycloak_replicas
+          value: "${ARGOCD_ENV_keycloak_replicas}"
+        - name: keycloak_operator_replicas
+          value: "${ARGOCD_ENV_keycloak_operator_replicas}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
+        - name: resource_keycloak_requests_cpu
+          value: "${ARGOCD_ENV_resource_keycloak_requests_cpu}"
+        - name: resource_keycloak_requests_memory
+          value: "${ARGOCD_ENV_resource_keycloak_requests_memory}"
+        - name: resource_keycloak_limits_cpu
+          value: "${ARGOCD_ENV_resource_keycloak_limits_cpu}"
+        - name: resource_keycloak_limits_memory
+          value: "${ARGOCD_ENV_resource_keycloak_limits_memory}"
+        - name: resource_keycloak_operator_requests_cpu
+          value: "${ARGOCD_ENV_resource_keycloak_operator_requests_cpu}"
+        - name: resource_keycloak_operator_requests_memory
+          value: "${ARGOCD_ENV_resource_keycloak_operator_requests_memory}"
+        - name: resource_keycloak_operator_limits_cpu
+          value: "${ARGOCD_ENV_resource_keycloak_operator_limits_cpu}"
+        - name: resource_keycloak_operator_limits_memory
+          value: "${ARGOCD_ENV_resource_keycloak_operator_limits_memory}"
+        - name: resource_keycloak_db_bootstrap_prepare_requests_cpu
+          value: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_requests_cpu}"
+        - name: resource_keycloak_db_bootstrap_prepare_requests_memory
+          value: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_requests_memory}"
+        - name: resource_keycloak_db_bootstrap_prepare_limits_cpu
+          value: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_limits_cpu}"
+        - name: resource_keycloak_db_bootstrap_prepare_limits_memory
+          value: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_limits_memory}"
+        - name: resource_keycloak_db_bootstrap_create_requests_cpu
+          value: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_requests_cpu}"
+        - name: resource_keycloak_db_bootstrap_create_requests_memory
+          value: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_requests_memory}"
+        - name: resource_keycloak_db_bootstrap_create_limits_cpu
+          value: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_limits_cpu}"
+        - name: resource_keycloak_db_bootstrap_create_limits_memory
+          value: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_limits_memory}"
   destination:
     server: https://kubernetes.default.svc
     namespace: keycloak

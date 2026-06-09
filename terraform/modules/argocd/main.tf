@@ -119,6 +119,8 @@ resource "local_file" "argocd_root_app" {
     tempo_memcached_replicas               = var.tempo_memcached_replicas
     tempo_querier_replicas                 = var.tempo_querier_replicas
     tempo_query_frontend_replicas          = var.tempo_query_frontend_replicas
+    keycloak_replicas                      = var.keycloak_replicas
+    keycloak_operator_replicas             = var.keycloak_operator_replicas
 
     resource_env                         = var.resource_env
     observability_env                    = var.observability_env

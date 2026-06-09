@@ -10,3 +10,27 @@ resources:
   - keycloak-db-bootstrap-job.yaml
   - keycloak.yaml
   - keycloak-httproute.yaml
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: keycloak-operator
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: keycloak-operator
+      spec:
+        replicas: ${ARGOCD_ENV_keycloak_operator_replicas}
+        template:
+          spec:
+            containers:
+              - name: keycloak-operator
+                resources:
+                  requests:
+                    cpu: "${ARGOCD_ENV_resource_keycloak_operator_requests_cpu}"
+                    memory: "${ARGOCD_ENV_resource_keycloak_operator_requests_memory}"
+                  limits:
+                    cpu: "${ARGOCD_ENV_resource_keycloak_operator_limits_cpu}"
+                    memory: "${ARGOCD_ENV_resource_keycloak_operator_limits_memory}"

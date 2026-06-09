@@ -50,11 +50,11 @@ spec:
               mountPath: /work
           resources:
             requests:
-              cpu: 25m
-              memory: 64Mi
+              cpu: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_requests_cpu}"
+              memory: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_requests_memory}"
             limits:
-              cpu: 200m
-              memory: 128Mi
+              cpu: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_limits_cpu}"
+              memory: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_limits_memory}"
       containers:
         - name: create-database
           image: docker.io/library/mysql:8.4
@@ -85,8 +85,8 @@ spec:
               mountPath: /work
           resources:
             requests:
-              cpu: 25m
-              memory: 128Mi
+              cpu: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_requests_cpu}"
+              memory: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_requests_memory}"
             limits:
-              cpu: 300m
-              memory: 256Mi
+              cpu: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_limits_cpu}"
+              memory: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_limits_memory}"
