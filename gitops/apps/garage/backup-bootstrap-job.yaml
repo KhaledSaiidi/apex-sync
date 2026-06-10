@@ -29,18 +29,15 @@ spec:
           env:
             - name: GARAGE_NAMESPACE
               value: garage
-            - name: BUCKET_NAME
-              value: percona-backups
-            - name: KEY_NAME
-              value: percona-backup-key
-            - name: SECRET_NAME
-              value: percona-backup-garage-s3
             - name: ENDPOINT_URL
               value: https://garage-s3.${ARGOCD_ENV_base_domain}
             - name: REGION
               value: garage
             - name: GARAGE_LABEL_SELECTOR
               value: app.kubernetes.io/name=garage,app.kubernetes.io/instance=garage
+            - name: GARAGE_TARGETS
+              value: |
+                percona-backup-garage-s3|percona-backup-key|percona-backups|BUCKET_NAME|stateful-resources
           resources:
             requests:
               cpu: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_cpu}"
@@ -49,126 +46,13 @@ spec:
               cpu: "${ARGOCD_ENV_resource_garage_bootstrap_job_limits_cpu}"
               memory: "${ARGOCD_ENV_resource_garage_bootstrap_job_limits_memory}"
           command:
-            - /bin/sh
-            - -ec
-            - |
-              set -eu
-
-              set -- \
-                "$(printenv GARAGE_NAMESPACE)" \
-                "$(printenv BUCKET_NAME)" \
-                "$(printenv KEY_NAME)" \
-                "$(printenv SECRET_NAME)" \
-                "$(printenv ENDPOINT_URL)" \
-                "$(printenv REGION)" \
-                "$(printenv GARAGE_LABEL_SELECTOR)"
-
-              kubectl wait \
-                --namespace "$1" \
-                --for=condition=ready pod \
-                --selector "$7" \
-                --timeout=600s
-
-              set -- \
-                "$1" \
-                "$2" \
-                "$3" \
-                "$4" \
-                "$5" \
-                "$6" \
-                "$7" \
-                "$(kubectl get pod \
-                  --namespace "$1" \
-                  --selector "$7" \
-                  --output jsonpath='{.items[0].metadata.name}')"
-
-              if [ -z "$8" ]; then
-                echo "Garage pod not found" >&2
-                exit 1
-              fi
-
-              if kubectl get secret "$4" -n "$1" >/dev/null 2>&1; then
-                set -- \
-                  "$1" \
-                  "$2" \
-                  "$3" \
-                  "$4" \
-                  "$5" \
-                  "$6" \
-                  "$7" \
-                  "$8" \
-                  "$(kubectl get secret "$4" -n "$1" -o jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 -d)"
-              else
-                set -- "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" ""
-              fi
-
-              if [ -n "$9" ] && kubectl exec -n "$1" "$8" -- /garage key info "$9" >/dev/null 2>&1; then
-                :
-              elif kubectl exec -n "$1" "$8" -- /garage key info "$3" >/dev/null 2>&1; then
-                set -- "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$3"
-              else
-                kubectl exec -n "$1" "$8" -- /garage key create "$3" >/dev/null
-                set -- "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$3"
-              fi
-
-              timeout 180 sh -ec '
-                until kubectl exec -n "$1" "$2" -- /garage key info "$3" >/dev/null 2>&1; do
-                  sleep 5
-                done
-              ' _ "$1" "$8" "$9"
-
-              if ! kubectl exec -n "$1" "$8" -- /garage bucket info "$2" >/dev/null 2>&1; then
-                kubectl exec -n "$1" "$8" -- /garage bucket create "$2" >/dev/null
-              fi
-
-              timeout 180 sh -ec '
-                until kubectl exec -n "$1" "$2" -- /garage bucket info "$3" >/dev/null 2>&1; do
-                  sleep 5
-                done
-              ' _ "$1" "$8" "$2"
-
-              timeout 180 sh -ec '
-                until kubectl exec -n "$1" "$2" -- /garage bucket allow --key "$4" --read --write --owner "$3" >/dev/null 2>&1; do
-                  sleep 5
-                done
-              ' _ "$1" "$8" "$2" "$9"
-
-              timeout 180 sh -ec '
-                while true; do
-                  if kubectl exec -n "$1" "$2" -- /garage key info --show-secret "$3" >/tmp/garage-key-info.txt 2>/dev/null; then
-                    awk -F": *" "/Key ID:/ {print \$2; exit}" /tmp/garage-key-info.txt >/tmp/garage-access-key-id.txt
-                    awk -F": *" "/Secret key:/ {print \$2; exit}" /tmp/garage-key-info.txt >/tmp/garage-secret-key.txt
-
-                    if [ -s /tmp/garage-access-key-id.txt ] && [ -s /tmp/garage-secret-key.txt ]; then
-                      exit 0
-                    fi
-                  fi
-
-                  sleep 5
-                done
-              ' _ "$1" "$8" "$9"
-
-              awk -F': *' '/Key ID:/ {print $2; exit}' /tmp/garage-key-info.txt >/tmp/garage-access-key-id.txt
-              awk -F': *' '/Secret key:/ {print $2; exit}' /tmp/garage-key-info.txt >/tmp/garage-secret-key.txt
-
-              if [ ! -s /tmp/garage-access-key-id.txt ] || [ ! -s /tmp/garage-secret-key.txt ]; then
-                echo "Failed to read Garage access key material" >&2
-                exit 1
-              fi
-
-              kubectl create secret generic "$4" \
-                --namespace "$1" \
-                --from-literal=AWS_ACCESS_KEY_ID="$(cat /tmp/garage-access-key-id.txt)" \
-                --from-literal=AWS_SECRET_ACCESS_KEY="$(cat /tmp/garage-secret-key.txt)" \
-                --from-literal=AWS_ENDPOINT_URL="$5" \
-                --from-literal=AWS_REGION="$6" \
-                --from-literal=BUCKET_NAME="$2" \
-                --dry-run=client \
-                -o yaml \
-                | kubectl annotate --local -f - \
-                    reflector.v1.k8s.emberstack.com/reflection-allowed="true" \
-                    reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces="stateful-resources" \
-                    reflector.v1.k8s.emberstack.com/reflection-auto-enabled="true" \
-                    reflector.v1.k8s.emberstack.com/reflection-auto-namespaces="stateful-resources" \
-                    -o yaml \
-                | kubectl apply -f -
+            - /scripts/bucket-secret-bootstrap.sh
+          volumeMounts:
+            - name: script
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: script
+          configMap:
+            name: garage-bucket-secret-bootstrap-script
+            defaultMode: 0555

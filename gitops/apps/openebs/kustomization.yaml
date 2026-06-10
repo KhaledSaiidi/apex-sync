@@ -13,3 +13,14 @@ resources:
   - openebs-hostpath-setup.yaml
   - openebs-localpv-rbac.yaml
   - openebs-storage-class.yaml
+configMapGenerator:
+  - name: openebs-hostpath-setup-script
+    files:
+      - setup-hostpath.sh=scripts/setup-hostpath.sh
+    options:
+      annotations:
+        argocd.argoproj.io/hook: PreSync
+        argocd.argoproj.io/sync-wave: "-11"
+        argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+generatorOptions:
+  disableNameSuffixHash: true

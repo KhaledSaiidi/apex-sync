@@ -36,54 +36,13 @@ spec:
               cpu: "${ARGOCD_ENV_resource_garage_backup_lifecycle_job_limits_cpu}"
               memory: "${ARGOCD_ENV_resource_garage_backup_lifecycle_job_limits_memory}"
           command:
-            - /bin/sh
-            - -ec
-            - |
-              set -eu
-
-              set -- \
-                "$(printenv AWS_REGION)" \
-                "$(printenv BUCKET_NAME)"
-
-              cat >/tmp/lifecycle.json <<EOF
-              {
-                "Rules": [
-                  {
-                    "ID": "expire-full-backups-after-7-days",
-                    "Status": "Enabled",
-                    "Filter": {
-                      "Prefix": "full/"
-                    },
-                    "Expiration": {
-                      "Days": 7
-                    }
-                  },
-                  {
-                    "ID": "expire-binlogs-after-1-day",
-                    "Status": "Enabled",
-                    "Filter": {
-                      "Prefix": "binlogs/"
-                    },
-                    "Expiration": {
-                      "Days": 1
-                    }
-                  },
-                  {
-                    "ID": "abort-incomplete-multipart-uploads",
-                    "Status": "Enabled",
-                    "Filter": {
-                      "Prefix": ""
-                    },
-                    "AbortIncompleteMultipartUpload": {
-                      "DaysAfterInitiation": 1
-                    }
-                  }
-                ]
-              }
-              EOF
-
-              aws s3api put-bucket-lifecycle-configuration \
-                --endpoint-url "http://garage.garage.svc.cluster.local:3900" \
-                --region "$1" \
-                --bucket "$2" \
-                --lifecycle-configuration "file:///tmp/lifecycle.json"
+            - /scripts/backup-lifecycle.sh
+          volumeMounts:
+            - name: script
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: script
+          configMap:
+            name: garage-backup-lifecycle-script
+            defaultMode: 0555
