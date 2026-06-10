@@ -14,4 +14,4 @@ resources:
   - stateful-operator.yaml # sync-wave: 10
   - stateful-resources.yaml # sync-wave: 20
   - keycloak.yaml # sync-wave: 21
-  - observability.yaml # sync-wave: 23
+  # - observability.yaml # sync-wave: 23
