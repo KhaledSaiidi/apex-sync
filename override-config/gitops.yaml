@@ -6,6 +6,7 @@ gitops_root_app_target_revision: "main" # Git branch, tag, or commit Argo CD tra
 gitops_root_app_path: "gitops/argo-apps" # Repository path containing the root app-of-apps manifests.
 external_dns_txt_owner_id: "apex-sync" # Owner ID external-dns writes into TXT registry records.
 base_domain: "kube-forge.com"
+public_gateway_dns_target: "REPLACE_WITH_PUBLIC_IP" # Public IP external-dns publishes for HTTPRoute hostnames.
 cert_manager_acme_email: "khaled.saiidi@outlook.com"
 cert_manager_route53_region: "us-east-1"
 cert_manager_route53_hosted_zone_id: "Z032863786J0OF6PKT1D"

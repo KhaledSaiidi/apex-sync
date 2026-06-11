@@ -134,6 +134,10 @@ variable "base_domain" {
   type = string
 }
 
+variable "public_gateway_dns_target" {
+  type = string
+}
+
 variable "cert_manager_version" {
   type = string
 }

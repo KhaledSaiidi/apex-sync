@@ -65,6 +65,8 @@ spec:
           value: "${cert_manager_route53_hosted_zone_id}"
         - name: base_domain
           value: "${base_domain}"
+        - name: public_gateway_dns_target
+          value: "${public_gateway_dns_target}"
         - name: cert_manager_version
           value: "${cert_manager_version}"
         - name: external_dns_version
