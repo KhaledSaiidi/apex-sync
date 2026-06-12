@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-db-bootstrap
+  namespace: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: keycloak-db-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: keycloak-db-bootstrap
+      volumes:
+        - name: db-credentials
+          emptyDir: {}
+        - name: prepare-credentials-script
+          configMap:
+            name: keycloak-db-prepare-credentials-script
+            defaultMode: 0555
+        - name: create-database-script
+          configMap:
+            name: keycloak-db-create-database-script
+            defaultMode: 0555
+      initContainers:
+        - name: prepare-credentials
+          image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /scripts/prepare-db-credentials.sh
+          volumeMounts:
+            - name: db-credentials
+              mountPath: /work
+            - name: prepare-credentials-script
+              mountPath: /scripts
+              readOnly: true
+          resources:
+            requests:
+              cpu: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_requests_cpu}"
+              memory: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_requests_memory}"
+            limits:
+              cpu: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_limits_cpu}"
+              memory: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_prepare_limits_memory}"
+      containers:
+        - name: create-database
+          image: docker.io/library/mysql:8.4
+          imagePullPolicy: IfNotPresent
+          command:
+            - /scripts/create-database.sh
+          volumeMounts:
+            - name: db-credentials
+              mountPath: /work
+            - name: create-database-script
+              mountPath: /scripts
+              readOnly: true
+          resources:
+            requests:
+              cpu: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_requests_cpu}"
+              memory: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_requests_memory}"
+            limits:
+              cpu: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_limits_cpu}"
+              memory: "${ARGOCD_ENV_resource_keycloak_db_bootstrap_create_limits_memory}"

@@ -1,0 +1,43 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: keycloak-server-http-redirect
+  namespace: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: public-gateway
+      namespace: istio-ingress
+      sectionName: http-wildcard
+  hostnames:
+    - "keycloak.${ARGOCD_ENV_base_domain}"
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: keycloak-server
+  namespace: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: public-gateway
+      namespace: istio-ingress
+      sectionName: https-wildcard
+  hostnames:
+    - "keycloak.${ARGOCD_ENV_base_domain}"
+  rules:
+    - backendRefs:
+        - name: keycloak
+          port: 80

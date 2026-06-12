@@ -17,6 +17,8 @@ spec:
       env:
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
+        - name: public_gateway_dns_target
+          value: "${ARGOCD_ENV_public_gateway_dns_target}"
         - name: public_gateway_replicas
           value: "${ARGOCD_ENV_public_gateway_replicas}"
         - name: public_gateway_min_replicas

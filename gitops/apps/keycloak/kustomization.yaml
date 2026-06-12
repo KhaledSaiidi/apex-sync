@@ -1,0 +1,45 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: keycloak
+resources:
+  - namespace.yaml
+  - 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${ARGOCD_ENV_keycloak_operator_version}/kubernetes/keycloaks.k8s.keycloak.org-v1.yml'
+  - 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${ARGOCD_ENV_keycloak_operator_version}/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml'
+  - 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${ARGOCD_ENV_keycloak_operator_version}/kubernetes/kubernetes.yml'
+  - keycloak-db-bootstrap-rbac.yaml
+  - keycloak-db-bootstrap-job.yaml
+  - keycloak.yaml
+  - keycloak-httproute.yaml
+configMapGenerator:
+  - name: keycloak-db-prepare-credentials-script
+    files:
+      - prepare-db-credentials.sh=scripts/prepare-db-credentials.sh
+  - name: keycloak-db-create-database-script
+    files:
+      - create-database.sh=scripts/create-database.sh
+generatorOptions:
+  disableNameSuffixHash: true
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: keycloak-operator
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: keycloak-operator
+      spec:
+        replicas: ${ARGOCD_ENV_keycloak_operator_replicas}
+        template:
+          spec:
+            containers:
+              - name: keycloak-operator
+                resources:
+                  requests:
+                    cpu: "${ARGOCD_ENV_resource_keycloak_operator_requests_cpu}"
+                    memory: "${ARGOCD_ENV_resource_keycloak_operator_requests_memory}"
+                  limits:
+                    cpu: "${ARGOCD_ENV_resource_keycloak_operator_limits_cpu}"
+                    memory: "${ARGOCD_ENV_resource_keycloak_operator_limits_memory}"

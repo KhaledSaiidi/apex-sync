@@ -5,6 +5,7 @@ metadata:
   namespace: istio-ingress
   annotations:
     argocd.argoproj.io/sync-wave: "30"
+    external-dns.alpha.kubernetes.io/target: "${ARGOCD_ENV_public_gateway_dns_target}"
 spec:
   gatewayClassName: istio
   infrastructure:

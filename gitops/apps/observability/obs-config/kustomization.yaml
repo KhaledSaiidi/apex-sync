@@ -17,4 +17,10 @@ resources:
   - grafana/folder/grafana-istio.yaml
   - grafana/folder/grafana-observability.yaml
   - grafana/folder/grafana-storage.yaml
-  - grafana/dashboards/istio-mesh.yaml
+  - grafana/dashboards/istio-mesh-overview.yaml
+  - grafana/dashboards/istio-resource-usage.yaml
+  - grafana/dashboards/istio-service-traffic.yaml
+  - grafana/dashboards/istio-istiod-health.yaml
+  - grafana/dashboards/cluster-overview.yaml
+  - grafana/dashboards/argocd-dashboard.yaml
+  - grafana/dashboards/keycloak-overview.yaml

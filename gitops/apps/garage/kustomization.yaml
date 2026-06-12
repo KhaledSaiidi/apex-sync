@@ -19,3 +19,30 @@ resources:
   - backup-bootstrap-job.yaml
   - monitoring-bootstrap-job.yaml
   - backup-lifecycle-job.yaml
+configMapGenerator:
+  - name: garage-internal-secrets-bootstrap-script
+    files:
+      - internal-secrets-bootstrap.sh=scripts/internal-secrets-bootstrap.sh
+    options:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-11"
+  - name: garage-discovery-cleanup-script
+    files:
+      - discovery-cleanup.sh=scripts/discovery-cleanup.sh
+    options:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-6"
+  - name: garage-cluster-layout-bootstrap-script
+    files:
+      - cluster-layout-bootstrap.sh=scripts/cluster-layout-bootstrap.sh
+    options:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+  - name: garage-bucket-secret-bootstrap-script
+    files:
+      - bucket-secret-bootstrap.sh=scripts/bucket-secret-bootstrap.sh
+  - name: garage-backup-lifecycle-script
+    files:
+      - backup-lifecycle.sh=scripts/backup-lifecycle.sh
+generatorOptions:
+  disableNameSuffixHash: true

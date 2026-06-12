@@ -50,6 +50,7 @@ module "argocd" {
   cert_manager_route53_region            = var.cert_manager_route53_region
   cert_manager_route53_hosted_zone_id    = var.cert_manager_route53_hosted_zone_id
   base_domain                            = var.base_domain
+  public_gateway_dns_target              = var.public_gateway_dns_target
   cert_manager_version                   = var.cert_manager_version
   external_dns_version                   = var.external_dns_version
   external_dns_txt_owner_id              = var.external_dns_txt_owner_id
@@ -116,6 +117,8 @@ module "argocd" {
   tempo_memcached_replicas               = var.tempo_memcached_replicas
   tempo_querier_replicas                 = var.tempo_querier_replicas
   tempo_query_frontend_replicas          = var.tempo_query_frontend_replicas
+  keycloak_replicas                      = var.keycloak_replicas
+  keycloak_operator_replicas             = var.keycloak_operator_replicas
 
   resource_env                         = local.resource_env
   observability_env                    = local.observability_env
@@ -128,7 +131,7 @@ module "argocd" {
   grafana_exploretraces_plugin_version = var.grafana_exploretraces_plugin_version
   grafana_operator_version             = var.grafana_operator_version
   opentelemetry_operator_version       = var.opentelemetry_operator_version
-
+  keycloak_operator_version            = var.keycloak_operator_version
   depends_on = [
     null_resource.artifacts_dir
   ]

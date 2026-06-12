@@ -65,6 +65,8 @@ spec:
           value: "${cert_manager_route53_hosted_zone_id}"
         - name: base_domain
           value: "${base_domain}"
+        - name: public_gateway_dns_target
+          value: "${public_gateway_dns_target}"
         - name: cert_manager_version
           value: "${cert_manager_version}"
         - name: external_dns_version
@@ -197,6 +199,10 @@ spec:
           value: "${tempo_querier_replicas}"
         - name: tempo_query_frontend_replicas
           value: "${tempo_query_frontend_replicas}"
+        - name: keycloak_replicas
+          value: "${keycloak_replicas}"
+        - name: keycloak_operator_replicas
+          value: "${keycloak_operator_replicas}"
         - name: mimir_version
           value: "${mimir_version}"
         - name: loki_version
@@ -215,6 +221,8 @@ spec:
           value: "${grafana_operator_version}"
         - name: opentelemetry_operator_version
           value: "${opentelemetry_operator_version}"
+        - name: keycloak_operator_version
+          value: "${keycloak_operator_version}"
 %{ for name, value in resource_env ~}
         - name: ${name}
           value: "${value}"

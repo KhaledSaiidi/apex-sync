@@ -1,0 +1,52 @@
+apiVersion: k8s.keycloak.org/v2beta1
+kind: Keycloak
+metadata:
+  name: keycloak
+  namespace: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+spec:
+  instances: ${ARGOCD_ENV_keycloak_replicas}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_keycloak_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_keycloak_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_keycloak_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_keycloak_limits_memory}"
+  db:
+    vendor: mysql
+    host: mysql-cluster-haproxy.stateful-resources.svc.cluster.local
+    port: 3306
+    database: keycloak
+    usernameSecret:
+      name: keycloak-db-credentials
+      key: username
+    passwordSecret:
+      name: keycloak-db-credentials
+      key: password
+  hostname:
+    hostname: keycloak.${ARGOCD_ENV_base_domain}
+    strict: true
+  http:
+    httpEnabled: true
+    serviceName: keycloak
+    serviceHttpPort: 80
+  httpManagement:
+    port: 9000
+  ingress:
+    enabled: false
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+    labels:
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/instance: keycloak
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/part-of: observability
+  additionalOptions:
+    - name: metrics-enabled
+      value: "true"
+    - name: proxy-headers
+      value: xforwarded
