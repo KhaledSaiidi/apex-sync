@@ -270,9 +270,9 @@ The base applications are synced in waves:
   - Grafana Alloy gateway and daemonset collectors
   - Grafana instance and datasources
 - `obs-config` at wave 29:
-  - ServiceMonitors for platform workloads and observability targets
+  - Declarative ServiceMonitors for platform workloads and observability targets
   - Grafana folders for Kubernetes, Istio, storage, and observability dashboards
-  - Grafana dashboards, starting with the Istio mesh dashboard
+  - Grafana dashboards for Kubernetes, Istio, Argo CD, and Keycloak
 
 Most child applications use the `envsubst` CMP plugin, then run
 `kustomize build --enable-helm`.
@@ -316,8 +316,9 @@ Collector choices:
 ServiceMonitor model:
 
 - Chart-created ServiceMonitors are disabled where practical.
-- `obs-config` owns ServiceMonitors declaratively so scrape intent lives in one
-  GitOps layer.
+- `obs-config` owns most ServiceMonitors declaratively so scrape intent lives in
+  one GitOps layer. Operator-owned monitors are used when the owning CR exposes
+  a first-class, versioned ServiceMonitor contract, such as Keycloak.
 - Argo CD, Kyverno, and cert-manager monitors are split by component to avoid
   collapsing jobs under one generic label.
 - ServiceMonitors avoid blanket `honorLabels` so target labels do not override

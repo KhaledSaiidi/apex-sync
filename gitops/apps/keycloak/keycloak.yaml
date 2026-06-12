@@ -32,8 +32,21 @@ spec:
     httpEnabled: true
     serviceName: keycloak
     serviceHttpPort: 80
+  httpManagement:
+    port: 9000
   ingress:
     enabled: false
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+    labels:
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/instance: keycloak
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/part-of: observability
   additionalOptions:
+    - name: metrics-enabled
+      value: "true"
     - name: proxy-headers
       value: xforwarded

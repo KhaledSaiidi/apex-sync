@@ -1,17 +1,17 @@
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: istio-mesh
+  name: cluster-overview
   namespace: observability
 spec:
   allowCrossNamespaceImport: false
   datasources:
   - datasourceName: Mimir
-    inputName: DS_PROMETHEUS
-  folderRef: istio
+    inputName: datasource
+  folderRef: kubernetes
   grafanaCom:
-    id: 7639
-    revision: 255
+    id: 15757
+    revision: 43
   instanceSelector:
     matchLabels:
       dashboards: grafana
