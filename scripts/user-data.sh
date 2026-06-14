@@ -1,4 +1,3 @@
-## For teststing on ec2 instances. This script will be used as user data for the EC2 instance. OS: Ubuntu 26.04 LTS
 #!/bin/bash
 set -euo pipefail
 
@@ -61,8 +60,10 @@ apt-get install -y \
   unzip \
   software-properties-common \
   apt-transport-https \
+  haproxy \
   git \
   jq \
+  yq \
   python3 \
   python3-pip \
   python3-venv
@@ -195,6 +196,8 @@ docker --version
 docker compose version
 terraform version
 ansible --version | head -n 1
+haproxy -v
+yq --version
 kubectl version --client=true
 kind version
 
