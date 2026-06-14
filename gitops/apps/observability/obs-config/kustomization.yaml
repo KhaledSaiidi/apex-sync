@@ -24,4 +24,5 @@ resources:
   - grafana/dashboards/cluster-overview.yaml
   - grafana/dashboards/stateful-storage-overview.yaml
   - grafana/dashboards/argocd-dashboard.yaml
+  - grafana/dashboards/gitops-operations.yaml
   - grafana/dashboards/keycloak-overview.yaml
