@@ -15,6 +15,17 @@ data:
     spec:
       type: LoadBalancer
       externalTrafficPolicy: Cluster
+      ports:
+        - name: http-wildcard
+          port: 80
+          protocol: TCP
+          targetPort: 80
+          nodePort: 30080
+        - name: https-wildcard
+          port: 443
+          protocol: TCP
+          targetPort: 443
+          nodePort: 30443
   deployment: |
     spec:
       replicas: ${ARGOCD_ENV_public_gateway_replicas}
