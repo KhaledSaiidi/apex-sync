@@ -22,5 +22,6 @@ resources:
   - grafana/dashboards/istio-service-traffic.yaml
   - grafana/dashboards/istio-istiod-health.yaml
   - grafana/dashboards/cluster-overview.yaml
+  - grafana/dashboards/stateful-storage-overview.yaml
   - grafana/dashboards/argocd-dashboard.yaml
   - grafana/dashboards/keycloak-overview.yaml
