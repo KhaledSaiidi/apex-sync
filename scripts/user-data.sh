@@ -65,6 +65,7 @@ apt-get install -y \
   jq \
   yq \
   python3 \
+  python3-kubernetes \
   python3-pip \
   python3-venv
 
