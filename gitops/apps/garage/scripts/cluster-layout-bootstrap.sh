@@ -98,7 +98,17 @@ while IFS="$(printf '\t')" read -r assignment_tag assignment_node_id assignment_
   [ -n "$assignment_tag" ] || continue
 
   echo "Assigning $assignment_node_id to zone=$assignment_zone capacity=$assignment_capacity tag=$assignment_tag"
-  kubectl exec -n "$garage_namespace" garage-0 -- /garage layout assign "$assignment_node_id" -z "$assignment_zone" -c "$assignment_capacity" -t "$assignment_tag"
+  if ! kubectl exec -n "$garage_namespace" garage-0 -- /garage layout assign "$assignment_node_id" -z "$assignment_zone" -c "$assignment_capacity" -t "$assignment_tag" >/tmp/garage-layout-assign.txt 2>&1; then
+    cat /tmp/garage-layout-assign.txt
+
+    if grep -q "smaller than the replication factor" /tmp/garage-layout-assign.txt || grep -q "cannot yet be applied" /tmp/garage-layout-assign.txt; then
+      echo "Garage layout is temporarily invalid until enough nodes are assigned; continuing."
+    else
+      exit 1
+    fi
+  else
+    cat /tmp/garage-layout-assign.txt
+  fi
 done </tmp/garage-assignments.tsv
 
 kubectl exec -n "$garage_namespace" garage-0 -- /garage layout show >/tmp/garage-layout.txt
