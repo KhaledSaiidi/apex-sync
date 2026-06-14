@@ -11,7 +11,7 @@ spec:
   folderRef: istio
   grafanaCom:
     id: 7639
-    revision: 255
+    revision: 310
   instanceSelector:
     matchLabels:
       dashboards: grafana
