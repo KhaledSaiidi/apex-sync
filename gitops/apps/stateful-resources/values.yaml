@@ -69,7 +69,7 @@ pxc:
       - 1001
 
 haproxy:
-  enabled: true
+  enabled: false
   size: ${ARGOCD_ENV_stateful_resources_haproxy_replicas}
   exposePrimary:
     type: ClusterIP
@@ -120,7 +120,35 @@ haproxy:
       - 1001
 
 proxysql:
-  enabled: false
+  enabled: true
+  size: ${ARGOCD_ENV_stateful_resources_haproxy_replicas}
+  resources:
+    requests:
+      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_memory}"
+      cpu: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_cpu}"
+    limits:
+      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_limits_memory}"
+  priorityClassName: high-priority
+  tolerations:
+    - operator: Exists
+  topologySpreadConstraints:
+    - labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: percona-xtradb-cluster
+      maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+  affinity:
+    antiAffinityTopologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    maxUnavailable: 1
+  containerSecurityContext:
+    privileged: false
+  podSecurityContext:
+    runAsUser: 1001
+    runAsGroup: 1001
+    supplementalGroups:
+      - 1001
 
 logcollector:
   enabled: true

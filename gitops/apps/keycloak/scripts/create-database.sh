@@ -7,7 +7,7 @@ keycloak_password="$(cat /work/keycloak-password)"
 
 mysql \
   --protocol=TCP \
-  --host=mysql-cluster-haproxy.stateful-resources.svc.cluster.local \
+  --host=mysql-cluster-proxysql.stateful-resources.svc.cluster.local \
   --port=3306 \
   --user=root \
   --password="$root_password" <<SQL

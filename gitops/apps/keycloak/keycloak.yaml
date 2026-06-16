@@ -16,7 +16,7 @@ spec:
       memory: "${ARGOCD_ENV_resource_keycloak_limits_memory}"
   db:
     vendor: mysql
-    host: mysql-cluster-haproxy.stateful-resources.svc.cluster.local
+    host: mysql-cluster-proxysql.stateful-resources.svc.cluster.local
     port: 3306
     database: keycloak
     usernameSecret:
