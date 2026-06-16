@@ -96,8 +96,8 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "(sum(kube_pod_status_ready{namespace=\"garage\",pod=~\"garage-[0-9]+\",condition=\"true\"}) / count(kube_pod_info{namespace=\"garage\",pod=~\"garage-[0-9]+\"})) or vector(0)",
-              "legendFormat": "garage ready ratio",
+              "expr": "sum(up{namespace=\"garage\",pod=~\"garage-[0-9]+\",service=\"garage-metrics\"}) / count(up{namespace=\"garage\",pod=~\"garage-[0-9]+\",service=\"garage-metrics\"})",
+              "legendFormat": "garage metrics targets up",
               "refId": "A"
             }
           ],
