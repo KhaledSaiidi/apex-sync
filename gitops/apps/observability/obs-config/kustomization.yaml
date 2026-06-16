@@ -3,6 +3,8 @@ kind: Kustomization
 namespace: observability
 resources:
   - servicemonitors/garage-servicemonitor.yaml
+  - servicemonitors/keycloak-servicemonitor.yaml
+  - servicemonitors/proxysql-servicemonitor.yaml
   - servicemonitors/argocd-servicemonitor.yaml
   - servicemonitors/cert-manager-servicemonitor.yaml
   - servicemonitors/external-dns-servicemonitor.yaml

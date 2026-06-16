@@ -129,8 +129,8 @@ spec:
           value: "${kiali_replicas}"
         - name: stateful_resources_pxc_replicas
           value: "${stateful_resources_pxc_replicas}"
-        - name: stateful_resources_haproxy_replicas
-          value: "${stateful_resources_haproxy_replicas}"
+        - name: stateful_resources_proxysql_replicas
+          value: "${stateful_resources_proxysql_replicas}"
         - name: grafana_operator_replicas
           value: "${grafana_operator_replicas}"
         - name: opentelemetry_operator_replicas

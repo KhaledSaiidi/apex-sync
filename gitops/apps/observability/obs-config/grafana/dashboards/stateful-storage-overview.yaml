@@ -96,8 +96,8 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_pod_status_ready{namespace=\"garage\",pod=~\"garage-[0-9]+\",condition=\"true\"}) / count(kube_pod_info{namespace=\"garage\",pod=~\"garage-[0-9]+\"})",
-              "legendFormat": "garage ready ratio",
+              "expr": "sum(up{namespace=\"garage\",pod=~\"garage-[0-9]+\",service=\"garage-metrics\"}) / count(up{namespace=\"garage\",pod=~\"garage-[0-9]+\",service=\"garage-metrics\"})",
+              "legendFormat": "garage metrics targets up",
               "refId": "A"
             }
           ],
@@ -163,7 +163,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"garage\",pod=~\"garage-[0-9]+\",container=\"garage\"}[1h]))",
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"garage\",pod=~\"garage-[0-9]+\",container=\"garage\"}[1h])) or vector(0)",
               "legendFormat": "garage restarts",
               "refId": "A"
             }
@@ -191,11 +191,11 @@ spec:
                   },
                   {
                     "color": "green",
-                    "value": 1
+                    "value": 3
                   }
                 ]
               },
-              "unit": "percentunit"
+              "unit": "short"
             },
             "overrides": []
           },
@@ -227,12 +227,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",pod=~\"mysql-cluster-pxc-[0-9]+\",condition=\"true\"}) / count(kube_pod_info{namespace=\"stateful-resources\",pod=~\"mysql-cluster-pxc-[0-9]+\"})",
-              "legendFormat": "pxc ready ratio",
+              "expr": "count(count by (pod) (container_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"mysql-cluster-pxc-[0-9]+\",container=\"pxc\"}))",
+              "legendFormat": "pxc pods",
               "refId": "A"
             }
           ],
-          "title": "PXC Pod Readiness",
+          "title": "PXC Pods Reporting",
           "type": "stat"
         },
         {
@@ -255,11 +255,11 @@ spec:
                   },
                   {
                     "color": "green",
-                    "value": 1
+                    "value": 3
                   }
                 ]
               },
-              "unit": "percentunit"
+              "unit": "short"
             },
             "overrides": []
           },
@@ -291,12 +291,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",pod=~\"mysql-cluster-haproxy-[0-9]+\",condition=\"true\"}) / count(kube_pod_info{namespace=\"stateful-resources\",pod=~\"mysql-cluster-haproxy-[0-9]+\"})",
-              "legendFormat": "haproxy ready ratio",
+              "expr": "count(count by (pod) (container_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"mysql-cluster-proxysql-[0-9]+\",container=\"proxysql\"}))",
+              "legendFormat": "proxysql pods",
               "refId": "A"
             }
           ],
-          "title": "PXC HAProxy Readiness",
+          "title": "ProxySQL Pods Reporting",
           "type": "stat"
         },
         {
@@ -354,7 +354,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_persistentvolumeclaim_status_phase{namespace=~\"garage|stateful-resources\",phase=\"Pending\"})",
+              "expr": "sum(kube_persistentvolumeclaim_status_phase{namespace=~\"garage|stateful-resources\",phase=\"Pending\"}) or vector(0)",
               "legendFormat": "pending pvcs",
               "refId": "A"
             }
@@ -421,8 +421,8 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"mysql-cluster-(pxc|haproxy)-[0-9]+\"}[1h]))",
-              "legendFormat": "pxc + haproxy restarts",
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"mysql-cluster-(pxc|proxysql)-[0-9]+\"}[1h])) or vector(0)",
+              "legendFormat": "pxc + proxysql restarts",
               "refId": "A"
             }
           ],
@@ -512,12 +512,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (__name__) (rate({__name__=~\"garage_.*(request|requests|api|s3).*(_total|_count|counter)\", namespace=\"garage\"}[5m]))",
-              "legendFormat": "{{__name__}}",
+              "expr": "sum by (api_endpoint) (rate(api_s3_request_counter{namespace=\"garage\"}[5m]))",
+              "legendFormat": "{{api_endpoint}}",
               "refId": "A"
             }
           ],
-          "title": "Garage S3/API Request Rate",
+          "title": "Garage S3 Request Rate",
           "type": "timeseries"
         },
         {
@@ -603,12 +603,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (__name__) (increase({__name__=~\"garage_.*(error|errors|fail|failed|failure).*\", namespace=\"garage\"}[5m]))",
-              "legendFormat": "{{__name__}}",
+              "expr": "sum by (api_endpoint, status_code) (increase(api_s3_error_counter{namespace=\"garage\"}[5m]))",
+              "legendFormat": "{{api_endpoint}} {{status_code}}",
               "refId": "A"
             }
           ],
-          "title": "Garage Errors / Failures",
+          "title": "Garage S3 Errors",
           "type": "timeseries"
         },
         {
@@ -702,12 +702,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes{namespace=~\"garage|stateful-resources\"}) / sum by (namespace, persistentvolumeclaim) (kubelet_volume_stats_capacity_bytes{namespace=~\"garage|stateful-resources\"})",
-              "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}",
+              "expr": "max by (instance) (kubelet_volume_stats_used_bytes{namespace=~\"garage|stateful-resources\"} / kubelet_volume_stats_capacity_bytes{namespace=~\"garage|stateful-resources\"})",
+              "legendFormat": "{{instance}} backing filesystem",
               "refId": "A"
             }
           ],
-          "title": "PVC Disk Usage",
+          "title": "OpenEBS Backing Filesystem Usage",
           "type": "timeseries"
         },
         {
@@ -762,7 +762,7 @@ spec:
                   }
                 ]
               },
-              "unit": "short"
+              "unit": "bytes"
             },
             "overrides": []
           },
@@ -793,12 +793,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (namespace, persistentvolumeclaim, phase) (kube_persistentvolumeclaim_status_phase{namespace=~\"garage|stateful-resources\",phase=~\"Pending|Bound|Lost\"})",
-              "legendFormat": "{{namespace}} / {{persistentvolumeclaim}} / {{phase}}",
+              "expr": "kube_persistentvolumeclaim_resource_requests_storage_bytes{exported_namespace=~\"garage|stateful-resources\"}",
+              "legendFormat": "{{exported_namespace}} / {{persistentvolumeclaim}}",
               "refId": "A"
             }
           ],
-          "title": "PVC Phase",
+          "title": "PVC Requested Capacity",
           "type": "timeseries"
         },
         {
@@ -853,7 +853,7 @@ spec:
                   }
                 ]
               },
-              "unit": "short"
+              "unit": "bytes"
             },
             "overrides": []
           },
@@ -884,12 +884,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (pod, container) (increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"mysql-cluster-(pxc|haproxy)-[0-9]+\"}[30m]))",
+              "expr": "sum by (pod, container) (increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"mysql-cluster-(pxc|proxysql)-[0-9]+\"}[30m])) or vector(0)",
               "legendFormat": "{{pod}} / {{container}}",
               "refId": "A"
             }
           ],
-          "title": "PXC and HAProxy Restarts",
+          "title": "PXC and ProxySQL Restarts",
           "type": "timeseries"
         },
         {
@@ -944,7 +944,7 @@ spec:
                   }
                 ]
               },
-              "unit": "short"
+              "unit": "bytes"
             },
             "overrides": []
           },
@@ -975,12 +975,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "{__name__=~\"mysql_global_status_wsrep_(cluster_size|ready|connected|cluster_status|local_state)\", namespace=\"stateful-resources\"}",
-              "legendFormat": "{{__name__}} / {{pod}}",
+              "expr": "sum by (pod, container) (container_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"mysql-cluster-pxc-[0-9]+\",container=~\"pxc|logs\"})",
+              "legendFormat": "{{pod}} / {{container}}",
               "refId": "A"
             }
           ],
-          "title": "PXC Quorum / WSREP State",
+          "title": "PXC Container Memory",
           "type": "timeseries"
         },
         {
@@ -1066,12 +1066,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "{__name__=~\"haproxy_.*(up|status|server|backend).*\", namespace=\"stateful-resources\", pod=~\"mysql-cluster-haproxy-[0-9]+\"}",
-              "legendFormat": "{{__name__}} / {{pod}} / {{proxy}} / {{server}}",
+              "expr": "{__name__=~\"proxysql_.*(up|status|server|backend|hostgroup).*\", namespace=\"stateful-resources\", pod=~\"mysql-cluster-proxysql-[0-9]+\"}",
+              "legendFormat": "{{__name__}} / {{pod}} / {{hostgroup}} / {{server}}",
               "refId": "A"
             }
           ],
-          "title": "PXC HAProxy Backend State",
+          "title": "PXC ProxySQL Backend State",
           "type": "timeseries"
         },
         {
@@ -1102,7 +1102,7 @@ spec:
                 "type": "loki",
                 "uid": "Loki"
               },
-              "expr": "{job=\"integrations/kubernetes/eventhandler\"} |~ \"Warning|Unhealthy|BackOff|Killing|Failed|Probe\" |~ \"garage|mysql-cluster|pxc|haproxy|persistentvolumeclaim|openebs\"",
+              "expr": "{job=\"integrations/kubernetes/eventhandler\"} |~ \"Warning|Unhealthy|BackOff|Killing|Failed|Probe\" |~ \"garage|mysql-cluster|pxc|proxysql|persistentvolumeclaim|openebs\"",
               "refId": "A"
             }
           ],
@@ -1199,6 +1199,22 @@ spec:
           ],
           "title": "Garage Layout / Cluster State",
           "type": "timeseries"
+        },
+        {
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 44
+          },
+          "id": 16,
+          "options": {
+            "content": "| Bucket | Purpose |\n| --- | --- |\n| `percona-backups` | PXC full backups and binlogs |\n| `loki-chunks` | Loki chunks |\n| `loki-ruler` | Loki ruler data |\n| `loki-admin` | Loki admin data |\n| `tempo-traces` | Tempo traces |\n| `mimir-blocks` | Mimir TSDB blocks |\n| `mimir-ruler` | Mimir ruler data |\n| `mimir-alertmanager` | Mimir Alertmanager data |",
+            "mode": "markdown"
+          },
+          "pluginVersion": "11.0.0",
+          "title": "Garage Configured Buckets",
+          "type": "text"
         }
       ],
       "refresh": "30s",

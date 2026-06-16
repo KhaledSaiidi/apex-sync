@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: proxysql
+  labels:
+    app.kubernetes.io/name: proxysql
+    app.kubernetes.io/instance: mysql-cluster
+    app.kubernetes.io/component: metrics
+spec:
+  namespaceSelector:
+    matchNames:
+      - stateful-resources
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: proxysql
+      app.kubernetes.io/instance: mysql-cluster
+      app.kubernetes.io/name: percona-xtradb-cluster
+  endpoints:
+    - port: stats
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

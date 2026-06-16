@@ -25,8 +25,8 @@ spec:
           value: "${ARGOCD_ENV_base_domain}"
         - name: stateful_resources_pxc_replicas
           value: "${ARGOCD_ENV_stateful_resources_pxc_replicas}"
-        - name: stateful_resources_haproxy_replicas
-          value: "${ARGOCD_ENV_stateful_resources_haproxy_replicas}"
+        - name: stateful_resources_proxysql_replicas
+          value: "${ARGOCD_ENV_stateful_resources_proxysql_replicas}"
         - name: resource_stateful_resources_pxc_requests_cpu
           value: "${ARGOCD_ENV_resource_stateful_resources_pxc_requests_cpu}"
         - name: resource_stateful_resources_pxc_requests_memory
@@ -35,12 +35,12 @@ spec:
           value: "${ARGOCD_ENV_resource_stateful_resources_pxc_limits_cpu}"
         - name: resource_stateful_resources_pxc_limits_memory
           value: "${ARGOCD_ENV_resource_stateful_resources_pxc_limits_memory}"
-        - name: resource_stateful_resources_haproxy_requests_cpu
-          value: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_cpu}"
-        - name: resource_stateful_resources_haproxy_requests_memory
-          value: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_memory}"
-        - name: resource_stateful_resources_haproxy_limits_memory
-          value: "${ARGOCD_ENV_resource_stateful_resources_haproxy_limits_memory}"
+        - name: resource_stateful_resources_proxysql_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_proxysql_requests_cpu}"
+        - name: resource_stateful_resources_proxysql_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_proxysql_requests_memory}"
+        - name: resource_stateful_resources_proxysql_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_proxysql_limits_memory}"
         - name: resource_stateful_resources_logcollector_requests_cpu
           value: "${ARGOCD_ENV_resource_stateful_resources_logcollector_requests_cpu}"
         - name: resource_stateful_resources_logcollector_requests_memory

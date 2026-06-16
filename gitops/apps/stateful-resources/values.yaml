@@ -69,21 +69,17 @@ pxc:
       - 1001
 
 haproxy:
+  enabled: false
+
+proxysql:
   enabled: true
-  size: ${ARGOCD_ENV_stateful_resources_haproxy_replicas}
-  exposePrimary:
-    type: ClusterIP
-  exposeReplicas:
-    enabled: true
-    onlyReaders: true
-    type: ClusterIP
+  size: ${ARGOCD_ENV_stateful_resources_proxysql_replicas}
   resources:
     requests:
-      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_memory}"
-      cpu: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_stateful_resources_proxysql_requests_memory}"
+      cpu: "${ARGOCD_ENV_resource_stateful_resources_proxysql_requests_cpu}"
     limits:
-      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_limits_memory}"
-  envVarsSecret: mysql-cluster-haproxy-env
+      memory: "${ARGOCD_ENV_resource_stateful_resources_proxysql_limits_memory}"
   priorityClassName: high-priority
   tolerations:
     - operator: Exists
@@ -98,19 +94,6 @@ haproxy:
     antiAffinityTopologyKey: kubernetes.io/hostname
   podDisruptionBudget:
     maxUnavailable: 1
-  gracePeriod: 30
-  readinessProbes:
-    initialDelaySeconds: 15
-    timeoutSeconds: 5
-    periodSeconds: 5
-    successThreshold: 1
-    failureThreshold: 3
-  livenessProbes:
-    initialDelaySeconds: 60
-    timeoutSeconds: 5
-    periodSeconds: 30
-    successThreshold: 1
-    failureThreshold: 4
   containerSecurityContext:
     privileged: false
   podSecurityContext:
@@ -118,9 +101,6 @@ haproxy:
     runAsGroup: 1001
     supplementalGroups:
       - 1001
-
-proxysql:
-  enabled: false
 
 logcollector:
   enabled: true
