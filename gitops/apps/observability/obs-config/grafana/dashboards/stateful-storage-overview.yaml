@@ -702,12 +702,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes{namespace=~\"garage|stateful-resources\"}) / sum by (namespace, persistentvolumeclaim) (kubelet_volume_stats_capacity_bytes{namespace=~\"garage|stateful-resources\"})",
-              "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}",
+              "expr": "max by (instance) (kubelet_volume_stats_used_bytes{namespace=~\"garage|stateful-resources\"} / kubelet_volume_stats_capacity_bytes{namespace=~\"garage|stateful-resources\"})",
+              "legendFormat": "{{instance}} backing filesystem",
               "refId": "A"
             }
           ],
-          "title": "PVC Disk Usage",
+          "title": "OpenEBS Backing Filesystem Usage",
           "type": "timeseries"
         },
         {
@@ -793,12 +793,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (namespace, persistentvolumeclaim) (kubelet_volume_stats_capacity_bytes{namespace=~\"garage|stateful-resources\"})",
-              "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}",
+              "expr": "kube_persistentvolumeclaim_resource_requests_storage_bytes{exported_namespace=~\"garage|stateful-resources\"}",
+              "legendFormat": "{{exported_namespace}} / {{persistentvolumeclaim}}",
               "refId": "A"
             }
           ],
-          "title": "PVC Capacity",
+          "title": "PVC Requested Capacity",
           "type": "timeseries"
         },
         {
