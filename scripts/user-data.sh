@@ -49,6 +49,39 @@ if [ "$OS_ID" != "ubuntu" ]; then
 fi
 
 # ------------------------------------------------------------
+# Create apex-sync operator user
+# ------------------------------------------------------------
+APEX_USER="apex-sync"
+APEX_HOME="/home/${APEX_USER}"
+
+if ! id "$APEX_USER" >/dev/null 2>&1; then
+  useradd -m -s /bin/bash "$APEX_USER"
+  echo "Created user: ${APEX_USER}"
+else
+  echo "User already exists: ${APEX_USER}"
+fi
+
+# Give passwordless sudo privileges.
+usermod -aG sudo "$APEX_USER"
+cat >"/etc/sudoers.d/${APEX_USER}" <<EOF
+${APEX_USER} ALL=(ALL) NOPASSWD:ALL
+EOF
+chmod 0440 "/etc/sudoers.d/${APEX_USER}"
+
+# Reuse the default EC2 user's authorized_keys so you can SSH as apex-sync.
+mkdir -p "${APEX_HOME}/.ssh"
+
+if [ -f "/home/${DEFAULT_USER}/.ssh/authorized_keys" ]; then
+  cp "/home/${DEFAULT_USER}/.ssh/authorized_keys" "${APEX_HOME}/.ssh/authorized_keys"
+fi
+
+chown -R "${APEX_USER}:${APEX_USER}" "${APEX_HOME}/.ssh"
+chmod 700 "${APEX_HOME}/.ssh"
+chmod 600 "${APEX_HOME}/.ssh/authorized_keys" || true
+
+echo "Configured sudo and SSH access for user: ${APEX_USER}"
+
+# ------------------------------------------------------------
 # Base packages
 # ------------------------------------------------------------
 apt-get update -y
@@ -110,7 +143,21 @@ apt-get install -y \
 systemctl enable docker
 systemctl start docker
 
+# ------------------------------------------------------------
+# Docker permissions
+# ------------------------------------------------------------
+groupadd -f docker
+
 usermod -aG docker "$DEFAULT_USER" || true
+usermod -aG docker "$APEX_USER"
+
+chown root:docker /var/run/docker.sock || true
+chmod 660 /var/run/docker.sock || true
+
+echo "Docker group configured:"
+id "$DEFAULT_USER" || true
+id "$APEX_USER"
+ls -la /var/run/docker.sock || true
 
 # ------------------------------------------------------------
 # Terraform latest
@@ -189,13 +236,16 @@ rm -f /tmp/kind
 # Clone apex-sync repository
 # ------------------------------------------------------------
 REPO_URL="https://github.com/KhaledSaiidi/apex-sync.git"
-REPO_DIR="/home/${DEFAULT_USER}/apex-sync"
+REPO_DIR="/home/${APEX_USER}/apex-sync"
 
 if [ ! -d "$REPO_DIR/.git" ]; then
-  git clone "$REPO_URL" "$REPO_DIR"
-  chown -R "${DEFAULT_USER}:${DEFAULT_USER}" "$REPO_DIR"
+  rm -rf "$REPO_DIR"
+  sudo -u "$APEX_USER" git clone "$REPO_URL" "$REPO_DIR"
+  chown -R "${APEX_USER}:${APEX_USER}" "$REPO_DIR"
 else
-  echo "Repository already exists at ${REPO_DIR}, skipping clone."
+  echo "Repository already exists at ${REPO_DIR}, pulling latest changes."
+  sudo -u "$APEX_USER" git -C "$REPO_DIR" pull --ff-only || true
+  chown -R "${APEX_USER}:${APEX_USER}" "$REPO_DIR"
 fi
 
 # ------------------------------------------------------------
