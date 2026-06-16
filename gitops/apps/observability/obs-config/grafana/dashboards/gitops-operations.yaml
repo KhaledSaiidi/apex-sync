@@ -99,7 +99,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(argocd_app_info{health_status!=\"Healthy\"})",
+              "expr": "count(argocd_app_info{health_status!=\"Healthy\"}) or vector(0)",
               "legendFormat": "not healthy",
               "refId": "A"
             }
@@ -166,7 +166,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(argocd_app_info{sync_status!=\"Synced\"})",
+              "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)",
               "legendFormat": "not synced",
               "refId": "A"
             }
@@ -233,7 +233,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(argocd_app_info{health_status=\"Progressing\"})",
+              "expr": "count(argocd_app_info{health_status=\"Progressing\"}) or vector(0)",
               "legendFormat": "progressing",
               "refId": "A"
             }
@@ -296,7 +296,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(argocd_app_info{name=\"app-of-apps\",sync_status!=\"Synced\"}) + count(argocd_app_info{name=\"app-of-apps\",health_status!=\"Healthy\"})",
+              "expr": "(count(argocd_app_info{name=\"app-of-apps\",sync_status!=\"Synced\"}) or vector(0)) + (count(argocd_app_info{name=\"app-of-apps\",health_status!=\"Healthy\"}) or vector(0))",
               "legendFormat": "app-of-apps problems",
               "refId": "A"
             }
@@ -363,7 +363,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(increase(argocd_app_sync_total{phase!=\"Succeeded\"}[1h]))",
+              "expr": "sum(increase(argocd_app_sync_total{phase!=\"Succeeded\"}[1h])) or vector(0)",
               "legendFormat": "failed syncs",
               "refId": "A"
             }
@@ -430,7 +430,7 @@ spec:
                 "type": "loki",
                 "uid": "Loki"
               },
-              "expr": "sum(count_over_time({namespace=\"argocd\"} |~ \"(?i)(hook.*failed|failed.*hook|hookPhase.*Failed|sync.*failed)\" [1h]))",
+              "expr": "sum(count_over_time({namespace=\"argocd\"} |~ \"(?i)(hook.*failed|failed.*hook|hookPhase.*Failed|sync.*failed)\" [1h])) or vector(0)",
               "refId": "A"
             }
           ],
@@ -489,7 +489,7 @@ spec:
                   }
                 ]
               },
-              "unit": "s"
+              "unit": "ops"
             },
             "overrides": []
           },
@@ -521,8 +521,8 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "histogram_quantile(0.95, sum by (le) (rate(argocd_app_sync_duration_seconds_bucket[5m])))",
-              "legendFormat": "p95 sync duration",
+              "expr": "sum(rate(argocd_app_sync_total{phase=\"Succeeded\"}[5m])) or vector(0)",
+              "legendFormat": "succeeded syncs/s",
               "refId": "A"
             },
             {
@@ -530,12 +530,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "histogram_quantile(0.50, sum by (le) (rate(argocd_app_sync_duration_seconds_bucket[5m])))",
-              "legendFormat": "p50 sync duration",
+              "expr": "sum(rate(argocd_app_sync_total{phase!=\"Succeeded\"}[5m])) or vector(0)",
+              "legendFormat": "failed/error syncs/s",
               "refId": "B"
             }
           ],
-          "title": "Sync Duration",
+          "title": "Sync Activity Rate",
           "type": "timeseries"
         },
         {
