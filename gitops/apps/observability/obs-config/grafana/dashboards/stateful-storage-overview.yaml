@@ -512,12 +512,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (__name__) (rate({__name__=~\"garage_.*(request|requests|api|s3).*(_total|_count|counter)\", namespace=\"garage\"}[5m]))",
-              "legendFormat": "{{__name__}}",
+              "expr": "sum by (api_endpoint) (rate(api_s3_request_counter{namespace=\"garage\"}[5m]))",
+              "legendFormat": "{{api_endpoint}}",
               "refId": "A"
             }
           ],
-          "title": "Garage S3/API Request Rate",
+          "title": "Garage S3 Request Rate",
           "type": "timeseries"
         },
         {
@@ -572,7 +572,7 @@ spec:
                   }
                 ]
               },
-              "unit": "bytes"
+              "unit": "short"
             },
             "overrides": []
           },
@@ -603,12 +603,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (__name__) (increase({__name__=~\"garage_.*(error|errors|fail|failed|failure).*\", namespace=\"garage\"}[5m]))",
-              "legendFormat": "{{__name__}}",
+              "expr": "sum by (api_endpoint, status_code) (increase(api_s3_error_counter{namespace=\"garage\"}[5m]))",
+              "legendFormat": "{{api_endpoint}} {{status_code}}",
               "refId": "A"
             }
           ],
-          "title": "Garage Errors / Failures",
+          "title": "Garage S3 Errors",
           "type": "timeseries"
         },
         {
@@ -1199,6 +1199,22 @@ spec:
           ],
           "title": "Garage Layout / Cluster State",
           "type": "timeseries"
+        },
+        {
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 44
+          },
+          "id": 16,
+          "options": {
+            "content": "| Bucket | Purpose |\n| --- | --- |\n| `percona-backups` | PXC full backups and binlogs |\n| `loki-chunks` | Loki chunks |\n| `loki-ruler` | Loki ruler data |\n| `loki-admin` | Loki admin data |\n| `tempo-traces` | Tempo traces |\n| `mimir-blocks` | Mimir TSDB blocks |\n| `mimir-ruler` | Mimir ruler data |\n| `mimir-alertmanager` | Mimir Alertmanager data |",
+            "mode": "markdown"
+          },
+          "pluginVersion": "11.0.0",
+          "title": "Garage Configured Buckets",
+          "type": "text"
         }
       ],
       "refresh": "30s",
