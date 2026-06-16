@@ -291,12 +291,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",pod=~\"mysql-cluster-haproxy-[0-9]+\",condition=\"true\"}) / count(kube_pod_info{namespace=\"stateful-resources\",pod=~\"mysql-cluster-haproxy-[0-9]+\"})",
-              "legendFormat": "haproxy ready ratio",
+              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",pod=~\"mysql-cluster-proxysql-[0-9]+\",condition=\"true\"}) / count(kube_pod_info{namespace=\"stateful-resources\",pod=~\"mysql-cluster-proxysql-[0-9]+\"})",
+              "legendFormat": "proxysql ready ratio",
               "refId": "A"
             }
           ],
-          "title": "PXC HAProxy Readiness",
+          "title": "PXC ProxySQL Readiness",
           "type": "stat"
         },
         {
@@ -421,8 +421,8 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"mysql-cluster-(pxc|haproxy)-[0-9]+\"}[1h]))",
-              "legendFormat": "pxc + haproxy restarts",
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"mysql-cluster-(pxc|proxysql)-[0-9]+\"}[1h]))",
+              "legendFormat": "pxc + proxysql restarts",
               "refId": "A"
             }
           ],
@@ -884,12 +884,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (pod, container) (increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"mysql-cluster-(pxc|haproxy)-[0-9]+\"}[30m]))",
+              "expr": "sum by (pod, container) (increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"mysql-cluster-(pxc|proxysql)-[0-9]+\"}[30m]))",
               "legendFormat": "{{pod}} / {{container}}",
               "refId": "A"
             }
           ],
-          "title": "PXC and HAProxy Restarts",
+          "title": "PXC and ProxySQL Restarts",
           "type": "timeseries"
         },
         {
@@ -1066,12 +1066,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "{__name__=~\"haproxy_.*(up|status|server|backend).*\", namespace=\"stateful-resources\", pod=~\"mysql-cluster-haproxy-[0-9]+\"}",
-              "legendFormat": "{{__name__}} / {{pod}} / {{proxy}} / {{server}}",
+              "expr": "{__name__=~\"proxysql_.*(up|status|server|backend|hostgroup).*\", namespace=\"stateful-resources\", pod=~\"mysql-cluster-proxysql-[0-9]+\"}",
+              "legendFormat": "{{__name__}} / {{pod}} / {{hostgroup}} / {{server}}",
               "refId": "A"
             }
           ],
-          "title": "PXC HAProxy Backend State",
+          "title": "PXC ProxySQL Backend State",
           "type": "timeseries"
         },
         {
@@ -1102,7 +1102,7 @@ spec:
                 "type": "loki",
                 "uid": "Loki"
               },
-              "expr": "{job=\"integrations/kubernetes/eventhandler\"} |~ \"Warning|Unhealthy|BackOff|Killing|Failed|Probe\" |~ \"garage|mysql-cluster|pxc|haproxy|persistentvolumeclaim|openebs\"",
+              "expr": "{job=\"integrations/kubernetes/eventhandler\"} |~ \"Warning|Unhealthy|BackOff|Killing|Failed|Probe\" |~ \"garage|mysql-cluster|pxc|proxysql|persistentvolumeclaim|openebs\"",
               "refId": "A"
             }
           ],

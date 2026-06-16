@@ -235,7 +235,7 @@ variable "stateful_resources_pxc_replicas" {
   type = string
 }
 
-variable "stateful_resources_haproxy_replicas" {
+variable "stateful_resources_proxysql_replicas" {
   type = string
 }
 

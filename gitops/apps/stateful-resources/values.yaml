@@ -70,64 +70,16 @@ pxc:
 
 haproxy:
   enabled: false
-  size: ${ARGOCD_ENV_stateful_resources_haproxy_replicas}
-  exposePrimary:
-    type: ClusterIP
-  exposeReplicas:
-    enabled: true
-    onlyReaders: true
-    type: ClusterIP
-  resources:
-    requests:
-      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_memory}"
-      cpu: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_cpu}"
-    limits:
-      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_limits_memory}"
-  envVarsSecret: mysql-cluster-haproxy-env
-  priorityClassName: high-priority
-  tolerations:
-    - operator: Exists
-  topologySpreadConstraints:
-    - labelSelector:
-        matchLabels:
-          app.kubernetes.io/name: percona-xtradb-cluster
-      maxSkew: 1
-      topologyKey: kubernetes.io/hostname
-      whenUnsatisfiable: DoNotSchedule
-  affinity:
-    antiAffinityTopologyKey: kubernetes.io/hostname
-  podDisruptionBudget:
-    maxUnavailable: 1
-  gracePeriod: 30
-  readinessProbes:
-    initialDelaySeconds: 15
-    timeoutSeconds: 5
-    periodSeconds: 5
-    successThreshold: 1
-    failureThreshold: 3
-  livenessProbes:
-    initialDelaySeconds: 60
-    timeoutSeconds: 5
-    periodSeconds: 30
-    successThreshold: 1
-    failureThreshold: 4
-  containerSecurityContext:
-    privileged: false
-  podSecurityContext:
-    runAsUser: 1001
-    runAsGroup: 1001
-    supplementalGroups:
-      - 1001
 
 proxysql:
   enabled: true
-  size: ${ARGOCD_ENV_stateful_resources_haproxy_replicas}
+  size: ${ARGOCD_ENV_stateful_resources_proxysql_replicas}
   resources:
     requests:
-      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_memory}"
-      cpu: "${ARGOCD_ENV_resource_stateful_resources_haproxy_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_stateful_resources_proxysql_requests_memory}"
+      cpu: "${ARGOCD_ENV_resource_stateful_resources_proxysql_requests_cpu}"
     limits:
-      memory: "${ARGOCD_ENV_resource_stateful_resources_haproxy_limits_memory}"
+      memory: "${ARGOCD_ENV_resource_stateful_resources_proxysql_limits_memory}"
   priorityClassName: high-priority
   tolerations:
     - operator: Exists

@@ -85,7 +85,7 @@ resource "local_file" "argocd_root_app" {
     cert_manager_cainjector_replicas       = var.cert_manager_cainjector_replicas
     kiali_replicas                         = var.kiali_replicas
     stateful_resources_pxc_replicas        = var.stateful_resources_pxc_replicas
-    stateful_resources_haproxy_replicas    = var.stateful_resources_haproxy_replicas
+    stateful_resources_proxysql_replicas   = var.stateful_resources_proxysql_replicas
     grafana_operator_replicas              = var.grafana_operator_replicas
     opentelemetry_operator_replicas        = var.opentelemetry_operator_replicas
     grafana_replicas                       = var.grafana_replicas
