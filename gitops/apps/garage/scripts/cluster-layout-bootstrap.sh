@@ -65,6 +65,35 @@ done </tmp/garage-pods.tsv
 
 echo "Computed Garage assignments:"
 cat /tmp/garage-assignments.tsv
+cut -f2 /tmp/garage-assignments.tsv | cut -c1-16 > /tmp/garage-node-ids.txt
+
+echo "Waiting for Garage cluster membership to include all discovered nodes"
+WAIT_GARAGE_NAMESPACE="$garage_namespace" \
+  timeout 900 sh -ec '
+  while :; do
+    if kubectl exec -n "$WAIT_GARAGE_NAMESPACE" garage-0 -- /garage status >/tmp/garage-status.txt 2>/tmp/garage-status.err; then
+      missing_node_ids=""
+
+      while read -r node_id; do
+        [ -n "$node_id" ] || continue
+
+        if ! grep -F "$node_id" /tmp/garage-status.txt >/dev/null; then
+          missing_node_ids="$missing_node_ids $node_id"
+        fi
+      done </tmp/garage-node-ids.txt
+
+      if [ -z "$missing_node_ids" ]; then
+        exit 0
+      fi
+
+      echo "Garage cluster membership is not converged yet; missing node IDs:$missing_node_ids"
+    else
+      cat /tmp/garage-status.err >&2 || true
+    fi
+
+    sleep 5
+  done
+'
 
 WAIT_GARAGE_NAMESPACE="$garage_namespace" \
   timeout 900 sh -ec '
