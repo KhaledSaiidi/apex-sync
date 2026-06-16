@@ -186,6 +186,37 @@ install -o root -g root -m 0755 /tmp/kind /usr/local/bin/kind
 rm -f /tmp/kind
 
 # ------------------------------------------------------------
+# Clone apex-sync repository
+# ------------------------------------------------------------
+REPO_URL="https://github.com/KhaledSaiidi/apex-sync.git"
+REPO_DIR="/home/${DEFAULT_USER}/apex-sync"
+
+if [ ! -d "$REPO_DIR/.git" ]; then
+  git clone "$REPO_URL" "$REPO_DIR"
+  chown -R "${DEFAULT_USER}:${DEFAULT_USER}" "$REPO_DIR"
+else
+  echo "Repository already exists at ${REPO_DIR}, skipping clone."
+fi
+
+# ------------------------------------------------------------
+# Configure HAProxy public gateway
+# ------------------------------------------------------------
+HAPROXY_SOURCE_CFG="${REPO_DIR}/scripts/haproxy-public-gateway.cfg"
+HAPROXY_TARGET_CFG="/etc/haproxy/haproxy.cfg"
+
+if [ ! -f "$HAPROXY_SOURCE_CFG" ]; then
+  echo "HAProxy config file not found: $HAPROXY_SOURCE_CFG"
+  exit 1
+fi
+
+cat "$HAPROXY_SOURCE_CFG" > "$HAPROXY_TARGET_CFG"
+
+haproxy -c -f "$HAPROXY_TARGET_CFG"
+
+systemctl enable haproxy
+systemctl restart haproxy
+
+# ------------------------------------------------------------
 # Final verification
 # ------------------------------------------------------------
 echo ""
