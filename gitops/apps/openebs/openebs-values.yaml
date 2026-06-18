@@ -1,29 +1,53 @@
 engines:
   local:
+    hostpath:
+      enabled: false
     lvm:
       enabled: false
     zfs:
       enabled: false
   replicated:
     mayastor:
-      enabled: false
+      enabled: true
+
+openebs-crds:
+  csi:
+    volumeSnapshots:
+      enabled: true
+
 alloy:
   enabled: false
 loki:
   enabled: false
+
 localpv-provisioner:
   analytics:
     enabled: false
   hostpathClass:
     enabled: false
-  localpv:
-    enabled: true
-    basePath: /var/openebs/apex-sync
-    replicas: ${ARGOCD_ENV_openebs_localpv_replicas}
+
+mayastor:
+  storageClass:
+    enabled: false
+  csi:
+    node:
+      initContainers:
+        enabled: true
+  io_engine:
     resources:
       requests:
-        cpu: "${ARGOCD_ENV_resource_openebs_localpv_requests_cpu}"
-        memory: "${ARGOCD_ENV_resource_openebs_localpv_requests_memory}"
+        cpu: "${ARGOCD_ENV_resource_openebs_mayastor_io_engine_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_openebs_mayastor_io_engine_requests_memory}"
       limits:
-        cpu: "${ARGOCD_ENV_resource_openebs_localpv_limits_cpu}"
-        memory: "${ARGOCD_ENV_resource_openebs_localpv_limits_memory}"
+        cpu: "${ARGOCD_ENV_resource_openebs_mayastor_io_engine_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_openebs_mayastor_io_engine_limits_memory}"
+  etcd:
+    clusterDomain: cluster.local
+  localpv-provisioner:
+    enabled: false
+  crds:
+    enabled: false
+  loki:
+    enabled: false
+  alloy:
+    enabled: false

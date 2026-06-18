@@ -9,18 +9,5 @@ helmCharts:
     valuesFile: openebs-values.yaml
     version: ${ARGOCD_ENV_openebs_version}
 resources:
-  - openebs-hostpath-setup-rbac.yaml
-  - openebs-hostpath-setup.yaml
-  - openebs-localpv-rbac.yaml
+  - disk-pool.yaml
   - openebs-storage-class.yaml
-configMapGenerator:
-  - name: openebs-hostpath-setup-script
-    files:
-      - setup-hostpath.sh=scripts/setup-hostpath.sh
-    options:
-      annotations:
-        argocd.argoproj.io/hook: PreSync
-        argocd.argoproj.io/sync-wave: "-11"
-        argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
-generatorOptions:
-  disableNameSuffixHash: true

@@ -1,0 +1,9 @@
+apiVersion: openebs.io/v1beta2
+kind: DiskPool
+metadata:
+  name: pool-node-1
+  namespace: openebs
+spec:
+  node: worker-1
+  disks:
+    - aio:///dev/disk/by-id/...

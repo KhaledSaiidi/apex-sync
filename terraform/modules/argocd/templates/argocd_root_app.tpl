@@ -111,8 +111,8 @@ spec:
           value: "${garage_replicas}"
         - name: istiod_replicas
           value: "${istiod_replicas}"
-        - name: openebs_localpv_replicas
-          value: "${openebs_localpv_replicas}"
+        - name: openebs_repl_factor
+          value: "${openebs_repl_factor}"
         - name: public_gateway_replicas
           value: "${public_gateway_replicas}"
         - name: public_gateway_min_replicas

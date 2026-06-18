@@ -76,7 +76,7 @@ resource "local_file" "argocd_root_app" {
     garage_replication_factor              = var.garage_replication_factor
     garage_replicas                        = var.garage_replicas
     istiod_replicas                        = var.istiod_replicas
-    openebs_localpv_replicas               = var.openebs_localpv_replicas
+    openebs_repl_factor                    = var.openebs_repl_factor
     public_gateway_replicas                = var.public_gateway_replicas
     public_gateway_min_replicas            = var.public_gateway_min_replicas
     public_gateway_max_replicas            = var.public_gateway_max_replicas

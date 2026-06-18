@@ -4,13 +4,10 @@ metadata:
   name: openebs-storage-class
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-    openebs.io/cas-type: local
-    cas.openebs.io/config: |
-      - name: StorageType
-        value: hostpath
-      - name: BasePath
-        value: /var/openebs/apex-sync
-provisioner: openebs.io/local
+parameters:
+  protocol: nvmf
+  repl: "${ARGOCD_ENV_openebs_repl_factor}"
+provisioner: io.openebs.csi-mayastor
 reclaimPolicy: Retain
 allowVolumeExpansion: true
 volumeBindingMode: WaitForFirstConsumer

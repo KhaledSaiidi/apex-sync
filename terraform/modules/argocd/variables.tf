@@ -199,7 +199,7 @@ variable "istiod_replicas" {
   type = string
 }
 
-variable "openebs_localpv_replicas" {
+variable "openebs_repl_factor" {
   type = string
 }
 
