@@ -187,3 +187,31 @@ spec:
               metadata:
                 annotations:
                   ops.corp.com/triggerrestart: "{{ request.object.metadata.resourceVersion }}"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: label-nodes-for-openebs
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  admission: true
+  background: true
+  emitWarning: false
+  rules:
+    - name: add-nodes-label-to-io-engine
+      skipBackgroundRequests: false
+      match:
+        any:
+          - resources:
+              kinds:
+                - Node
+      mutate:
+        mutateExistingOnPolicyUpdate: true
+        targets:
+          - apiVersion: v1
+            kind: Node
+        patchStrategicMerge:
+          metadata:
+            labels:
+              openebs.io/engine: mayastor

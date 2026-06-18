@@ -6,7 +6,7 @@ metadata:
     rbac.kyverno.io/aggregate-to-background-controller: "true"
 rules:
   - apiGroups: [""]
-    resources: ["namespaces"]
+    resources: ["namespaces", "nodes"]
     verbs: ["get", "list", "watch", "update", "patch"]
   - apiGroups: ["apps"]
     resources: ["deployments", "statefulsets", "daemonsets"]
