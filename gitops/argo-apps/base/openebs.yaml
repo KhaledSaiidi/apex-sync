@@ -23,6 +23,24 @@ spec:
           value: "${ARGOCD_ENV_openebs_version}"
         - name: openebs_repl_factor
           value: "${ARGOCD_ENV_openebs_repl_factor}"
+        - name: openebs_disk_pool_1_name
+          value: "${ARGOCD_ENV_openebs_disk_pool_1_name}"
+        - name: openebs_disk_pool_1_node
+          value: "${ARGOCD_ENV_openebs_disk_pool_1_node}"
+        - name: openebs_disk_pool_1_disk_uri
+          value: "${ARGOCD_ENV_openebs_disk_pool_1_disk_uri}"
+        - name: openebs_disk_pool_2_name
+          value: "${ARGOCD_ENV_openebs_disk_pool_2_name}"
+        - name: openebs_disk_pool_2_node
+          value: "${ARGOCD_ENV_openebs_disk_pool_2_node}"
+        - name: openebs_disk_pool_2_disk_uri
+          value: "${ARGOCD_ENV_openebs_disk_pool_2_disk_uri}"
+        - name: openebs_disk_pool_3_name
+          value: "${ARGOCD_ENV_openebs_disk_pool_3_name}"
+        - name: openebs_disk_pool_3_node
+          value: "${ARGOCD_ENV_openebs_disk_pool_3_node}"
+        - name: openebs_disk_pool_3_disk_uri
+          value: "${ARGOCD_ENV_openebs_disk_pool_3_disk_uri}"
         - name: resource_openebs_mayastor_io_engine_requests_cpu
           value: "${ARGOCD_ENV_resource_openebs_mayastor_io_engine_requests_cpu}"
         - name: resource_openebs_mayastor_io_engine_requests_memory

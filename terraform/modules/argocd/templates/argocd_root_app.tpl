@@ -231,6 +231,10 @@ spec:
         - name: ${name}
           value: "${value}"
 %{ endfor ~}
+%{ for name, value in openebs_disk_pool_env ~}
+        - name: ${name}
+          value: "${value}"
+%{ endfor ~}
   destination:
     server: ${gitops_root_app_destination_server}
     namespace: ${gitops_root_app_destination_namespace}

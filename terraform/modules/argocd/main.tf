@@ -125,6 +125,7 @@ resource "local_file" "argocd_root_app" {
 
     resource_env                         = var.resource_env
     observability_env                    = var.observability_env
+    openebs_disk_pool_env                = var.openebs_disk_pool_env
     mimir_version                        = var.mimir_version
     loki_version                         = var.loki_version
     tempo_version                        = var.tempo_version

@@ -5,6 +5,7 @@ locals {
   custom_config            = merge([for file in local.custom_config_files : yamldecode(file("${local.repo_root}/${file}"))]...)
   resource_env             = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "resource_") }
   observability_env        = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "observability_") }
+  openebs_disk_pool_env    = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "openebs_disk_pool_") }
   kubeconfig_path          = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
   bootstrap_sources_files  = sort(concat(["ansible.cfg"], tolist(fileset(local.repo_root, "ansible/**/*.yml")), tolist(fileset(local.repo_root, "ansible/**/*.yaml"))))
   bootstrap_sources_sha256 = sha256(join("", [for file in local.bootstrap_sources_files : filesha256("${local.repo_root}/${file}")]))
@@ -122,6 +123,7 @@ module "argocd" {
 
   resource_env                         = local.resource_env
   observability_env                    = local.observability_env
+  openebs_disk_pool_env                = local.openebs_disk_pool_env
   mimir_version                        = var.mimir_version
   loki_version                         = var.loki_version
   tempo_version                        = var.tempo_version

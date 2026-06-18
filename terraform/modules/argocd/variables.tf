@@ -384,6 +384,10 @@ variable "observability_env" {
   type = map(string)
 }
 
+variable "openebs_disk_pool_env" {
+  type = map(string)
+}
+
 variable "mimir_version" {
   type = string
 }
