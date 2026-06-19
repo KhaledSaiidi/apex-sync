@@ -49,6 +49,17 @@ if [ "$OS_ID" != "ubuntu" ]; then
 fi
 
 # ------------------------------------------------------------
+# Kernel limits for file watchers
+# ------------------------------------------------------------
+cat >/etc/sysctl.d/99-inotify.conf <<EOF
+fs.inotify.max_user_watches=524288
+fs.inotify.max_user_instances=1024
+fs.inotify.max_queued_events=32768
+EOF
+
+sysctl --load=/etc/sysctl.d/99-inotify.conf
+
+# ------------------------------------------------------------
 # Create apex-sync operator user
 # ------------------------------------------------------------
 APEX_USER="apex-sync"
