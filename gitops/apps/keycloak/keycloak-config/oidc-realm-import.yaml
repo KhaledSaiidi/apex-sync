@@ -2172,7 +2172,6 @@ spec:
       "organizationsEnabled" : false,
       "verifiableCredentialsEnabled" : false,
       "adminPermissionsEnabled" : false,
-      "scimApiEnabled" : false,
       "clientProfiles" : {
         "profiles" : [ ]
       },
