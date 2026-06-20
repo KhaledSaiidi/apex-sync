@@ -53,7 +53,6 @@ spec:
       "quickLoginCheckMilliSeconds" : 1000,
       "maxDeltaTimeSeconds" : 43200,
       "failureFactor" : 30,
-      "maxSecondaryAuthFailures" : 0,
       "roles" : {
         "realm" : [ {
           "id" : "7a5b081e-cb8e-4b14-ba4b-b361a5f93180",
