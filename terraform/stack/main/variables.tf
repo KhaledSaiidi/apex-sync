@@ -122,6 +122,10 @@ variable "cert_manager_acme_email" {
   type = string
 }
 
+variable "cert_manager_acme_server" {
+  type = string
+}
+
 variable "cert_manager_route53_region" {
   type = string
 }

@@ -21,6 +21,8 @@ spec:
       env:
         - name: cert_manager_acme_email
           value: "${ARGOCD_ENV_cert_manager_acme_email}"
+        - name: cert_manager_acme_server
+          value: "${ARGOCD_ENV_cert_manager_acme_server}"
         - name: cert_manager_route53_region
           value: "${ARGOCD_ENV_cert_manager_route53_region}"
         - name: cert_manager_route53_hosted_zone_id

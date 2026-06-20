@@ -7,7 +7,7 @@ metadata:
 spec:
   acme:
     email: "${ARGOCD_ENV_cert_manager_acme_email}"
-    server: https://acme-v02.api.letsencrypt.org/directory
+    server: "${ARGOCD_ENV_cert_manager_acme_server}"
     privateKeySecretRef:
       name: letsencrypt-prod-route53-account-key
     solvers:
