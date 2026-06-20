@@ -1,17 +1,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: keycloak
 resources:
   - oidc-realm-import.yaml
   - argocd-oidc-client-secret-sync.yaml
 configMapGenerator:
   - name: argocd-oidc-read-keycloak-client-secret-script
+    namespace: keycloak
     files:
       - read-keycloak-client-secret.sh=scripts/read-keycloak-client-secret.sh
     options:
       annotations:
         argocd.argoproj.io/sync-wave: "39"
   - name: argocd-oidc-write-argocd-secret-script
+    namespace: keycloak
     files:
       - write-argocd-secret.sh=scripts/write-argocd-secret.sh
     options:

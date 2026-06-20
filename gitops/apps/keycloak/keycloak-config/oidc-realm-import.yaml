@@ -5,6 +5,10 @@ metadata:
   namespace: keycloak
 spec:
   keycloakCRName: keycloak
+  # When refreshing this CR from a Keycloak realm export, always remove fields
+  # rejected by the Keycloak operator importer:
+  # - "maxSecondaryAuthFailures" : 0,
+  # - "scimApiEnabled" : false,
   realm:
     {
       "id" : "f9dbe625-c3ad-4afd-bf52-eaaf82a15040",
