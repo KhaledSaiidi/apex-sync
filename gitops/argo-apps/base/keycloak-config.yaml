@@ -21,10 +21,6 @@ spec:
       env:
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
-        - name: root_app_repo_url
-          value: ${ARGOCD_ENV_gitops_root_app_repo_url}
-        - name: root_app_target_revision
-          value: ${ARGOCD_ENV_gitops_root_app_target_revision}
         - name: keycloak_operator_version
           value: "${ARGOCD_ENV_keycloak_operator_version}"
   destination:
