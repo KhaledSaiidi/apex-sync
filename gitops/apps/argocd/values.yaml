@@ -40,7 +40,16 @@ configs:
         end
       end
       return hs
-
+    url: "https://argocd.${ARGOCD_ENV_base_domain}"
+    oidc.config: |
+      name: keycloak
+      issuer: https://keycloak.${ARGOCD_ENV_base_domain}/realms/oidc
+      clientID: argocd
+      clientSecret: $argocd-oidc-client-secret:oidc.keycloak.clientSecret
+      requestedScopes: ["openid", "profile", "email", "groups"]
+  rbac:
+    policy.csv: |
+      g, ArgoCDAdmins, role:admin
   params:
     server.insecure: "true"
     controller.repo.server.timeout.seconds: "${ARGOCD_ENV_argocd_repo_server_timeout_secs}"
