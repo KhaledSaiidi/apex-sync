@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: obs-config
+  name: keycloak-config
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: '29'
+    argocd.argoproj.io/sync-wave: '22'
   labels:
-    app.kubernetes.io/name: obs-config
+    app.kubernetes.io/name: keycloak-config
     app.kubernetes.io/part-of: platform-baseline
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -15,10 +15,17 @@ spec:
   source:
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
-    path: gitops/apps/observability/obs-config
+    path: gitops/apps/keycloak/keycloak-config
+    plugin:
+      name: envsubst
+      env:
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
+        - name: keycloak_operator_version
+          value: "${ARGOCD_ENV_keycloak_operator_version}"
   destination:
     server: https://kubernetes.default.svc
-    namespace: observability
+    namespace: keycloak
   syncPolicy:
     automated:
       prune: true
@@ -30,8 +37,5 @@ spec:
         maxDuration: 3m0s
         factor: 2
     syncOptions:
-      - CreateNamespace=true
       - PrunePropagationPolicy=background
       - PruneLast=true
-      - RespectIgnoreDifferences=true
-      - ServerSideApply=true

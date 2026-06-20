@@ -19,6 +19,10 @@ spec:
     plugin:
       name: envsubst
       env:
+        - name: gitops_root_app_repo_url
+          value: ${ARGOCD_ENV_gitops_root_app_repo_url}
+        - name: gitops_root_app_target_revision
+          value: ${ARGOCD_ENV_gitops_root_app_target_revision}
         - name: keycloak_operator_version
           value: "${ARGOCD_ENV_keycloak_operator_version}"
         - name: keycloak_replicas
@@ -67,7 +71,7 @@ spec:
       prune: true
       selfHeal: true
     retry:
-      limit: 5
+      limit: 10
       backoff:
         duration: 5s
         maxDuration: 3m0s
