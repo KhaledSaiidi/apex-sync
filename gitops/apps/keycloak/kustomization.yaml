@@ -10,6 +10,7 @@ resources:
   - keycloak-db-bootstrap-job.yaml
   - keycloak.yaml
   - keycloak-httproute.yaml
+  - keycloak-config.yaml
 configMapGenerator:
   - name: keycloak-db-prepare-credentials-script
     files:
