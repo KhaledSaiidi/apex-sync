@@ -50,6 +50,7 @@ resource "local_file" "argocd_root_app" {
     metallb_addresses_start                = var.metallb_addresses_start
     metallb_addresses_end                  = var.metallb_addresses_end
     cert_manager_acme_email                = var.cert_manager_acme_email
+    cert_manager_acme_server               = var.cert_manager_acme_server
     cert_manager_route53_region            = var.cert_manager_route53_region
     cert_manager_route53_hosted_zone_id    = var.cert_manager_route53_hosted_zone_id
     base_domain                            = var.base_domain

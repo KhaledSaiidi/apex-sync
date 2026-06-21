@@ -11,4 +11,5 @@ helmCharts:
     valuesFile: values.yaml
 resources:
   - kyverno-background-rbac.yaml
+  - kyverno-argocd-oidc-secret-policy.yaml
   - kyverno-istio-default-policies.yaml

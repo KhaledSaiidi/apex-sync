@@ -59,6 +59,8 @@ spec:
           value: "${gitops_root_app_target_revision}"
         - name: cert_manager_acme_email
           value: "${cert_manager_acme_email}"
+        - name: cert_manager_acme_server
+          value: "${cert_manager_acme_server}"
         - name: cert_manager_route53_region
           value: "${cert_manager_route53_region}"
         - name: cert_manager_route53_hosted_zone_id
