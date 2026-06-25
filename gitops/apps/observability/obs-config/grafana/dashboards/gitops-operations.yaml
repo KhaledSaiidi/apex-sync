@@ -99,7 +99,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(argocd_app_info{health_status!=\"Healthy\"}) or vector(0)",
+              "expr": "count(argocd_app_info{project=~\"$project\",name=~\"$application\",health_status=~\"$health_status\",sync_status=~\"$sync_status\",health_status!=\"Healthy\"}) or vector(0)",
               "legendFormat": "not healthy",
               "refId": "A"
             }
@@ -166,7 +166,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)",
+              "expr": "count(argocd_app_info{project=~\"$project\",name=~\"$application\",health_status=~\"$health_status\",sync_status=~\"$sync_status\",sync_status!=\"Synced\"}) or vector(0)",
               "legendFormat": "not synced",
               "refId": "A"
             }
@@ -233,7 +233,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(argocd_app_info{health_status=\"Progressing\"}) or vector(0)",
+              "expr": "count(argocd_app_info{project=~\"$project\",name=~\"$application\",health_status=~\"$health_status\",sync_status=~\"$sync_status\",health_status=\"Progressing\"}) or vector(0)",
               "legendFormat": "progressing",
               "refId": "A"
             }
@@ -363,7 +363,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(increase(argocd_app_sync_total{phase!=\"Succeeded\"}[1h])) or vector(0)",
+              "expr": "sum(increase(argocd_app_sync_total{project=~\"$project\",name=~\"$application\",phase=~\"Failed|Error\"}[1h])) or vector(0)",
               "legendFormat": "failed syncs",
               "refId": "A"
             }
@@ -442,6 +442,219 @@ spec:
             "type": "prometheus",
             "uid": "Mimir"
           },
+          "description": "Successful sync operations divided by all completed sync operations during the last hour. Running and terminating operations are excluded.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "No completed syncs",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.95
+                  },
+                  {
+                    "color": "green",
+                    "value": 0.99
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 0,
+            "y": 4
+          },
+          "id": 13,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "(sum(increase(argocd_app_sync_total{project=~\"$project\",name=~\"$application\",phase=\"Succeeded\"}[1h])) / sum(increase(argocd_app_sync_total{project=~\"$project\",name=~\"$application\",phase=~\"Succeeded|Failed|Error\"}[1h]))) and (sum(increase(argocd_app_sync_total{project=~\"$project\",name=~\"$application\",phase=~\"Succeeded|Failed|Error\"}[1h])) > 0)",
+              "legendFormat": "success ratio",
+              "refId": "A"
+            }
+          ],
+          "title": "Sync Success Ratio - 1h",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "description": "95th percentile application reconciliation duration over a 5-minute window.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "No reconciliation data",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 30
+                  },
+                  {
+                    "color": "red",
+                    "value": 60
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 8,
+            "y": 4
+          },
+          "id": 14,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(argocd_app_reconcile_bucket{project=~\"$project\",name=~\"$application\"}[5m])))",
+              "legendFormat": "p95",
+              "refId": "A"
+            }
+          ],
+          "title": "Reconciliation Duration p95",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "description": "99th percentile application reconciliation duration over a 5-minute window.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "No reconciliation data",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 30
+                  },
+                  {
+                    "color": "red",
+                    "value": 60
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 16,
+            "y": 4
+          },
+          "id": 15,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "histogram_quantile(0.99, sum by (le) (rate(argocd_app_reconcile_bucket{project=~\"$project\",name=~\"$application\"}[5m])))",
+              "legendFormat": "p99",
+              "refId": "A"
+            }
+          ],
+          "title": "Reconciliation Duration p99",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -497,7 +710,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 4
+            "y": 8
           },
           "id": 7,
           "options": {
@@ -521,7 +734,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(rate(argocd_app_sync_total{phase=\"Succeeded\"}[5m])) or vector(0)",
+              "expr": "sum(rate(argocd_app_sync_total{project=~\"$project\",name=~\"$application\",phase=\"Succeeded\"}[5m])) or vector(0)",
               "legendFormat": "succeeded syncs/s",
               "refId": "A"
             },
@@ -530,7 +743,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(rate(argocd_app_sync_total{phase!=\"Succeeded\"}[5m])) or vector(0)",
+              "expr": "sum(rate(argocd_app_sync_total{project=~\"$project\",name=~\"$application\",phase=~\"Failed|Error\"}[5m])) or vector(0)",
               "legendFormat": "failed/error syncs/s",
               "refId": "B"
             }
@@ -572,7 +785,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 4
+            "y": 8
           },
           "id": 8,
           "options": {
@@ -594,13 +807,14 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "argocd_app_info{health_status!=\"Healthy\"} or argocd_app_info{sync_status!=\"Synced\"}",
+              "expr": "argocd_app_info{project=~\"$project\",name=~\"$application\",health_status=~\"$health_status\",sync_status=~\"$sync_status\",health_status!=\"Healthy\"} or argocd_app_info{project=~\"$project\",name=~\"$application\",health_status=~\"$health_status\",sync_status=~\"$sync_status\",sync_status!=\"Synced\"}",
               "format": "table",
               "instant": true,
               "legendFormat": "{{name}}",
               "refId": "A"
             }
           ],
+          "description": "Applications matching the dashboard filters that are unhealthy or out of sync.",
           "title": "Applications Needing Attention",
           "transformations": [
             {
@@ -618,11 +832,21 @@ spec:
                   "pod": true,
                   "service": true
                 },
-                "indexByName": {},
+                "indexByName": {
+                  "dest_namespace": 4,
+                  "dest_server": 5,
+                  "health_status": 2,
+                  "name": 0,
+                  "project": 1,
+                  "repo": 6,
+                  "sync_status": 3
+                },
                 "renameByName": {
-                  "dest_namespace": "destination",
+                  "dest_namespace": "destination namespace",
+                  "dest_server": "cluster",
                   "health_status": "health",
                   "name": "application",
+                  "repo": "repository",
                   "sync_status": "sync"
                 }
               }
@@ -639,7 +863,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 12
+            "y": 16
           },
           "id": 9,
           "options": {
@@ -674,7 +898,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 12
+            "y": 16
           },
           "id": 10,
           "options": {
@@ -760,7 +984,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 20
+            "y": 24
           },
           "id": 11,
           "options": {
@@ -783,7 +1007,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (phase) (increase(argocd_app_sync_total[30m]))",
+              "expr": "sum by (phase) (increase(argocd_app_sync_total{project=~\"$project\",name=~\"$application\"}[30m]))",
               "legendFormat": "{{phase}}",
               "refId": "A"
             }
@@ -851,7 +1075,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 20
+            "y": 24
           },
           "id": 12,
           "options": {
@@ -874,7 +1098,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count by (health_status) (argocd_app_info)",
+              "expr": "count by (health_status) (argocd_app_info{project=~\"$project\",name=~\"$application\",health_status=~\"$health_status\",sync_status=~\"$sync_status\"})",
               "legendFormat": "{{health_status}}",
               "refId": "A"
             }
@@ -891,7 +1115,120 @@ spec:
         "operations"
       ],
       "templating": {
-        "list": []
+        "list": [
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "Mimir"
+            },
+            "definition": "label_values(argocd_app_info, project)",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Project",
+            "multi": true,
+            "name": "project",
+            "options": [],
+            "query": {
+              "query": "label_values(argocd_app_info, project)",
+              "refId": "PrometheusVariableQueryEditor-Project"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "Mimir"
+            },
+            "definition": "label_values(argocd_app_info{project=~\"$project\"}, name)",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Application",
+            "multi": true,
+            "name": "application",
+            "options": [],
+            "query": {
+              "query": "label_values(argocd_app_info{project=~\"$project\"}, name)",
+              "refId": "PrometheusVariableQueryEditor-Application"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "Mimir"
+            },
+            "definition": "label_values(argocd_app_info{project=~\"$project\",name=~\"$application\"}, health_status)",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Health",
+            "multi": true,
+            "name": "health_status",
+            "options": [],
+            "query": {
+              "query": "label_values(argocd_app_info{project=~\"$project\",name=~\"$application\"}, health_status)",
+              "refId": "PrometheusVariableQueryEditor-Health"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "Mimir"
+            },
+            "definition": "label_values(argocd_app_info{project=~\"$project\",name=~\"$application\"}, sync_status)",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Sync",
+            "multi": true,
+            "name": "sync_status",
+            "options": [],
+            "query": {
+              "query": "label_values(argocd_app_info{project=~\"$project\",name=~\"$application\"}, sync_status)",
+              "refId": "PrometheusVariableQueryEditor-Sync"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          }
+        ]
       },
       "time": {
         "from": "now-6h",
