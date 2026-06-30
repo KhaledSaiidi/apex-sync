@@ -23,6 +23,7 @@ resources:
   - grafana/dashboards/istio-resource-usage.yaml
   - grafana/dashboards/istio-service-traffic.yaml
   - grafana/dashboards/istio-istiod-health.yaml
+  - grafana/dashboards/istio-service-reliability.yaml
   - grafana/dashboards/cluster-overview.yaml
   - grafana/dashboards/stateful-storage-overview.yaml
   - grafana/dashboards/argocd-dashboard.yaml
