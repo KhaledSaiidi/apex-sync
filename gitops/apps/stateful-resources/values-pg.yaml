@@ -1,0 +1,155 @@
+fullnameOverride: pg-cluster
+
+finalizers:
+  - percona.com/delete-ssl
+
+crVersion: ${ARGOCD_ENV_percona_pg_version}
+
+repository: docker.io/percona/percona-distribution-postgresql
+image: docker.io/percona/percona-distribution-postgresql:18.4-1
+imagePullPolicy: IfNotPresent
+imagePullSecrets: []
+
+postgresVersion: 18
+pause: false
+unmanaged: false
+
+users:
+  - name: ${ARGOCD_ENV_stateful_resources_pg_app_user}
+    databases:
+      - ${ARGOCD_ENV_stateful_resources_pg_app_database}
+    secretName: ${ARGOCD_ENV_stateful_resources_pg_app_secret_name}
+    grantPublicSchemaAccess: true
+    password:
+      type: AlphaNumeric
+
+customTLSSecret:
+  name: ""
+customReplicationTLSSecret:
+  name: ""
+
+instances:
+  - name: instance1
+    replicas: ${ARGOCD_ENV_stateful_resources_pg_replicas}
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/data: postgres
+              topologyKey: kubernetes.io/hostname
+    tolerations:
+      - operator: Exists
+    topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            postgres-operator.crunchydata.com/instance-set: instance1
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+    resources:
+      requests:
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_pg_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_stateful_resources_pg_requests_memory}"
+      limits:
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_pg_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_stateful_resources_pg_limits_memory}"
+    securityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      fsGroup: 1001
+      fsGroupChangePolicy: OnRootMismatch
+      supplementalGroups:
+        - 1001
+    dataVolumeClaimSpec:
+      storageClassName: openebs-storage-class
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+
+proxy:
+  pgBouncer:
+    replicas: ${ARGOCD_ENV_stateful_resources_pgbouncer_replicas}
+    image: docker.io/percona/percona-pgbouncer:1.25.2-1
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/role: pgbouncer
+              topologyKey: kubernetes.io/hostname
+    tolerations:
+      - operator: Exists
+    topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            postgres-operator.crunchydata.com/role: pgbouncer
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+    resources:
+      requests:
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_requests_memory}"
+      limits:
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_limits_memory}"
+    securityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      fsGroup: 1001
+      fsGroupChangePolicy: OnRootMismatch
+      supplementalGroups:
+        - 1001
+
+backups:
+  enabled: true
+  trackLatestRestorableTime: true
+  pgbackrest:
+    configuration:
+      - secret:
+          name: ${ARGOCD_ENV_stateful_resources_pg_backup_secret_name}
+    global:
+      repo2-path: /pgbackrest/postgres-operator/pg-cluster/repo2
+      repo2-retention-full: "${ARGOCD_ENV_stateful_resources_pg_backup_retention_full}"
+      repo2-retention-full-type: ${ARGOCD_ENV_stateful_resources_pg_backup_retention_full_type}
+      repo2-s3-uri-style: path
+      repo2-storage-verify-tls: "y"
+    jobs:
+      resources:
+        requests:
+          cpu: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_requests_cpu}"
+          memory: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_requests_memory}"
+        limits:
+          cpu: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_limits_cpu}"
+          memory: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_limits_memory}"
+    manual:
+      repoName: repo2
+      options:
+        - --type=full
+    repos:
+      - name: repo2
+        schedules:
+          full: "${ARGOCD_ENV_stateful_resources_pg_backup_schedule_full}"
+        s3:
+          bucket: ${ARGOCD_ENV_stateful_resources_pg_backup_bucket}
+          endpoint: garage-s3.${ARGOCD_ENV_base_domain}
+          region: garage
+
+pmm:
+  enabled: false
+
+secrets:
+  name: ""
+  primaryuser: ""
+  postgres: ""
+  pgbouncer: ""
+  pguser: ""

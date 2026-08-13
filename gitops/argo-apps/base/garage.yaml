@@ -23,6 +23,12 @@ spec:
           value: "${ARGOCD_ENV_garage_replication_factor}"
         - name: garage_replicas
           value: "${ARGOCD_ENV_garage_replicas}"
+        - name: stateful_resources_pg_backup_bucket
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_bucket}"
+        - name: stateful_resources_pg_backup_key_name
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_key_name}"
+        - name: stateful_resources_pg_backup_secret_name
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_secret_name}"
         - name: resource_garage_requests_cpu
           value: "${ARGOCD_ENV_resource_garage_requests_cpu}"
         - name: resource_garage_requests_memory

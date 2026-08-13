@@ -91,6 +91,28 @@ spec:
           value: "${reflector_version}"
         - name: percona_version
           value: "${percona_version}"
+        - name: percona_pg_version
+          value: "${percona_pg_version}"
+        - name: stateful_resources_pg_app_database
+          value: "${stateful_resources_pg_app_database}"
+        - name: stateful_resources_pg_app_user
+          value: "${stateful_resources_pg_app_user}"
+        - name: stateful_resources_pg_app_secret_name
+          value: "${stateful_resources_pg_app_secret_name}"
+        - name: stateful_resources_pg_app_reflection_namespaces
+          value: "${stateful_resources_pg_app_reflection_namespaces}"
+        - name: stateful_resources_pg_backup_bucket
+          value: "${stateful_resources_pg_backup_bucket}"
+        - name: stateful_resources_pg_backup_key_name
+          value: "${stateful_resources_pg_backup_key_name}"
+        - name: stateful_resources_pg_backup_secret_name
+          value: "${stateful_resources_pg_backup_secret_name}"
+        - name: stateful_resources_pg_backup_schedule_full
+          value: "${stateful_resources_pg_backup_schedule_full}"
+        - name: stateful_resources_pg_backup_retention_full
+          value: "${stateful_resources_pg_backup_retention_full}"
+        - name: stateful_resources_pg_backup_retention_full_type
+          value: "${stateful_resources_pg_backup_retention_full_type}"
         - name: garage_version
           value: "${garage_version}"
         - name: kyverno_admission_controller_replicas
@@ -107,6 +129,8 @@ spec:
           value: "${reflector_max_replicas}"
         - name: stateful_operator_replicas
           value: "${stateful_operator_replicas}"
+        - name: stateful_operator_pg_replicas
+          value: "${stateful_operator_pg_replicas}"
         - name: garage_replication_factor
           value: "${garage_replication_factor}"
         - name: garage_replicas
@@ -133,6 +157,10 @@ spec:
           value: "${stateful_resources_pxc_replicas}"
         - name: stateful_resources_proxysql_replicas
           value: "${stateful_resources_proxysql_replicas}"
+        - name: stateful_resources_pg_replicas
+          value: "${stateful_resources_pg_replicas}"
+        - name: stateful_resources_pgbouncer_replicas
+          value: "${stateful_resources_pgbouncer_replicas}"
         - name: grafana_operator_replicas
           value: "${grafana_operator_replicas}"
         - name: opentelemetry_operator_replicas

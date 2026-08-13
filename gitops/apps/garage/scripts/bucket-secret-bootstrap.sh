@@ -103,15 +103,37 @@ write_secret() {
     exit 1
   fi
 
-  kubectl create secret generic "$current_secret_name" \
-    --namespace "$garage_namespace" \
-    --from-literal=AWS_ACCESS_KEY_ID="$(cat "/tmp/$current_secret_name-access-key-id.txt")" \
-    --from-literal=AWS_SECRET_ACCESS_KEY="$(cat "/tmp/$current_secret_name-secret-key.txt")" \
-    --from-literal=AWS_ENDPOINT_URL="$endpoint_url" \
-    --from-literal=AWS_REGION="$region" \
-    --from-literal="$current_bucket_field=$current_buckets_csv" \
-    --dry-run=client \
-    -o yaml \
+  case "$current_secret_format" in
+    aws-env)
+      kubectl create secret generic "$current_secret_name" \
+        --namespace "$garage_namespace" \
+        --from-literal=AWS_ACCESS_KEY_ID="$(cat "/tmp/$current_secret_name-access-key-id.txt")" \
+        --from-literal=AWS_SECRET_ACCESS_KEY="$(cat "/tmp/$current_secret_name-secret-key.txt")" \
+        --from-literal=AWS_ENDPOINT_URL="$endpoint_url" \
+        --from-literal=AWS_REGION="$region" \
+        --from-literal="$current_bucket_field=$current_buckets_csv" \
+        --dry-run=client \
+        -o yaml
+      ;;
+    pgbackrest-repo2)
+      cat >"/tmp/$current_secret_name-s3.conf" <<EOF
+[global]
+repo2-s3-key=$(cat "/tmp/$current_secret_name-access-key-id.txt")
+repo2-s3-key-secret=$(cat "/tmp/$current_secret_name-secret-key.txt")
+EOF
+
+      kubectl create secret generic "$current_secret_name" \
+        --namespace "$garage_namespace" \
+        --from-file=s3.conf="/tmp/$current_secret_name-s3.conf" \
+        --from-literal="$current_bucket_field=$current_buckets_csv" \
+        --dry-run=client \
+        -o yaml
+      ;;
+    *)
+      echo "Unsupported secret format $current_secret_format for $current_secret_name" >&2
+      exit 1
+      ;;
+  esac \
     | kubectl annotate --local -f - \
         reflector.v1.k8s.emberstack.com/reflection-allowed="true" \
         reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces="$current_reflection_namespaces" \
@@ -121,8 +143,9 @@ write_secret() {
     | kubectl apply -f -
 }
 
-printf '%s\n' "$targets" | while IFS='|' read -r current_secret_name current_key_name current_buckets_csv current_bucket_field current_reflection_namespaces; do
+printf '%s\n' "$targets" | while IFS='|' read -r current_secret_name current_key_name current_buckets_csv current_bucket_field current_reflection_namespaces current_secret_format; do
   [ -n "$current_secret_name" ] || continue
+  current_secret_format="${current_secret_format:-aws-env}"
 
   current_key_id="$(ensure_key)"
   wait_for_key

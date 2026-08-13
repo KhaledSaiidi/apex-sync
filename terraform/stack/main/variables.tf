@@ -186,6 +186,46 @@ variable "percona_version" {
   type = string
 }
 
+variable "percona_pg_version" {
+  type = string
+}
+
+variable "stateful_resources_pg_app_user" {
+  type = string
+}
+
+variable "stateful_resources_pg_app_secret_name" {
+  type = string
+}
+
+variable "stateful_resources_pg_app_reflection_namespaces" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_bucket" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_key_name" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_secret_name" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_schedule_full" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_retention_full" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_retention_full_type" {
+  type = string
+}
+
 variable "garage_version" {
   type = string
 }
@@ -215,6 +255,10 @@ variable "reflector_max_replicas" {
 }
 
 variable "stateful_operator_replicas" {
+  type = string
+}
+
+variable "stateful_operator_pg_replicas" {
   type = string
 }
 
@@ -267,6 +311,14 @@ variable "stateful_resources_pxc_replicas" {
 }
 
 variable "stateful_resources_proxysql_replicas" {
+  type = string
+}
+
+variable "stateful_resources_pg_replicas" {
+  type = string
+}
+
+variable "stateful_resources_pgbouncer_replicas" {
   type = string
 }
 

@@ -1,0 +1,39 @@
+replicaCount: ${ARGOCD_ENV_stateful_operator_pg_replicas}
+
+operatorImageRepository: docker.io/percona/percona-postgresql-operator
+imagePullPolicy: IfNotPresent
+image: ""
+
+nameOverride: percona-postgresql-operator
+fullnameOverride: percona-postgresql-operator
+
+watchAllNamespaces: true
+
+imagePullSecrets: []
+
+resources:
+  requests:
+    cpu: "${ARGOCD_ENV_resource_stateful_operator_pg_requests_cpu}"
+    memory: "${ARGOCD_ENV_resource_stateful_operator_pg_requests_memory}"
+  limits:
+    cpu: "${ARGOCD_ENV_resource_stateful_operator_pg_limits_cpu}"
+    memory: "${ARGOCD_ENV_resource_stateful_operator_pg_limits_memory}"
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+podAnnotations: {}
+
+disableTelemetry: false
+logStructured: false
+logLevel: INFO
+
+leaderElectionEnabled: true
+leaseName: ""
+leaseDuration: 60s
+renewDeadline: 40s
+retryPeriod: 10s
+pprofBindAddress: "0"
+
+featureGates:
+  backupSnapshots: false

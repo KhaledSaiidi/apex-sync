@@ -28,6 +28,8 @@ spec:
   hostname:
     hostname: keycloak.${ARGOCD_ENV_base_domain}
     strict: true
+  proxy:
+    headers: xforwarded
   http:
     httpEnabled: true
     serviceName: keycloak
@@ -48,5 +50,3 @@ spec:
   additionalOptions:
     - name: metrics-enabled
       value: "true"
-    - name: proxy-headers
-      value: xforwarded

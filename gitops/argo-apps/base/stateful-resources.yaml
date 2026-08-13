@@ -12,6 +12,13 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: platform
+  ignoreDifferences:
+    - group: pgv2.percona.com
+      kind: PerconaPGCluster
+      name: pg-cluster
+      namespace: stateful-resources
+      jsonPointers:
+        - /metadata/finalizers
   source:
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
@@ -21,12 +28,36 @@ spec:
       env:
         - name: percona_version
           value: "${ARGOCD_ENV_percona_version}"
+        - name: percona_pg_version
+          value: "${ARGOCD_ENV_percona_pg_version}"
+        - name: stateful_resources_pg_app_database
+          value: "${ARGOCD_ENV_stateful_resources_pg_app_database}"
+        - name: stateful_resources_pg_app_user
+          value: "${ARGOCD_ENV_stateful_resources_pg_app_user}"
+        - name: stateful_resources_pg_app_secret_name
+          value: "${ARGOCD_ENV_stateful_resources_pg_app_secret_name}"
+        - name: stateful_resources_pg_app_reflection_namespaces
+          value: "${ARGOCD_ENV_stateful_resources_pg_app_reflection_namespaces}"
+        - name: stateful_resources_pg_backup_bucket
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_bucket}"
+        - name: stateful_resources_pg_backup_secret_name
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_secret_name}"
+        - name: stateful_resources_pg_backup_schedule_full
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_schedule_full}"
+        - name: stateful_resources_pg_backup_retention_full
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_retention_full}"
+        - name: stateful_resources_pg_backup_retention_full_type
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_retention_full_type}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
         - name: stateful_resources_pxc_replicas
           value: "${ARGOCD_ENV_stateful_resources_pxc_replicas}"
         - name: stateful_resources_proxysql_replicas
           value: "${ARGOCD_ENV_stateful_resources_proxysql_replicas}"
+        - name: stateful_resources_pg_replicas
+          value: "${ARGOCD_ENV_stateful_resources_pg_replicas}"
+        - name: stateful_resources_pgbouncer_replicas
+          value: "${ARGOCD_ENV_stateful_resources_pgbouncer_replicas}"
         - name: resource_stateful_resources_pxc_requests_cpu
           value: "${ARGOCD_ENV_resource_stateful_resources_pxc_requests_cpu}"
         - name: resource_stateful_resources_pxc_requests_memory
@@ -41,6 +72,38 @@ spec:
           value: "${ARGOCD_ENV_resource_stateful_resources_proxysql_requests_memory}"
         - name: resource_stateful_resources_proxysql_limits_memory
           value: "${ARGOCD_ENV_resource_stateful_resources_proxysql_limits_memory}"
+        - name: resource_stateful_resources_pg_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_requests_cpu}"
+        - name: resource_stateful_resources_pg_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_requests_memory}"
+        - name: resource_stateful_resources_pg_limits_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_limits_cpu}"
+        - name: resource_stateful_resources_pg_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_limits_memory}"
+        - name: resource_stateful_resources_pgbouncer_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_requests_cpu}"
+        - name: resource_stateful_resources_pgbouncer_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_requests_memory}"
+        - name: resource_stateful_resources_pgbouncer_limits_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_limits_cpu}"
+        - name: resource_stateful_resources_pgbouncer_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_limits_memory}"
+        - name: resource_stateful_resources_pg_app_bootstrap_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_app_bootstrap_requests_cpu}"
+        - name: resource_stateful_resources_pg_app_bootstrap_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_app_bootstrap_requests_memory}"
+        - name: resource_stateful_resources_pg_app_bootstrap_limits_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_app_bootstrap_limits_cpu}"
+        - name: resource_stateful_resources_pg_app_bootstrap_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_app_bootstrap_limits_memory}"
+        - name: resource_stateful_resources_pg_backup_jobs_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_requests_cpu}"
+        - name: resource_stateful_resources_pg_backup_jobs_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_requests_memory}"
+        - name: resource_stateful_resources_pg_backup_jobs_limits_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_limits_cpu}"
+        - name: resource_stateful_resources_pg_backup_jobs_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_limits_memory}"
         - name: resource_stateful_resources_logcollector_requests_cpu
           value: "${ARGOCD_ENV_resource_stateful_resources_logcollector_requests_cpu}"
         - name: resource_stateful_resources_logcollector_requests_memory

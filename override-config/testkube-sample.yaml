@@ -1,0 +1,9 @@
+database:
+  database_name: "api-db"
+
+# Later, when the app manifest exists, it may make sense to add app-facing keys there, for example:
+# database:
+#   database_name: "api-db"
+#   host_env: "DB_HOST"
+#   port_env: "DB_PORT"
+#   secret_name: "api-db-credentials"
