@@ -1,9 +1,10 @@
 #!/bin/sh
 set -eu
 
-KC_URL="http://keycloak.keycloak.svc.cluster.local"
-REALM="oidc"
-CLIENT_ID="argocd"
+KC_URL="${KC_URL:-http://keycloak.keycloak.svc.cluster.local}"
+REALM="${REALM:-oidc}"
+CLIENT_ID="${CLIENT_ID:-argocd}"
+OUTPUT_PATH="${OUTPUT_PATH:-/work/argocd-client-secret}"
 
 last_data_line() {
   value=""
@@ -95,4 +96,4 @@ if [ -z "$client_secret" ] || [ "$client_secret" = "value" ]; then
   exit 1
 fi
 
-printf "%s" "$client_secret" > /work/argocd-client-secret
+printf "%s" "$client_secret" > "$OUTPUT_PATH"

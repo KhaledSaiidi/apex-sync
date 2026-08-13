@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - oidc-realm-import.yaml
   - argocd-oidc-client-secret-sync.yaml
+  - grafana-oidc-client-secret-sync.yaml
 configMapGenerator:
   - name: argocd-oidc-read-keycloak-client-secret-script
     namespace: keycloak
