@@ -21,8 +21,12 @@ spec:
       env:
         - name: percona_version
           value: "${ARGOCD_ENV_percona_version}"
+        - name: percona_pg_version
+          value: "${ARGOCD_ENV_percona_pg_version}"
         - name: stateful_operator_replicas
           value: "${ARGOCD_ENV_stateful_operator_replicas}"
+        - name: stateful_operator_pg_replicas
+          value: "${ARGOCD_ENV_stateful_operator_pg_replicas}"
         - name: resource_stateful_operator_requests_cpu
           value: "${ARGOCD_ENV_resource_stateful_operator_requests_cpu}"
         - name: resource_stateful_operator_requests_memory
@@ -31,6 +35,14 @@ spec:
           value: "${ARGOCD_ENV_resource_stateful_operator_limits_cpu}"
         - name: resource_stateful_operator_limits_memory
           value: "${ARGOCD_ENV_resource_stateful_operator_limits_memory}"
+        - name: resource_stateful_operator_pg_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_operator_pg_requests_cpu}"
+        - name: resource_stateful_operator_pg_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_operator_pg_requests_memory}"
+        - name: resource_stateful_operator_pg_limits_cpu
+          value: "${ARGOCD_ENV_resource_stateful_operator_pg_limits_cpu}"
+        - name: resource_stateful_operator_pg_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_operator_pg_limits_memory}"
   destination:
     server: https://kubernetes.default.svc
     namespace: stateful-operator

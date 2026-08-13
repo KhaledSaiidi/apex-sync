@@ -186,6 +186,10 @@ variable "percona_version" {
   type = string
 }
 
+variable "percona_pg_version" {
+  type = string
+}
+
 variable "garage_version" {
   type = string
 }
@@ -215,6 +219,10 @@ variable "reflector_max_replicas" {
 }
 
 variable "stateful_operator_replicas" {
+  type = string
+}
+
+variable "stateful_operator_pg_replicas" {
   type = string
 }
 
@@ -267,6 +275,14 @@ variable "stateful_resources_pxc_replicas" {
 }
 
 variable "stateful_resources_proxysql_replicas" {
+  type = string
+}
+
+variable "stateful_resources_pg_replicas" {
+  type = string
+}
+
+variable "stateful_resources_pgbouncer_replicas" {
   type = string
 }
 

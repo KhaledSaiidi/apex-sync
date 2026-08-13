@@ -21,12 +21,18 @@ spec:
       env:
         - name: percona_version
           value: "${ARGOCD_ENV_percona_version}"
+        - name: percona_pg_version
+          value: "${ARGOCD_ENV_percona_pg_version}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
         - name: stateful_resources_pxc_replicas
           value: "${ARGOCD_ENV_stateful_resources_pxc_replicas}"
         - name: stateful_resources_proxysql_replicas
           value: "${ARGOCD_ENV_stateful_resources_proxysql_replicas}"
+        - name: stateful_resources_pg_replicas
+          value: "${ARGOCD_ENV_stateful_resources_pg_replicas}"
+        - name: stateful_resources_pgbouncer_replicas
+          value: "${ARGOCD_ENV_stateful_resources_pgbouncer_replicas}"
         - name: resource_stateful_resources_pxc_requests_cpu
           value: "${ARGOCD_ENV_resource_stateful_resources_pxc_requests_cpu}"
         - name: resource_stateful_resources_pxc_requests_memory
@@ -41,6 +47,22 @@ spec:
           value: "${ARGOCD_ENV_resource_stateful_resources_proxysql_requests_memory}"
         - name: resource_stateful_resources_proxysql_limits_memory
           value: "${ARGOCD_ENV_resource_stateful_resources_proxysql_limits_memory}"
+        - name: resource_stateful_resources_pg_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_requests_cpu}"
+        - name: resource_stateful_resources_pg_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_requests_memory}"
+        - name: resource_stateful_resources_pg_limits_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_limits_cpu}"
+        - name: resource_stateful_resources_pg_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_limits_memory}"
+        - name: resource_stateful_resources_pgbouncer_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_requests_cpu}"
+        - name: resource_stateful_resources_pgbouncer_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_requests_memory}"
+        - name: resource_stateful_resources_pgbouncer_limits_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_limits_cpu}"
+        - name: resource_stateful_resources_pgbouncer_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_limits_memory}"
         - name: resource_stateful_resources_logcollector_requests_cpu
           value: "${ARGOCD_ENV_resource_stateful_resources_logcollector_requests_cpu}"
         - name: resource_stateful_resources_logcollector_requests_memory

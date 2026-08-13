@@ -66,6 +66,7 @@ resource "local_file" "argocd_root_app" {
     openebs_version                        = var.openebs_version
     reflector_version                      = var.reflector_version
     percona_version                        = var.percona_version
+    percona_pg_version                     = var.percona_pg_version
     garage_version                         = var.garage_version
     kyverno_admission_controller_replicas  = var.kyverno_admission_controller_replicas
     kyverno_background_controller_replicas = var.kyverno_background_controller_replicas
@@ -74,6 +75,7 @@ resource "local_file" "argocd_root_app" {
     reflector_min_replicas                 = var.reflector_min_replicas
     reflector_max_replicas                 = var.reflector_max_replicas
     stateful_operator_replicas             = var.stateful_operator_replicas
+    stateful_operator_pg_replicas          = var.stateful_operator_pg_replicas
     garage_replication_factor              = var.garage_replication_factor
     garage_replicas                        = var.garage_replicas
     istiod_replicas                        = var.istiod_replicas
@@ -87,6 +89,8 @@ resource "local_file" "argocd_root_app" {
     kiali_replicas                         = var.kiali_replicas
     stateful_resources_pxc_replicas        = var.stateful_resources_pxc_replicas
     stateful_resources_proxysql_replicas   = var.stateful_resources_proxysql_replicas
+    stateful_resources_pg_replicas         = var.stateful_resources_pg_replicas
+    stateful_resources_pgbouncer_replicas  = var.stateful_resources_pgbouncer_replicas
     grafana_operator_replicas              = var.grafana_operator_replicas
     opentelemetry_operator_replicas        = var.opentelemetry_operator_replicas
     grafana_replicas                       = var.grafana_replicas

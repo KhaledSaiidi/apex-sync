@@ -11,7 +11,7 @@ helmCharts:
     valuesFile: values.yaml
   - name: pg-operator
     repo: https://percona.github.io/percona-helm-charts
-    version: 3.0.0
+    version: ${ARGOCD_ENV_percona_pg_version}
     releaseName: percona-postgresql-operator
     namespace: stateful-operator
     includeCRDs: true

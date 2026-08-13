@@ -3,7 +3,7 @@ fullnameOverride: pg-cluster
 finalizers:
   - percona.com/delete-ssl
 
-crVersion: 3.0.0
+crVersion: ${ARGOCD_ENV_percona_pg_version}
 
 repository: docker.io/percona/percona-distribution-postgresql
 image: docker.io/percona/percona-distribution-postgresql:18.4-1
@@ -21,7 +21,7 @@ customReplicationTLSSecret:
 
 instances:
   - name: instance1
-    replicas: 3
+    replicas: ${ARGOCD_ENV_stateful_resources_pg_replicas}
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
@@ -42,11 +42,11 @@ instances:
         whenUnsatisfiable: DoNotSchedule
     resources:
       requests:
-        cpu: "150m"
-        memory: "384Mi"
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_pg_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_stateful_resources_pg_requests_memory}"
       limits:
-        cpu: "1"
-        memory: "1536Mi"
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_pg_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_stateful_resources_pg_limits_memory}"
     securityContext:
       runAsUser: 1001
       runAsGroup: 1001
@@ -65,7 +65,7 @@ instances:
 
 proxy:
   pgBouncer:
-    replicas: 3
+    replicas: ${ARGOCD_ENV_stateful_resources_pgbouncer_replicas}
     image: docker.io/percona/percona-pgbouncer:1.25.2-1
     affinity:
       podAntiAffinity:
@@ -87,11 +87,11 @@ proxy:
         whenUnsatisfiable: DoNotSchedule
     resources:
       requests:
-        cpu: "150m"
-        memory: "128Mi"
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_requests_cpu}"
+        memory: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_requests_memory}"
       limits:
-        cpu: "500m"
-        memory: "256Mi"
+        cpu: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_limits_cpu}"
+        memory: "${ARGOCD_ENV_resource_stateful_resources_pgbouncer_limits_memory}"
     securityContext:
       runAsUser: 1001
       runAsGroup: 1001
