@@ -190,6 +190,22 @@ variable "percona_pg_version" {
   type = string
 }
 
+variable "stateful_resources_pg_app_database" {
+  type = string
+}
+
+variable "stateful_resources_pg_app_user" {
+  type = string
+}
+
+variable "stateful_resources_pg_app_secret_name" {
+  type = string
+}
+
+variable "stateful_resources_pg_app_reflection_namespaces" {
+  type = string
+}
+
 variable "garage_version" {
   type = string
 }

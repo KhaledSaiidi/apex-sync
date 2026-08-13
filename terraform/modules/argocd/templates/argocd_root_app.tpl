@@ -93,6 +93,14 @@ spec:
           value: "${percona_version}"
         - name: percona_pg_version
           value: "${percona_pg_version}"
+        - name: stateful_resources_pg_app_database
+          value: "${stateful_resources_pg_app_database}"
+        - name: stateful_resources_pg_app_user
+          value: "${stateful_resources_pg_app_user}"
+        - name: stateful_resources_pg_app_secret_name
+          value: "${stateful_resources_pg_app_secret_name}"
+        - name: stateful_resources_pg_app_reflection_namespaces
+          value: "${stateful_resources_pg_app_reflection_namespaces}"
         - name: garage_version
           value: "${garage_version}"
         - name: kyverno_admission_controller_replicas

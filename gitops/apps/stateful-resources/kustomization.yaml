@@ -3,6 +3,8 @@ kind: Kustomization
 namespace: stateful-resources
 resources:
   - priority-class.yaml
+  - pg-app-credentials-bootstrap-rbac.yaml
+  - pg-app-credentials-bootstrap-job.yaml
 helmCharts:
   - name: pxc-db
     repo: https://percona.github.io/percona-helm-charts
@@ -16,3 +18,9 @@ helmCharts:
     releaseName: pg-cluster
     namespace: stateful-resources
     valuesFile: values-pg.yaml
+configMapGenerator:
+  - name: pg-app-credentials-bootstrap-script
+    files:
+      - reflect-pg-app-credentials.sh=scripts/reflect-pg-app-credentials.sh
+generatorOptions:
+  disableNameSuffixHash: true

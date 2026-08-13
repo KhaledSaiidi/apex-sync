@@ -14,6 +14,15 @@ postgresVersion: 18
 pause: false
 unmanaged: false
 
+users:
+  - name: ${ARGOCD_ENV_stateful_resources_pg_app_user}
+    databases:
+      - ${ARGOCD_ENV_stateful_resources_pg_app_database}
+    secretName: ${ARGOCD_ENV_stateful_resources_pg_app_secret_name}
+    grantPublicSchemaAccess: true
+    password:
+      type: AlphaNumeric
+
 customTLSSecret:
   name: ""
 customReplicationTLSSecret:
@@ -102,7 +111,30 @@ proxy:
         - 1001
 
 backups:
-  enabled: false
+  enabled: true
+  trackLatestRestorableTime: true
+  pgbackrest:
+    configuration:
+      - secret:
+          name: pg-cluster-pgbackrest-garage-s3
+    global:
+      repo2-path: /pgbackrest/postgres-operator/pg-cluster/repo2
+      repo2-retention-full: "7"
+      repo2-retention-full-type: count
+      repo2-s3-uri-style: path
+      repo2-storage-verify-tls: "y"
+    manual:
+      repoName: repo2
+      options:
+        - --type=full
+    repos:
+      - name: repo2
+        schedules:
+          full: "0 0 * * *"
+        s3:
+          bucket: percona-pg-backups
+          endpoint: garage-s3.${ARGOCD_ENV_base_domain}
+          region: garage
 
 pmm:
   enabled: false
