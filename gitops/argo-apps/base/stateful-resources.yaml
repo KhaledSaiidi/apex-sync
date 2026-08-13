@@ -12,6 +12,13 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: platform
+  ignoreDifferences:
+    - group: pgv2.percona.com
+      kind: PerconaPGCluster
+      name: pg-cluster
+      namespace: stateful-resources
+      jsonPointers:
+        - /metadata/finalizers
   source:
     repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
     targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}

@@ -129,7 +129,7 @@ backup:
   storages:
     garage-full:
       type: s3
-      verifyTLS: true
+      verifyTLS: false
       resources:
         requests:
           memory: "${ARGOCD_ENV_resource_stateful_resources_backup_full_requests_memory}"
@@ -151,7 +151,7 @@ backup:
         region: garage
     garage-binlogs:
       type: s3
-      verifyTLS: true
+      verifyTLS: false
       containerSecurityContext:
         privileged: false
       s3:
