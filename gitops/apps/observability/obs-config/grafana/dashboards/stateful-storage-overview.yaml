@@ -74,6 +74,893 @@ spec:
             "x": 0,
             "y": 0
           },
+          "id": 20,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=~\"pg-cluster-(instance1-.+-0|pgbouncer-.+|repo-host-0)\"}) / count(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=~\"pg-cluster-(instance1-.+-0|pgbouncer-.+|repo-host-0)\"})",
+              "legendFormat": "pg pods ready",
+              "refId": "A"
+            }
+          ],
+          "title": "PG Cluster Pod Readiness",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 4,
+            "y": 0
+          },
+          "id": 21,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "count(kube_pod_labels{namespace=\"stateful-resources\",label_postgres_operator_crunchydata_com_cluster=\"pg-cluster\",label_postgres_operator_crunchydata_com_role=\"primary\"}) or vector(0)",
+              "legendFormat": "primary pods",
+              "refId": "A"
+            }
+          ],
+          "title": "PG Primary Pods",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 2
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 8,
+            "y": 0
+          },
+          "id": 22,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "count(kube_pod_labels{namespace=\"stateful-resources\",label_postgres_operator_crunchydata_com_cluster=\"pg-cluster\",label_postgres_operator_crunchydata_com_role=\"replica\"}) or vector(0)",
+              "legendFormat": "replica pods",
+              "refId": "A"
+            }
+          ],
+          "title": "PG Replica Pods",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 12,
+            "y": 0
+          },
+          "id": 23,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=~\"pg-cluster-pgbouncer-.+\"}) / count(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=~\"pg-cluster-pgbouncer-.+\"})",
+              "legendFormat": "pgbouncer ready",
+              "refId": "A"
+            }
+          ],
+          "title": "PgBouncer Readiness",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 16,
+            "y": 0
+          },
+          "id": 24,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=\"pg-cluster-repo-host-0\"}) / count(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=\"pg-cluster-repo-host-0\"})",
+              "legendFormat": "repo host ready",
+              "refId": "A"
+            }
+          ],
+          "title": "PGBackRest Repo Host",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 3
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 20,
+            "y": 0
+          },
+          "id": 25,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "11.0.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"pg-cluster-.*\"}[1h])) or vector(0)",
+              "legendFormat": "pg restarts",
+              "refId": "A"
+            }
+          ],
+          "title": "PG Restarts - 1h",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "cores"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 4
+          },
+          "id": 26,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "refId": "A",
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"stateful-resources\",pod=~\"pg-cluster-instance1-.+-0\",container=\"database\"}[5m]))",
+              "legendFormat": "{{pod}}"
+            }
+          ],
+          "title": "PG Database CPU",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 4
+          },
+          "id": 27,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "refId": "A",
+              "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"pg-cluster-instance1-.+-0\",container=\"database\"})",
+              "legendFormat": "{{pod}}"
+            }
+          ],
+          "title": "PG Database Memory",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 4
+          },
+          "id": 28,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "refId": "A",
+              "expr": "max by (persistentvolumeclaim) (kubelet_volume_stats_used_bytes{namespace=\"stateful-resources\",persistentvolumeclaim=~\"pg-cluster-instance1-.+-pgdata\"} / kubelet_volume_stats_capacity_bytes{namespace=\"stateful-resources\",persistentvolumeclaim=~\"pg-cluster-instance1-.+-pgdata\"})",
+              "legendFormat": "{{persistentvolumeclaim}}"
+            }
+          ],
+          "title": "PG Data PVC Usage",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 12
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "refId": "A",
+              "expr": "{__name__=~\"pg_stat_activity_count|pg_stat_database_numbackends\", namespace=\"stateful-resources\", pod=~\"pg-cluster-instance1-.+-0\"}",
+              "legendFormat": "{{pod}} / {{datname}} / {{state}}"
+            }
+          ],
+          "title": "PG Connections",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 12
+          },
+          "id": 30,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "refId": "A",
+              "expr": "sum by (pod, datname) (rate(pg_stat_database_xact_commit{namespace=\"stateful-resources\",pod=~\"pg-cluster-instance1-.+-0\"}[5m]))",
+              "legendFormat": "commit / {{pod}} / {{datname}}"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Mimir"
+              },
+              "refId": "B",
+              "expr": "sum by (pod, datname) (rate(pg_stat_database_xact_rollback{namespace=\"stateful-resources\",pod=~\"pg-cluster-instance1-.+-0\"}[5m]))",
+              "legendFormat": "rollback / {{pod}} / {{datname}}"
+            }
+          ],
+          "title": "PG Transaction Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "Loki"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 12
+          },
+          "id": 31,
+          "options": {
+            "dedupStrategy": "none",
+            "enableLogDetails": true,
+            "prettifyLogMessage": false,
+            "showCommonLabels": false,
+            "showLabels": false,
+            "showTime": true,
+            "sortOrder": "Descending",
+            "wrapLogMessage": true
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "Loki"
+              },
+              "expr": "{job=\"integrations/kubernetes/eventhandler\"} |~ \"Warning|Unhealthy|BackOff|Killing|Failed|Probe\" |~ \"pg-cluster|postgres|pgbackrest|pgbouncer\"",
+              "refId": "A"
+            }
+          ],
+          "title": "PG Warning Events",
+          "type": "logs"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Mimir"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 0,
+            "y": 20
+          },
           "id": 1,
           "options": {
             "colorMode": "background",
@@ -139,7 +1026,7 @@ spec:
             "h": 4,
             "w": 4,
             "x": 4,
-            "y": 0
+            "y": 20
           },
           "id": 2,
           "options": {
@@ -203,7 +1090,7 @@ spec:
             "h": 4,
             "w": 4,
             "x": 8,
-            "y": 0
+            "y": 20
           },
           "id": 3,
           "options": {
@@ -267,7 +1154,7 @@ spec:
             "h": 4,
             "w": 4,
             "x": 12,
-            "y": 0
+            "y": 20
           },
           "id": 4,
           "options": {
@@ -330,7 +1217,7 @@ spec:
             "h": 4,
             "w": 4,
             "x": 16,
-            "y": 0
+            "y": 20
           },
           "id": 5,
           "options": {
@@ -397,7 +1284,7 @@ spec:
             "h": 4,
             "w": 4,
             "x": 20,
-            "y": 0
+            "y": 20
           },
           "id": 6,
           "options": {
@@ -465,7 +1352,7 @@ spec:
             "h": 4,
             "w": 6,
             "x": 0,
-            "y": 4
+            "y": 24
           },
           "id": 17,
           "options": {
@@ -533,7 +1420,7 @@ spec:
             "h": 4,
             "w": 6,
             "x": 6,
-            "y": 4
+            "y": 24
           },
           "id": 18,
           "options": {
@@ -633,7 +1520,7 @@ spec:
             "h": 4,
             "w": 12,
             "x": 12,
-            "y": 4
+            "y": 24
           },
           "id": 19,
           "options": {
@@ -725,7 +1612,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 8
+            "y": 28
           },
           "id": 7,
           "options": {
@@ -816,7 +1703,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 8
+            "y": 28
           },
           "id": 8,
           "options": {
@@ -915,7 +1802,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 16
+            "y": 36
           },
           "id": 9,
           "options": {
@@ -1006,7 +1893,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 16
+            "y": 36
           },
           "id": 10,
           "options": {
@@ -1097,7 +1984,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 24
+            "y": 44
           },
           "id": 11,
           "options": {
@@ -1188,7 +2075,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 24
+            "y": 44
           },
           "id": 12,
           "options": {
@@ -1279,7 +2166,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 32
+            "y": 52
           },
           "id": 13,
           "options": {
@@ -1319,7 +2206,7 @@ spec:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 32
+            "y": 52
           },
           "id": 14,
           "options": {
@@ -1405,7 +2292,7 @@ spec:
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 40
+            "y": 60
           },
           "id": 15,
           "options": {
@@ -1441,7 +2328,7 @@ spec:
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 48
+            "y": 68
           },
           "id": 16,
           "options": {
@@ -1459,7 +2346,11 @@ spec:
         "storage",
         "garage",
         "pxc",
-        "openebs"
+        "openebs",
+        "postgresql",
+        "pg-cluster",
+        "pgbackrest",
+        "pgbouncer"
       ],
       "templating": {
         "list": []
