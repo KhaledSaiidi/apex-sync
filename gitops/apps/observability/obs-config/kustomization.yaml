@@ -15,6 +15,7 @@ resources:
   - servicemonitors/openebs-servicemonitor.yaml
   - servicemonitors/reflector-servicemonitor.yaml
   - servicemonitors/stateful-operator-servicemonitor.yaml
+  - podmonitors/postgres-podmonitor.yaml
   - grafana/folder/grafana-kubernetes.yaml
   - grafana/folder/grafana-istio.yaml
   - grafana/folder/grafana-observability.yaml

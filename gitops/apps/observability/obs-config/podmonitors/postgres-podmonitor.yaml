@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: postgres
+  labels:
+    app.kubernetes.io/name: percona-postgresql
+    app.kubernetes.io/instance: pg-cluster
+    app.kubernetes.io/component: metrics
+spec:
+  namespaceSelector:
+    matchNames:
+      - stateful-resources
+  selector:
+    matchLabels:
+      postgres-operator.crunchydata.com/cluster: pg-cluster
+    matchExpressions:
+      - key: postgres-operator.crunchydata.com/crunchy-postgres-exporter
+        operator: Exists
+  podMetricsEndpoints:
+    - targetPort: 9187
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
