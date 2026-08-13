@@ -69,7 +69,7 @@ for config_file in "${CONFIG_FILES[@]}"; do
   done < <(
     yq -r '
       to_entries[]
-      | select(.value != null)
+      | select(.value != null and (.value | type != "object") and (.value | type != "array"))
       | "\(.key)=\(.value)"
     ' "$config_file"
   )

@@ -116,13 +116,21 @@ backups:
   pgbackrest:
     configuration:
       - secret:
-          name: pg-cluster-pgbackrest-garage-s3
+          name: ${ARGOCD_ENV_stateful_resources_pg_backup_secret_name}
     global:
       repo2-path: /pgbackrest/postgres-operator/pg-cluster/repo2
-      repo2-retention-full: "7"
-      repo2-retention-full-type: count
+      repo2-retention-full: "${ARGOCD_ENV_stateful_resources_pg_backup_retention_full}"
+      repo2-retention-full-type: ${ARGOCD_ENV_stateful_resources_pg_backup_retention_full_type}
       repo2-s3-uri-style: path
       repo2-storage-verify-tls: "y"
+    jobs:
+      resources:
+        requests:
+          cpu: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_requests_cpu}"
+          memory: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_requests_memory}"
+        limits:
+          cpu: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_limits_cpu}"
+          memory: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_limits_memory}"
     manual:
       repoName: repo2
       options:
@@ -130,9 +138,9 @@ backups:
     repos:
       - name: repo2
         schedules:
-          full: "0 0 * * *"
+          full: "${ARGOCD_ENV_stateful_resources_pg_backup_schedule_full}"
         s3:
-          bucket: percona-pg-backups
+          bucket: ${ARGOCD_ENV_stateful_resources_pg_backup_bucket}
           endpoint: garage-s3.${ARGOCD_ENV_base_domain}
           region: garage
 

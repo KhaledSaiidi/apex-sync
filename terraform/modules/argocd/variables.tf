@@ -179,6 +179,30 @@ variable "stateful_resources_pg_app_reflection_namespaces" {
   type = string
 }
 
+variable "stateful_resources_pg_backup_bucket" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_key_name" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_secret_name" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_schedule_full" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_retention_full" {
+  type = string
+}
+
+variable "stateful_resources_pg_backup_retention_full_type" {
+  type = string
+}
+
 variable "garage_version" {
   type = string
 }

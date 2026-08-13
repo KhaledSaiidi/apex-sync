@@ -31,6 +31,16 @@ spec:
           value: "${ARGOCD_ENV_stateful_resources_pg_app_secret_name}"
         - name: stateful_resources_pg_app_reflection_namespaces
           value: "${ARGOCD_ENV_stateful_resources_pg_app_reflection_namespaces}"
+        - name: stateful_resources_pg_backup_bucket
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_bucket}"
+        - name: stateful_resources_pg_backup_secret_name
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_secret_name}"
+        - name: stateful_resources_pg_backup_schedule_full
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_schedule_full}"
+        - name: stateful_resources_pg_backup_retention_full
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_retention_full}"
+        - name: stateful_resources_pg_backup_retention_full_type
+          value: "${ARGOCD_ENV_stateful_resources_pg_backup_retention_full_type}"
         - name: base_domain
           value: "${ARGOCD_ENV_base_domain}"
         - name: stateful_resources_pxc_replicas
@@ -79,6 +89,14 @@ spec:
           value: "${ARGOCD_ENV_resource_stateful_resources_pg_app_bootstrap_limits_cpu}"
         - name: resource_stateful_resources_pg_app_bootstrap_limits_memory
           value: "${ARGOCD_ENV_resource_stateful_resources_pg_app_bootstrap_limits_memory}"
+        - name: resource_stateful_resources_pg_backup_jobs_requests_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_requests_cpu}"
+        - name: resource_stateful_resources_pg_backup_jobs_requests_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_requests_memory}"
+        - name: resource_stateful_resources_pg_backup_jobs_limits_cpu
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_limits_cpu}"
+        - name: resource_stateful_resources_pg_backup_jobs_limits_memory
+          value: "${ARGOCD_ENV_resource_stateful_resources_pg_backup_jobs_limits_memory}"
         - name: resource_stateful_resources_logcollector_requests_cpu
           value: "${ARGOCD_ENV_resource_stateful_resources_logcollector_requests_cpu}"
         - name: resource_stateful_resources_logcollector_requests_memory

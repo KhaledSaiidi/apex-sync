@@ -101,6 +101,18 @@ spec:
           value: "${stateful_resources_pg_app_secret_name}"
         - name: stateful_resources_pg_app_reflection_namespaces
           value: "${stateful_resources_pg_app_reflection_namespaces}"
+        - name: stateful_resources_pg_backup_bucket
+          value: "${stateful_resources_pg_backup_bucket}"
+        - name: stateful_resources_pg_backup_key_name
+          value: "${stateful_resources_pg_backup_key_name}"
+        - name: stateful_resources_pg_backup_secret_name
+          value: "${stateful_resources_pg_backup_secret_name}"
+        - name: stateful_resources_pg_backup_schedule_full
+          value: "${stateful_resources_pg_backup_schedule_full}"
+        - name: stateful_resources_pg_backup_retention_full
+          value: "${stateful_resources_pg_backup_retention_full}"
+        - name: stateful_resources_pg_backup_retention_full_type
+          value: "${stateful_resources_pg_backup_retention_full_type}"
         - name: garage_version
           value: "${garage_version}"
         - name: kyverno_admission_controller_replicas

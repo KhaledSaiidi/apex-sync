@@ -38,7 +38,7 @@ spec:
             - name: GARAGE_TARGETS
               value: |
                 percona-backup-garage-s3|percona-backup-key|percona-backups|BUCKET_NAME|stateful-resources
-                pg-cluster-pgbackrest-garage-s3|pg-cluster-backup-key|percona-pg-backups|BUCKET_NAME|stateful-resources|pgbackrest-repo2
+                ${ARGOCD_ENV_stateful_resources_pg_backup_secret_name}|${ARGOCD_ENV_stateful_resources_pg_backup_key_name}|${ARGOCD_ENV_stateful_resources_pg_backup_bucket}|BUCKET_NAME|stateful-resources|pgbackrest-repo2
           resources:
             requests:
               cpu: "${ARGOCD_ENV_resource_garage_bootstrap_job_requests_cpu}"
