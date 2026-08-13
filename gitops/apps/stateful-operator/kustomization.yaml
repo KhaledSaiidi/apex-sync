@@ -9,5 +9,12 @@ helmCharts:
     namespace: stateful-operator
     includeCRDs: true
     valuesFile: values.yaml
+  - name: pg-operator
+    repo: https://percona.github.io/percona-helm-charts
+    version: 3.0.0
+    releaseName: percona-postgresql-operator
+    namespace: stateful-operator
+    includeCRDs: true
+    valuesFile: values-pg.yaml
 resources:
   - operator-metrics-service.yaml

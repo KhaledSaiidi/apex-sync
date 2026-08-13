@@ -1,0 +1,39 @@
+replicaCount: 1
+
+operatorImageRepository: docker.io/percona/percona-postgresql-operator
+imagePullPolicy: IfNotPresent
+image: ""
+
+nameOverride: percona-postgresql-operator
+fullnameOverride: percona-postgresql-operator
+
+watchAllNamespaces: true
+
+imagePullSecrets: []
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "128Mi"
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+podAnnotations: {}
+
+disableTelemetry: false
+logStructured: false
+logLevel: INFO
+
+leaderElectionEnabled: true
+leaseName: ""
+leaseDuration: 60s
+renewDeadline: 40s
+retryPeriod: 10s
+pprofBindAddress: "0"
+
+featureGates:
+  backupSnapshots: false

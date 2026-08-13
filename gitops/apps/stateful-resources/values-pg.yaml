@@ -1,0 +1,115 @@
+fullnameOverride: pg-cluster
+
+finalizers:
+  - percona.com/delete-ssl
+
+crVersion: 3.0.0
+
+repository: docker.io/percona/percona-distribution-postgresql
+image: docker.io/percona/percona-distribution-postgresql:18.4-1
+imagePullPolicy: IfNotPresent
+imagePullSecrets: []
+
+postgresVersion: 18
+pause: false
+unmanaged: false
+
+customTLSSecret:
+  name: ""
+customReplicationTLSSecret:
+  name: ""
+
+instances:
+  - name: instance1
+    replicas: 3
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/data: postgres
+              topologyKey: kubernetes.io/hostname
+    tolerations:
+      - operator: Exists
+    topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            postgres-operator.crunchydata.com/instance-set: instance1
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+    resources:
+      requests:
+        cpu: "150m"
+        memory: "384Mi"
+      limits:
+        cpu: "1"
+        memory: "1536Mi"
+    securityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      fsGroup: 1001
+      fsGroupChangePolicy: OnRootMismatch
+      supplementalGroups:
+        - 1001
+    dataVolumeClaimSpec:
+      storageClassName: openebs-storage-class
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+
+proxy:
+  pgBouncer:
+    replicas: 3
+    image: docker.io/percona/percona-pgbouncer:1.25.2-1
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/role: pgbouncer
+              topologyKey: kubernetes.io/hostname
+    tolerations:
+      - operator: Exists
+    topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            postgres-operator.crunchydata.com/role: pgbouncer
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+    resources:
+      requests:
+        cpu: "150m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "256Mi"
+    securityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      fsGroup: 1001
+      fsGroupChangePolicy: OnRootMismatch
+      supplementalGroups:
+        - 1001
+
+backups:
+  enabled: false
+
+pmm:
+  enabled: false
+
+secrets:
+  name: ""
+  primaryuser: ""
+  postgres: ""
+  pgbouncer: ""
+  pguser: ""

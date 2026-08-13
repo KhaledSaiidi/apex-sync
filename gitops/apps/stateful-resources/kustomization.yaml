@@ -10,3 +10,9 @@ helmCharts:
     releaseName: mysql-cluster
     namespace: stateful-resources
     valuesFile: values.yaml
+  - name: pg-db
+    repo: https://percona.github.io/percona-helm-charts
+    version: 3.0.0
+    releaseName: pg-cluster
+    namespace: stateful-resources
+    valuesFile: values-pg.yaml
