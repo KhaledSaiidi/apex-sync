@@ -60,11 +60,11 @@ spec:
                   },
                   {
                     "color": "green",
-                    "value": 1
+                    "value": 7
                   }
                 ]
               },
-              "unit": "percentunit"
+              "unit": "short"
             },
             "overrides": []
           },
@@ -96,12 +96,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=~\"pg-cluster-(instance1-.+-0|pgbouncer-.+|repo-host-0)\"}) / count(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=~\"pg-cluster-(instance1-.+-0|pgbouncer-.+|repo-host-0)\"})",
-              "legendFormat": "pg pods ready",
+              "expr": "count(count by (pod) (pod_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"pg-cluster-(instance1-.+-0|pgbouncer-.+|repo-host-0)\"}))",
+              "legendFormat": "pg pods",
               "refId": "A"
             }
           ],
-          "title": "PG Cluster Pod Readiness",
+          "title": "PG Pods Reporting",
           "type": "stat"
         },
         {
@@ -124,7 +124,7 @@ spec:
                   },
                   {
                     "color": "green",
-                    "value": 1
+                    "value": 3
                   }
                 ]
               },
@@ -160,12 +160,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(kube_pod_labels{namespace=\"stateful-resources\",label_postgres_operator_crunchydata_com_cluster=\"pg-cluster\",label_postgres_operator_crunchydata_com_role=\"primary\"}) or vector(0)",
-              "legendFormat": "primary pods",
+              "expr": "count(count by (pod) (container_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"pg-cluster-instance1-.+-0\",container=\"database\"}))",
+              "legendFormat": "database pods",
               "refId": "A"
             }
           ],
-          "title": "PG Primary Pods",
+          "title": "PG Database Pods Reporting",
           "type": "stat"
         },
         {
@@ -188,7 +188,7 @@ spec:
                   },
                   {
                     "color": "green",
-                    "value": 2
+                    "value": 3
                   }
                 ]
               },
@@ -224,12 +224,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "count(kube_pod_labels{namespace=\"stateful-resources\",label_postgres_operator_crunchydata_com_cluster=\"pg-cluster\",label_postgres_operator_crunchydata_com_role=\"replica\"}) or vector(0)",
-              "legendFormat": "replica pods",
+              "expr": "count(count by (pod) (container_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"pg-cluster-instance1-.+-0\",container=\"pgbackrest\"}))",
+              "legendFormat": "pgbackrest sidecars",
               "refId": "A"
             }
           ],
-          "title": "PG Replica Pods",
+          "title": "PGBackRest Sidecars Reporting",
           "type": "stat"
         },
         {
@@ -252,11 +252,11 @@ spec:
                   },
                   {
                     "color": "green",
-                    "value": 1
+                    "value": 3
                   }
                 ]
               },
-              "unit": "percentunit"
+              "unit": "short"
             },
             "overrides": []
           },
@@ -288,12 +288,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=~\"pg-cluster-pgbouncer-.+\"}) / count(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=~\"pg-cluster-pgbouncer-.+\"})",
-              "legendFormat": "pgbouncer ready",
+              "expr": "count(count by (pod) (container_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"pg-cluster-pgbouncer-.+\",container=\"pgbouncer\"}))",
+              "legendFormat": "pgbouncer pods",
               "refId": "A"
             }
           ],
-          "title": "PgBouncer Readiness",
+          "title": "PgBouncer Pods Reporting",
           "type": "stat"
         },
         {
@@ -320,7 +320,7 @@ spec:
                   }
                 ]
               },
-              "unit": "percentunit"
+              "unit": "short"
             },
             "overrides": []
           },
@@ -352,12 +352,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=\"pg-cluster-repo-host-0\"}) / count(kube_pod_status_ready{namespace=\"stateful-resources\",condition=\"true\",pod=\"pg-cluster-repo-host-0\"})",
-              "legendFormat": "repo host ready",
+              "expr": "count(count by (pod) (pod_memory_working_set_bytes{namespace=\"stateful-resources\",pod=\"pg-cluster-repo-host-0\"}))",
+              "legendFormat": "repo host pods",
               "refId": "A"
             }
           ],
-          "title": "PGBackRest Repo Host",
+          "title": "PGBackRest Repo Host Reporting",
           "type": "stat"
         },
         {
@@ -420,12 +420,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"stateful-resources\",pod=~\"pg-cluster-.*\"}[1h])) or vector(0)",
-              "legendFormat": "pg restarts",
+              "expr": "sum(changes(container_start_time_seconds{namespace=\"stateful-resources\",pod=~\"pg-cluster-.*\",container=~\"database|pgbouncer|pgbackrest\"}[1h])) or vector(0)",
+              "legendFormat": "pg container restarts",
               "refId": "A"
             }
           ],
-          "title": "PG Restarts - 1h",
+          "title": "PG Container Restarts - 1h",
           "type": "stat"
         },
         {
@@ -753,7 +753,7 @@ spec:
                   }
                 ]
               },
-              "unit": "short"
+              "unit": "cores"
             },
             "overrides": []
           },
@@ -784,12 +784,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "refId": "A",
-              "expr": "{__name__=~\"pg_stat_activity_count|pg_stat_database_numbackends\", namespace=\"stateful-resources\", pod=~\"pg-cluster-instance1-.+-0\"}",
-              "legendFormat": "{{pod}} / {{datname}} / {{state}}"
+              "expr": "sum by (pod, container) (rate(container_cpu_usage_seconds_total{namespace=\"stateful-resources\",pod=~\"pg-cluster-.*\",container=~\"database|pgbouncer|pgbackrest\"}[5m]))",
+              "legendFormat": "{{pod}} / {{container}}",
+              "refId": "A"
             }
           ],
-          "title": "PG Connections",
+          "title": "PG Pod CPU by Component",
           "type": "timeseries"
         },
         {
@@ -844,7 +844,7 @@ spec:
                   }
                 ]
               },
-              "unit": "ops"
+              "unit": "bytes"
             },
             "overrides": []
           },
@@ -875,21 +875,12 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "refId": "A",
-              "expr": "sum by (pod, datname) (rate(pg_stat_database_xact_commit{namespace=\"stateful-resources\",pod=~\"pg-cluster-instance1-.+-0\"}[5m]))",
-              "legendFormat": "commit / {{pod}} / {{datname}}"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "Mimir"
-              },
-              "refId": "B",
-              "expr": "sum by (pod, datname) (rate(pg_stat_database_xact_rollback{namespace=\"stateful-resources\",pod=~\"pg-cluster-instance1-.+-0\"}[5m]))",
-              "legendFormat": "rollback / {{pod}} / {{datname}}"
+              "expr": "sum by (pod, container) (container_memory_working_set_bytes{namespace=\"stateful-resources\",pod=~\"pg-cluster-.*\",container=~\"database|pgbouncer|pgbackrest\"})",
+              "legendFormat": "{{pod}} / {{container}}",
+              "refId": "A"
             }
           ],
-          "title": "PG Transaction Rate",
+          "title": "PG Pod Memory by Component",
           "type": "timeseries"
         },
         {
