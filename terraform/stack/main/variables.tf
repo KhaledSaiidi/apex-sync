@@ -36,6 +36,10 @@ variable "kubeconfig_path" {
   type = string
 }
 
+variable "cluster_name" {
+  type    = string
+  default = "apex-sync"
+}
 
 variable "github_app_id" {
   type = string

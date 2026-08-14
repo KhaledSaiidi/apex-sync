@@ -20,6 +20,12 @@ resource "null_resource" "artifacts_dir" {
   }
 }
 
+module "kind" {
+  source          = "../../modules/kind"
+  cluster_name    = var.cluster_name
+  kubeconfig_path = local.kubeconfig_path
+}
+
 module "argocd" {
   source = "../../modules/argocd"
 
@@ -149,11 +155,10 @@ module "argocd" {
   opentelemetry_operator_version       = var.opentelemetry_operator_version
   keycloak_operator_version            = var.keycloak_operator_version
   depends_on = [
-    null_resource.artifacts_dir
+    null_resource.artifacts_dir,
+    module.kind
   ]
 }
-
-
 
 module "bootstrap_ansible" {
   source                               = "../../modules/bootstrap_ansible"
@@ -186,4 +191,7 @@ module "bootstrap_ansible" {
   bootstrap_sources_sha256             = local.bootstrap_sources_sha256
   bootstrap_artifacts_sha256           = local.bootstrap_artifacts_sha256
   working_directory                    = local.repo_root
+  depends_on = [
+    module.kind
+  ]
 }
