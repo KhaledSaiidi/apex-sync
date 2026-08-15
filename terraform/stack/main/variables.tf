@@ -194,6 +194,10 @@ variable "percona_pg_version" {
   type = string
 }
 
+variable "stateful_resources_pg_database_name" {
+  type = string
+}
+
 variable "stateful_resources_pg_app_user" {
   type = string
 }

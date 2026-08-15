@@ -93,8 +93,8 @@ spec:
           value: "${percona_version}"
         - name: percona_pg_version
           value: "${percona_pg_version}"
-        - name: stateful_resources_pg_app_database
-          value: "${stateful_resources_pg_app_database}"
+        - name: stateful_resources_pg_database_name
+          value: "${stateful_resources_pg_database_name}"
         - name: stateful_resources_pg_app_user
           value: "${stateful_resources_pg_app_user}"
         - name: stateful_resources_pg_app_secret_name
@@ -253,6 +253,10 @@ spec:
           value: "${opentelemetry_operator_version}"
         - name: keycloak_operator_version
           value: "${keycloak_operator_version}"
+%{ for name, value in testkube_sample_env ~}
+        - name: ${name}
+          value: "${value}"
+%{ endfor ~}
 %{ for name, value in resource_env ~}
         - name: ${name}
           value: "${value}"

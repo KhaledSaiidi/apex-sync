@@ -1,0 +1,45 @@
+api:
+  replicaCount: ${ARGOCD_ENV_testkube_sample_api_replicas}
+  image:
+    repository: ${ARGOCD_ENV_testkube_sample_api_image_repository}
+    tag: "${ARGOCD_ENV_testkube_sample_api_image_tag}"
+    pullPolicy: ${ARGOCD_ENV_testkube_sample_api_image_pull_policy}
+  database:
+    secretName: ${ARGOCD_ENV_stateful_resources_pg_app_secret_name}
+    secretKey: ${ARGOCD_ENV_testkube_sample_database_secret_key}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_testkube_sample_api_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_testkube_sample_api_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_testkube_sample_api_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_testkube_sample_api_limits_memory}"
+  pdb:
+    enabled: ${ARGOCD_ENV_testkube_sample_api_pdb_enabled}
+    maxUnavailable: ${ARGOCD_ENV_testkube_sample_api_pdb_max_unavailable}
+
+web:
+  replicaCount: ${ARGOCD_ENV_testkube_sample_web_replicas}
+  image:
+    repository: ${ARGOCD_ENV_testkube_sample_web_image_repository}
+    tag: "${ARGOCD_ENV_testkube_sample_web_image_tag}"
+    pullPolicy: ${ARGOCD_ENV_testkube_sample_web_image_pull_policy}
+  resources:
+    requests:
+      cpu: "${ARGOCD_ENV_resource_testkube_sample_web_requests_cpu}"
+      memory: "${ARGOCD_ENV_resource_testkube_sample_web_requests_memory}"
+    limits:
+      cpu: "${ARGOCD_ENV_resource_testkube_sample_web_limits_cpu}"
+      memory: "${ARGOCD_ENV_resource_testkube_sample_web_limits_memory}"
+  pdb:
+    enabled: ${ARGOCD_ENV_testkube_sample_web_pdb_enabled}
+    maxUnavailable: ${ARGOCD_ENV_testkube_sample_web_pdb_max_unavailable}
+
+httpRoute:
+  enabled: ${ARGOCD_ENV_testkube_sample_http_route_enabled}
+  hostname: ${ARGOCD_ENV_testkube_sample_hostname_prefix}.${ARGOCD_ENV_base_domain}
+  gateway:
+    name: ${ARGOCD_ENV_testkube_sample_gateway_name}
+    namespace: ${ARGOCD_ENV_testkube_sample_gateway_namespace}
+    httpSectionName: ${ARGOCD_ENV_testkube_sample_gateway_http_section_name}
+    httpsSectionName: ${ARGOCD_ENV_testkube_sample_gateway_https_section_name}

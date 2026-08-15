@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${ARGOCD_ENV_testkube_sample_namespace}
+  labels:
+    app.kubernetes.io/name: ${ARGOCD_ENV_testkube_sample_namespace}
+    app.kubernetes.io/part-of: ${ARGOCD_ENV_testkube_sample_namespace}
+    ingress.apex-sync.io/public-gateway-access: "${ARGOCD_ENV_testkube_sample_namespace_public_gateway_access}"
+    istio-injection: "${ARGOCD_ENV_testkube_sample_namespace_istio_injection}"

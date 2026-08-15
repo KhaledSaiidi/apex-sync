@@ -163,7 +163,7 @@ variable "percona_pg_version" {
   type = string
 }
 
-variable "stateful_resources_pg_app_database" {
+variable "stateful_resources_pg_database_name" {
   type = string
 }
 
@@ -480,4 +480,8 @@ variable "keycloak_operator_replicas" {
 }
 variable "keycloak_operator_version" {
   type = string
+}
+
+variable "testkube_sample_env" {
+  type = map(string)
 }

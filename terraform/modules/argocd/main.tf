@@ -67,7 +67,7 @@ resource "local_file" "argocd_root_app" {
     reflector_version                                = var.reflector_version
     percona_version                                  = var.percona_version
     percona_pg_version                               = var.percona_pg_version
-    stateful_resources_pg_app_database               = var.stateful_resources_pg_app_database
+    stateful_resources_pg_database_name              = var.stateful_resources_pg_database_name
     stateful_resources_pg_app_user                   = var.stateful_resources_pg_app_user
     stateful_resources_pg_app_secret_name            = var.stateful_resources_pg_app_secret_name
     stateful_resources_pg_app_reflection_namespaces  = var.stateful_resources_pg_app_reflection_namespaces
@@ -140,6 +140,7 @@ resource "local_file" "argocd_root_app" {
 
     resource_env                         = var.resource_env
     observability_env                    = var.observability_env
+    testkube_sample_env                  = var.testkube_sample_env
     mimir_version                        = var.mimir_version
     loki_version                         = var.loki_version
     tempo_version                        = var.tempo_version

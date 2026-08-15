@@ -17,7 +17,7 @@ unmanaged: false
 users:
   - name: ${ARGOCD_ENV_stateful_resources_pg_app_user}
     databases:
-      - ${ARGOCD_ENV_stateful_resources_pg_app_database}
+      - ${ARGOCD_ENV_stateful_resources_pg_database_name}
     secretName: ${ARGOCD_ENV_stateful_resources_pg_app_secret_name}
     grantPublicSchemaAccess: true
     password:

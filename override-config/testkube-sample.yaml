@@ -1,9 +1,56 @@
-database:
-  database_name: "api-db"
+# Developer
 
-# Later, when the app manifest exists, it may make sense to add app-facing keys there, for example:
-# database:
-#   database_name: "api-db"
-#   host_env: "DB_HOST"
-#   port_env: "DB_PORT"
-#   secret_name: "api-db-credentials"
+## Database
+stateful_resources_pg_database_name: "api-db"
+stateful_resources_pg_app_user: "api-user"
+
+## API image
+testkube_sample_api_image_repository: "ghcr.io/khaledsaiidi/testkube-samples-api"
+testkube_sample_api_image_tag: "0.1.3"
+
+## Web image
+testkube_sample_web_image_repository: "ghcr.io/khaledsaiidi/testkube-samples-web"
+testkube_sample_web_image_tag: "0.1.3"
+
+# Platform Engineer
+
+## Application
+testkube_sample_version: "0.1.0"
+testkube_sample_namespace: "testkube-sample"
+testkube_sample_namespace_public_gateway_access: "true"
+testkube_sample_namespace_istio_injection: "enabled"
+
+## Database integration
+stateful_resources_pg_app_secret_name: "api-db-credentials"
+stateful_resources_pg_app_reflection_namespaces: "testkube-sample"
+testkube_sample_database_secret_key: "uri"
+
+## API workload
+testkube_sample_api_replicas: "1"
+testkube_sample_api_image_pull_policy: "IfNotPresent"
+testkube_sample_api_pdb_enabled: "false"
+testkube_sample_api_pdb_max_unavailable: "1"
+
+## Web workload
+testkube_sample_web_replicas: "1"
+testkube_sample_web_image_pull_policy: "IfNotPresent"
+testkube_sample_web_pdb_enabled: "false"
+testkube_sample_web_pdb_max_unavailable: "1"
+
+## HTTP routing
+testkube_sample_http_route_enabled: "true"
+testkube_sample_hostname_prefix: "testkube"
+testkube_sample_gateway_name: "public-gateway"
+testkube_sample_gateway_namespace: "istio-ingress"
+testkube_sample_gateway_http_section_name: "http-wildcard"
+testkube_sample_gateway_https_section_name: "https-wildcard"
+
+## Resources
+resource_testkube_sample_api_requests_cpu: "100m"
+resource_testkube_sample_api_requests_memory: "128Mi"
+resource_testkube_sample_api_limits_cpu: "500m"
+resource_testkube_sample_api_limits_memory: "256Mi"
+resource_testkube_sample_web_requests_cpu: "25m"
+resource_testkube_sample_web_requests_memory: "32Mi"
+resource_testkube_sample_web_limits_cpu: "100m"
+resource_testkube_sample_web_limits_memory: "128Mi"

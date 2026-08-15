@@ -15,4 +15,5 @@ resources:
   - stateful-resources.yaml # sync-wave: 20
   - keycloak.yaml # sync-wave: 21
   - keycloak-config.yaml # sync-wave: 22
-  - observability.yaml # sync-wave: 23
+  - testkube-sample.yaml # sync-wave: 23
+  - observability.yaml # sync-wave: 25
