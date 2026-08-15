@@ -10,6 +10,8 @@ spec:
       inputName: Mimir
     - datasourceName: Loki
       inputName: Loki
+    - datasourceName: Tempo
+      inputName: Tempo
   folderRef: applications
   instanceSelector:
     matchLabels:
@@ -698,6 +700,38 @@ spec:
         },
         {
           "datasource": {
+            "type": "tempo",
+            "uid": "Tempo"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 28
+          },
+          "id": 13,
+          "options": {
+            "cellHeight": "sm",
+            "showHeader": true
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "tempo",
+                "uid": "Tempo"
+              },
+              "limit": 20,
+              "query": "{ resource.service.name = \"testkube-samples-api\" }",
+              "queryType": "traceql",
+              "refId": "A",
+              "tableType": "traces"
+            }
+          ],
+          "title": "Recent API Traces",
+          "type": "table"
+        },
+        {
+          "datasource": {
             "type": "loki",
             "uid": "Loki"
           },
@@ -705,7 +739,7 @@ spec:
             "h": 10,
             "w": 24,
             "x": 0,
-            "y": 28
+            "y": 36
           },
           "id": 12,
           "options": {

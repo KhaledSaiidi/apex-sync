@@ -1,0 +1,27 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: testkube-samples-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  exporter:
+    endpoint: http://alloy-gateway.observability.svc.cluster.local:4317
+  propagators:
+    - tracecontext
+    - baggage
+  sampler:
+    type: parentbased_traceidratio
+    argument: "1"
+  nodejs:
+    env:
+      - name: OTEL_SERVICE_NAME
+        value: testkube-samples-api
+      - name: OTEL_EXPORTER_OTLP_PROTOCOL
+        value: grpc
+      - name: OTEL_TRACES_EXPORTER
+        value: otlp
+      - name: OTEL_METRICS_EXPORTER
+        value: none
+      - name: OTEL_LOGS_EXPORTER
+        value: none

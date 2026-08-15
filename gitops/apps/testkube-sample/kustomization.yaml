@@ -3,8 +3,10 @@ kind: Kustomization
 namespace: ${ARGOCD_ENV_testkube_sample_namespace}
 resources:
   - namespace.yaml
+  - api-opentelemetry-instrumentation.yaml
 patches:
   - path: api-postgres-ssl-no-verify.yaml
+  - path: api-opentelemetry-auto-instrumentation.yaml
 helmCharts:
   - name: testkube-samples
     repo: https://khaledsaiidi.github.io/testkube-samples
