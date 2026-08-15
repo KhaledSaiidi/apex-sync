@@ -1,0 +1,212 @@
+name: Bootstrap Apex-Sync
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "override-config/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apex-sync-bootstrap
+  cancel-in-progress: false
+  # GitHub's queue support preserves more than one pending deployment.
+  queue: max
+
+env:
+  SSH_USER: apex-sync
+  REMOTE_REPO: /home/apex-sync/apex-sync
+  REPOSITORY_URL: https://github.com/KhaledSaiidi/apex-sync.git
+
+jobs:
+  bootstrap:
+    name: Bootstrap on Apex-Sync server
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    environment: apex-sync
+
+    steps:
+      - name: Checkout triggering commit
+        uses: actions/checkout@v4
+
+      - name: Install and verify orchestration tools
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for command in curl git ssh; do
+            if ! command -v "$command" >/dev/null 2>&1; then
+              echo "Required runner command is missing: $command"
+              exit 1
+            fi
+          done
+
+          install -d -m 0755 "$RUNNER_TEMP/bin"
+          curl -fsSL \
+            "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64" \
+            -o "$RUNNER_TEMP/bin/yq"
+          chmod 0755 "$RUNNER_TEMP/bin/yq"
+          "$RUNNER_TEMP/bin/yq" --version
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Read and validate Apex-Sync server target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          server="$("$RUNNER_TEMP/bin/yq" -er '.public_gateway_dns_target' override-config/gitops.yaml)"
+          if [[ -z "$server" ]] || [[ "$server" == "_Replace_me" ]] || [[ "$server" == "null" ]]; then
+            echo "public_gateway_dns_target must contain the Apex-Sync server IP or hostname."
+            exit 1
+          fi
+          if [[ ! "$server" =~ ^[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?$ ]]; then
+            echo "public_gateway_dns_target is not a valid IPv4 address or hostname."
+            exit 1
+          fi
+
+          echo "server=$server" >> "$GITHUB_OUTPUT"
+          echo "Using Apex-Sync server target: $server"
+
+      - name: Configure SSH private key
+        shell: bash
+        env:
+          APEX_SYNC_SSH_PRIVATE_KEY: ${{ secrets.APEX_SYNC_SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+
+          SSH_KEY_PATH="$RUNNER_TEMP/apex-sync-ssh-key"
+          umask 077
+          printf '%s\n' "$APEX_SYNC_SSH_PRIVATE_KEY" > "$SSH_KEY_PATH"
+          chmod 0600 "$SSH_KEY_PATH"
+          ssh-keygen -y -f "$SSH_KEY_PATH" >/dev/null
+
+      - name: Verify SSH connectivity and server prerequisites
+        shell: bash
+        env:
+          SERVER: ${{ steps.target.outputs.server }}
+        run: |
+          set -euo pipefail
+
+          ssh_options=(
+            -i "$RUNNER_TEMP/apex-sync-ssh-key"
+            -o BatchMode=yes
+            -o ConnectTimeout=15
+            -o StrictHostKeyChecking=no
+            -o UserKnownHostsFile=/dev/null
+          )
+
+          ssh "${ssh_options[@]}" "$SSH_USER@$SERVER" 'bash -se' <<'REMOTE'
+          required_commands=(ansible-galaxy ansible-playbook docker flock git terraform yq)
+          for command in "${required_commands[@]}"; do
+            if ! command -v "$command" >/dev/null 2>&1; then
+              echo "Required server command is missing: $command"
+              exit 1
+            fi
+          done
+
+          echo "Connected host: $(hostname)"
+          echo "Connected user: $(id -un)"
+          git --version
+          terraform version
+          yq --version
+          ansible-playbook --version
+          docker info --format 'Docker server: {{.ServerVersion}}'
+          df -h /home/apex-sync
+          test -w /home/apex-sync
+          REMOTE
+
+      - name: Clone or synchronize exact triggering commit
+        shell: bash
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          SERVER: ${{ steps.target.outputs.server }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$COMMIT_SHA" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo "GitHub supplied an invalid commit SHA."
+            exit 1
+          fi
+
+          ssh_options=(
+            -i "$RUNNER_TEMP/apex-sync-ssh-key"
+            -o BatchMode=yes
+            -o ConnectTimeout=15
+            -o StrictHostKeyChecking=no
+            -o UserKnownHostsFile=/dev/null
+          )
+
+          ssh "${ssh_options[@]}" "$SSH_USER@$SERVER" \
+            "bash -se -- '$COMMIT_SHA' '$REMOTE_REPO' '$REPOSITORY_URL'" <<'REMOTE'
+          commit_sha="$1"
+          repository_dir="$2"
+          repository_url="$3"
+
+          if [[ -d "$repository_dir/.git" ]]; then
+            echo "Existing repository found at $repository_dir; fetching origin."
+            git -C "$repository_dir" remote set-url origin "$repository_url"
+          elif [[ -e "$repository_dir" ]]; then
+            echo "Repository destination exists but is not a Git repository: $repository_dir"
+            exit 1
+          else
+            echo "Repository not found; cloning into $repository_dir."
+            git clone --no-checkout "$repository_url" "$repository_dir"
+          fi
+
+          git -C "$repository_dir" fetch --prune origin main
+          if ! git -C "$repository_dir" cat-file -e "${commit_sha}^{commit}"; then
+            echo "Commit was not included in origin/main history; fetching it explicitly."
+            git -C "$repository_dir" fetch origin "$commit_sha"
+          fi
+          git -C "$repository_dir" cat-file -e "${commit_sha}^{commit}"
+          git -C "$repository_dir" checkout --force -B main "$commit_sha"
+          git -C "$repository_dir" reset --hard "$commit_sha"
+
+          actual_sha="$(git -C "$repository_dir" rev-parse HEAD)"
+          if [[ "$actual_sha" != "$commit_sha" ]]; then
+            echo "Repository synchronization failed: expected $commit_sha, found $actual_sha."
+            exit 1
+          fi
+
+          echo "Repository synchronized to exact commit $actual_sha."
+          REMOTE
+
+      - name: Run remote bootstrap and verification
+        shell: bash
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_INSTALLATION_ID: ${{ secrets.APP_INSTALLATION_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          COMMIT_SHA: ${{ github.sha }}
+          SERVER: ${{ steps.target.outputs.server }}
+        run: |
+          set -euo pipefail
+
+          ssh_options=(
+            -T
+            -i "$RUNNER_TEMP/apex-sync-ssh-key"
+            -o BatchMode=yes
+            -o ConnectTimeout=15
+            -o StrictHostKeyChecking=no
+            -o UserKnownHostsFile=/dev/null
+          )
+
+          {
+            printf '%s\0' "$APP_ID"
+            printf '%s\0' "$APP_INSTALLATION_ID"
+            printf '%s\0' "$APP_PRIVATE_KEY"
+            printf '%s\0' "$AWS_ACCESS_KEY_ID"
+            printf '%s\0' "$AWS_SECRET_ACCESS_KEY"
+          } | ssh "${ssh_options[@]}" "$SSH_USER@$SERVER" \
+            "bash '$REMOTE_REPO/scripts/ci-remote-bootstrap.sh' '$COMMIT_SHA'"
+
+      - name: Remove temporary SSH key
+        if: always()
+        shell: bash
+        run: rm -f -- "$RUNNER_TEMP/apex-sync-ssh-key"
