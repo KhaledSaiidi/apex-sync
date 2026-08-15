@@ -122,7 +122,7 @@ Review and edit:
 - `override-config/resources.yaml`
 - `override-config/testkube-sample.yaml`
 
-Create `.env.bootstrap` from the example:
+For local execution, create `.env.bootstrap` from the example:
 
 ```bash
 cp example.env.bootstrap .env.bootstrap
@@ -146,8 +146,11 @@ export TF_VAR_aws_access_key_id="AKIA..."
 export TF_VAR_aws_secret_access_key="..."
 ```
 
-`.env.bootstrap` is local bootstrap input. It is ignored by Git and should not
-be committed.
+`.env.bootstrap` is optional when the required values already exist in the
+process environment. It is ignored by Git and should not be committed. The
+bootstrap script maps `TF_VAR_aws_access_key_id` and
+`TF_VAR_aws_secret_access_key` to the standard AWS environment variables used
+by the S3 Terraform backend.
 
 ## Important Config Values
 
@@ -214,12 +217,13 @@ intervals, retention windows, and collector batch settings, lives in
 `scripts/bootstrap.sh` does the following:
 
 1. Checks for Terraform and `yq`.
-2. Requires `.env.bootstrap`.
-3. Requires at least one YAML file in `override-config/`.
-4. Exports each YAML key as a `TF_VAR_*` variable.
-5. Runs `terraform init` in `terraform/stack/main`.
-6. Runs `terraform apply --auto-approve`.
-7. Writes Terraform logs under the runtime temp log directory.
+2. Loads `.env.bootstrap` when it exists and CI has not disabled local env loading.
+3. Validates the required GitHub App and AWS variables.
+4. Requires at least one YAML file in `override-config/`.
+5. Exports each YAML key as a `TF_VAR_*` variable.
+6. Runs noninteractive `terraform init` in `terraform/stack/main`.
+7. Runs noninteractive `terraform apply --auto-approve`.
+8. Writes Terraform logs under the runtime temp log directory.
 
 Terraform then:
 
@@ -404,6 +408,30 @@ Edit `override-config/*.yaml` and `.env.bootstrap`, then bootstrap:
 ./scripts/bootstrap.sh
 ```
 
+## Automated Bootstrap
+
+`.github/workflows/bootstrap.yml` runs when a push to `main` changes a file
+under `override-config/`. The GitHub-hosted runner only orchestrates the
+deployment: it reads `public_gateway_dns_target` from
+`override-config/gitops.yaml`, connects to the Apex-Sync server over SSH,
+clones or reuses `/home/apex-sync/apex-sync`, checks out the exact triggering
+commit, and runs the bootstrap on that server.
+
+Create a GitHub Environment named `apex-sync` with these secrets:
+
+- `APEX_SYNC_SSH_PRIVATE_KEY`
+- `APP_ID`
+- `APP_INSTALLATION_ID`
+- `APP_PRIVATE_KEY`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+
+The AWS credentials authenticate both the configured S3 Terraform backend and
+the existing Route53 bootstrap integration. The workflow streams Terraform,
+Ansible, and verification output until the remote process finishes. For the
+initial MVP, SSH host-key checking is disabled; replace that temporary setting
+with host-key pinning before treating the workflow as hardened.
+
 Typical checks:
 
 ```bash
@@ -423,13 +451,12 @@ Bootstrap creates local generated content:
 - `kind-kubeconfig.yaml`
 - `terraform/stack/main/artifacts/`
 - `terraform/stack/main/.terraform/`
-- `terraform/stack/main/.terraform.lock.hcl`
-- `terraform/stack/main/terraform.tfstate`
-- `terraform/stack/main/terraform.tfstate.backup`
 - `.ansible/`
 - runtime temp logs
 
-These are runtime artifacts and are not part of the desired GitOps state.
+Terraform state is stored in the S3 backend configured by
+`terraform/stack/main/backend.tf`. The remaining entries are runtime artifacts
+and are not part of the desired GitOps state.
 
 ## Destroy
 
