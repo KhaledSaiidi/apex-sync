@@ -30,8 +30,8 @@ spec:
           value: "${ARGOCD_ENV_percona_version}"
         - name: percona_pg_version
           value: "${ARGOCD_ENV_percona_pg_version}"
-        - name: stateful_resources_pg_app_database
-          value: "${ARGOCD_ENV_stateful_resources_pg_app_database}"
+        - name: stateful_resources_pg_database_name
+          value: "${ARGOCD_ENV_stateful_resources_pg_database_name}"
         - name: stateful_resources_pg_app_user
           value: "${ARGOCD_ENV_stateful_resources_pg_app_user}"
         - name: stateful_resources_pg_app_secret_name

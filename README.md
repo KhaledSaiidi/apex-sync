@@ -5,25 +5,30 @@ to Argo CD.
 
 The repo is organized around a short bootstrap phase and a longer GitOps phase:
 
-1. Provide a kubeconfig for an existing Kubernetes cluster.
+1. Ensure Docker is running on the bootstrap host.
 2. Review the tracked baseline values in `override-config/`.
 3. Create `.env.bootstrap` for sensitive bootstrap inputs.
 4. Run `scripts/bootstrap.sh`.
-5. Terraform renders Argo CD and Ansible artifacts.
-6. Ansible installs Cilium, installs Argo CD, creates bootstrap secrets, and
+5. Terraform creates the Kind cluster and writes its kubeconfig.
+6. Terraform renders Argo CD and Ansible artifacts.
+7. Ansible installs Cilium, installs Argo CD, creates bootstrap secrets, and
    applies the root Argo CD application.
-7. Argo CD reconciles the platform from `gitops/`.
-8. Argo CD Config Management Plugins render environment-specific values and
+8. Argo CD reconciles the platform from `gitops/`.
+9. Argo CD Config Management Plugins render environment-specific values and
    Helm chart versions during sync.
 
-Cluster provisioning is currently outside this repo's active bootstrap path. A
-future Terraform module can own infrastructure and cluster creation before this
-GitOps bootstrap runs.
+The local Kubernetes cluster is part of the active Terraform bootstrap. The
+Kind module creates one control-plane node and three worker nodes, disables the
+default CNI and kube-proxy, and writes the kubeconfig to the configured
+`kubeconfig_path`. Cilium is then installed as both the CNI and kube-proxy
+replacement. Do not run the old manual `kind create cluster` command before
+bootstrapping. Cluster topology now lives in `terraform/modules/kind/main.tf`;
 
 ## What This Repo Manages
 
-Bootstrap installs:
+Bootstrap creates and installs:
 
+- A Terraform-managed Kind cluster
 - Cilium as CNI and kube-proxy replacement
 - Argo CD as the GitOps control plane
 - Argo CD CMP sidecars for environment substitution
@@ -40,8 +45,11 @@ GitOps then manages:
 - Kyverno and baseline policies
 - external-dns for Route53 DNS records
 - Garage object storage with S3 routing and bootstrap jobs
-- Percona XtraDB Cluster Operator
-- Percona XtraDB Cluster resources, HAProxy, and S3 backup settings
+- Percona operators for MySQL and PostgreSQL
+- Percona MySQL and PostgreSQL resources, connection-secret reflection, and S3
+  backup settings
+- Keycloak and its declarative realm configuration
+- The Testkube sample API and web application
 - Argo CD HTTPRoute through the Istio public gateway
 - Observability foundation and backends:
   - Prometheus Operator CRDs
@@ -56,9 +64,10 @@ GitOps then manages:
 ## Repository Layout
 
 - `scripts/bootstrap.sh`: main bootstrap entrypoint; runs Terraform apply.
-- `scripts/destroy.sh`: Terraform destroy helper and generated-file cleanup.
+- `scripts/destroy.sh`: destroys the Kind cluster and cleans generated files.
 - `override-config/`: tracked baseline configuration values used by bootstrap.
 - `terraform/stack/main`: Terraform entrypoint.
+- `terraform/modules/kind`: creates the local Kind cluster and kubeconfig.
 - `terraform/modules/argocd`: renders Argo CD Helm values and root app.
 - `terraform/modules/bootstrap_ansible`: renders Ansible inventory/vars and runs Ansible.
 - `ansible/playbooks/bootstrap.yml`: local bootstrap playbook.
@@ -70,6 +79,8 @@ GitOps then manages:
   Grafana, and datasources.
 - `gitops/apps/observability/obs-config`: declarative ServiceMonitors and
   Grafana folder/dashboard resources.
+- `gitops/apps/testkube-sample`: Testkube sample Helm release overrides and
+  namespace configuration.
 - `cmp-build/`: custom Argo CD CMP image source.
 - `.github/workflows/build-cmp-envsubst.yml`: GHCR image publish workflow.
 - `example.env.bootstrap`: example secret bootstrap env file.
@@ -79,10 +90,10 @@ GitOps then manages:
 Install or have available:
 
 - Terraform `>= 1.5.0`
+- Docker with a running daemon for the Terraform Kind provider
 - `yq`
 - `ansible-playbook`
 - `ansible-galaxy`
-- Access to a Kubernetes cluster through `kubeconfig_path`
 
 The Ansible bootstrap can install `kubectl` and Helm when they are missing on
 supported Debian or RedHat hosts. On other OS families, install them manually.
@@ -109,6 +120,7 @@ Review and edit:
 - `override-config/observability.yaml`
 - `override-config/replication.yaml`
 - `override-config/resources.yaml`
+- `override-config/testkube-sample.yaml`
 
 Create `.env.bootstrap` from the example:
 
@@ -141,6 +153,7 @@ be committed.
 
 The main values to review before bootstrapping are:
 
+- `cluster_name` (optional; defaults to `apex-sync`)
 - `kubeconfig_path`
 - `gitops_root_app_repo_url`
 - `gitops_root_app_target_revision`
@@ -156,7 +169,7 @@ The main values to review before bootstrapping are:
 - `cert_manager_route53_hosted_zone_id`
 - `external_dns_txt_owner_id`
 
-Application chart versions are externalized in `override-config/gitops.yaml`,
+Platform chart versions are externalized in `override-config/gitops.yaml`,
 including:
 
 - `cert_manager_version`
@@ -166,6 +179,7 @@ including:
 - `grafana_operator_version`
 - `istio_main_version`
 - `kiali_version`
+- `keycloak_operator_version`
 - `kube_state_metrics_version`
 - `kyverno_version`
 - `loki_version`
@@ -174,6 +188,7 @@ including:
 - `openebs_version`
 - `opentelemetry_operator_version`
 - `percona_version`
+- `percona_pg_version`
 - `prometheus_operator_crds_version`
 - `alloy_version`
 - `grafana_exploretraces_plugin_version`
@@ -181,8 +196,14 @@ including:
 - `tempo_version`
 
 Replication and sizing values live in `override-config/replication.yaml`.
-Resource requests and limits live in `override-config/resources.yaml` and are
-passed through Terraform as `resource_*` environment values.
+Shared platform resource requests and limits live in
+`override-config/resources.yaml` and are passed through Terraform as
+`resource_*` environment values.
+Testkube sample settings live in `override-config/testkube-sample.yaml`. That
+file separates developer-owned settings, such as database identity and
+application images, from platform-owned settings, such as the chart version,
+namespace, replicas, database secret integration, PDBs, routing, and the
+application's resource requests and limits.
 Observability runtime tuning, such as datasource refresh periods, scrape
 intervals, retention windows, and collector batch settings, lives in
 `override-config/observability.yaml` and is passed through Terraform as
@@ -203,11 +224,13 @@ intervals, retention windows, and collector batch settings, lives in
 Terraform then:
 
 1. Reads and merges `override-config/*.yaml`.
-2. Renders Argo CD Helm values into `terraform/stack/main/artifacts/`.
-3. Renders the root Argo CD application manifest.
-4. Renders the local Ansible inventory and vars file.
-5. Installs Ansible collections into `.ansible/collections`.
-6. Runs `ansible/playbooks/bootstrap.yml`.
+2. Creates the Kind cluster through `terraform/modules/kind` and writes the
+   generated kubeconfig to `kubeconfig_path`.
+3. Renders Argo CD Helm values into `terraform/stack/main/artifacts/`.
+4. Renders the root Argo CD application manifest.
+5. Renders the local Ansible inventory and vars file.
+6. Installs Ansible collections into `.ansible/collections`.
+7. Runs `ansible/playbooks/bootstrap.yml` after the Kind cluster exists.
 
 Ansible then:
 
@@ -248,12 +271,16 @@ The base applications are synced in waves:
 | 8 | `external-dns` |
 | 10 | `garage`, `stateful-operator` |
 | 20 | `stateful-resources` |
-| 23 | `observability` |
+| 21 | `keycloak` |
+| 22 | `keycloak-config` |
+| 23 | `testkube-sample` |
+| 25 | `observability` |
 
 `istio-main` is itself a small app-of-apps layer that deploys:
 
 - `istio-main-app`: Gateway API CRDs, Istio base, and Istiod.
-- `public-gateway`: Istio Gateway API infrastructure, wildcard certificate, Gateway, and Envoy filters.
+- `public-gateway`: Istio Gateway API infrastructure, wildcard certificate,
+  Gateway, and Envoy filters.
 - `kiali`: Kiali in `istio-system`.
 
 `observability` is also an app-of-apps layer:
@@ -380,15 +407,20 @@ Edit `override-config/*.yaml` and `.env.bootstrap`, then bootstrap:
 Typical checks:
 
 ```bash
-kubectl --kubeconfig <path-from-kubeconfig_path> get nodes
-kubectl --kubeconfig <path-from-kubeconfig_path> -n argocd get applications
-kubectl --kubeconfig <path-from-kubeconfig_path> -n argocd get pods
+kubectl --kubeconfig kind-kubeconfig.yaml get nodes
+kubectl --kubeconfig kind-kubeconfig.yaml -n argocd get applications
+kubectl --kubeconfig kind-kubeconfig.yaml -n argocd get pods
 ```
+
+The commands above use the default repository-root path produced by
+`kubeconfig_path: "../../../kind-kubeconfig.yaml"` in
+`override-config/ansible.yaml`. Use the configured path if you change it.
 
 ## Generated Files
 
 Bootstrap creates local generated content:
 
+- `kind-kubeconfig.yaml`
 - `terraform/stack/main/artifacts/`
 - `terraform/stack/main/.terraform/`
 - `terraform/stack/main/.terraform.lock.hcl`
@@ -407,8 +439,9 @@ To destroy Terraform-managed bootstrap resources:
 ./scripts/destroy.sh
 ```
 
-When destroy succeeds, the script removes generated Terraform, Ansible, and log
-artifacts. It does not delete the Kubernetes cluster.
+Terraform destroy deletes the Terraform-managed Kind cluster. When destruction
+succeeds, the script also removes generated Terraform, Ansible, and log
+artifacts.
 
 ## Current Caveats
 

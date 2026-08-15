@@ -1,0 +1,104 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: testkube-sample
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '23'
+  labels:
+    app.kubernetes.io/name: testkube-sample
+    app.kubernetes.io/part-of: platform-baseline
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  source:
+    repoURL: ${ARGOCD_ENV_gitops_root_app_repo_url}
+    targetRevision: ${ARGOCD_ENV_gitops_root_app_target_revision}
+    path: gitops/apps/testkube-sample
+    plugin:
+      name: envsubst
+      env:
+        - name: base_domain
+          value: "${ARGOCD_ENV_base_domain}"
+        - name: testkube_sample_namespace
+          value: "${ARGOCD_ENV_testkube_sample_namespace}"
+        - name: testkube_sample_namespace_public_gateway_access
+          value: "${ARGOCD_ENV_testkube_sample_namespace_public_gateway_access}"
+        - name: testkube_sample_namespace_istio_injection
+          value: "${ARGOCD_ENV_testkube_sample_namespace_istio_injection}"
+        - name: testkube_sample_version
+          value: "${ARGOCD_ENV_testkube_sample_version}"
+        - name: stateful_resources_pg_app_secret_name
+          value: "${ARGOCD_ENV_stateful_resources_pg_app_secret_name}"
+        - name: testkube_sample_database_secret_key
+          value: "${ARGOCD_ENV_testkube_sample_database_secret_key}"
+        - name: testkube_sample_api_replicas
+          value: "${ARGOCD_ENV_testkube_sample_api_replicas}"
+        - name: testkube_sample_api_image_repository
+          value: "${ARGOCD_ENV_testkube_sample_api_image_repository}"
+        - name: testkube_sample_api_image_tag
+          value: "${ARGOCD_ENV_testkube_sample_api_image_tag}"
+        - name: testkube_sample_api_image_pull_policy
+          value: "${ARGOCD_ENV_testkube_sample_api_image_pull_policy}"
+        - name: testkube_sample_api_pdb_enabled
+          value: "${ARGOCD_ENV_testkube_sample_api_pdb_enabled}"
+        - name: testkube_sample_api_pdb_max_unavailable
+          value: "${ARGOCD_ENV_testkube_sample_api_pdb_max_unavailable}"
+        - name: testkube_sample_web_replicas
+          value: "${ARGOCD_ENV_testkube_sample_web_replicas}"
+        - name: testkube_sample_web_image_repository
+          value: "${ARGOCD_ENV_testkube_sample_web_image_repository}"
+        - name: testkube_sample_web_image_tag
+          value: "${ARGOCD_ENV_testkube_sample_web_image_tag}"
+        - name: testkube_sample_web_image_pull_policy
+          value: "${ARGOCD_ENV_testkube_sample_web_image_pull_policy}"
+        - name: testkube_sample_web_pdb_enabled
+          value: "${ARGOCD_ENV_testkube_sample_web_pdb_enabled}"
+        - name: testkube_sample_web_pdb_max_unavailable
+          value: "${ARGOCD_ENV_testkube_sample_web_pdb_max_unavailable}"
+        - name: testkube_sample_http_route_enabled
+          value: "${ARGOCD_ENV_testkube_sample_http_route_enabled}"
+        - name: testkube_sample_hostname_prefix
+          value: "${ARGOCD_ENV_testkube_sample_hostname_prefix}"
+        - name: testkube_sample_gateway_name
+          value: "${ARGOCD_ENV_testkube_sample_gateway_name}"
+        - name: testkube_sample_gateway_namespace
+          value: "${ARGOCD_ENV_testkube_sample_gateway_namespace}"
+        - name: testkube_sample_gateway_http_section_name
+          value: "${ARGOCD_ENV_testkube_sample_gateway_http_section_name}"
+        - name: testkube_sample_gateway_https_section_name
+          value: "${ARGOCD_ENV_testkube_sample_gateway_https_section_name}"
+        - name: resource_testkube_sample_api_requests_cpu
+          value: "${ARGOCD_ENV_resource_testkube_sample_api_requests_cpu}"
+        - name: resource_testkube_sample_api_requests_memory
+          value: "${ARGOCD_ENV_resource_testkube_sample_api_requests_memory}"
+        - name: resource_testkube_sample_api_limits_cpu
+          value: "${ARGOCD_ENV_resource_testkube_sample_api_limits_cpu}"
+        - name: resource_testkube_sample_api_limits_memory
+          value: "${ARGOCD_ENV_resource_testkube_sample_api_limits_memory}"
+        - name: resource_testkube_sample_web_requests_cpu
+          value: "${ARGOCD_ENV_resource_testkube_sample_web_requests_cpu}"
+        - name: resource_testkube_sample_web_requests_memory
+          value: "${ARGOCD_ENV_resource_testkube_sample_web_requests_memory}"
+        - name: resource_testkube_sample_web_limits_cpu
+          value: "${ARGOCD_ENV_resource_testkube_sample_web_limits_cpu}"
+        - name: resource_testkube_sample_web_limits_memory
+          value: "${ARGOCD_ENV_resource_testkube_sample_web_limits_memory}"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ${ARGOCD_ENV_testkube_sample_namespace}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - PruneLast=true

@@ -5,7 +5,7 @@ locals {
   custom_config            = merge([for file in local.custom_config_files : yamldecode(file("${local.repo_root}/${file}"))]...)
   resource_env             = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "resource_") }
   observability_env        = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "observability_") }
-  testkube_sample_database = try(local.custom_config.database, {})
+  testkube_sample_env      = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "testkube_sample_") }
   kubeconfig_path          = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
   bootstrap_sources_files  = sort(concat(["ansible.cfg"], tolist(fileset(local.repo_root, "ansible/**/*.yml")), tolist(fileset(local.repo_root, "ansible/**/*.yaml"))))
   bootstrap_sources_sha256 = sha256(join("", [for file in local.bootstrap_sources_files : filesha256("${local.repo_root}/${file}")]))
@@ -18,6 +18,12 @@ resource "null_resource" "artifacts_dir" {
   provisioner "local-exec" {
     command = "mkdir -p '${local.artifacts_dir}'"
   }
+}
+
+module "kind" {
+  source          = "../../modules/kind"
+  cluster_name    = var.cluster_name
+  kubeconfig_path = local.kubeconfig_path
 }
 
 module "argocd" {
@@ -65,7 +71,7 @@ module "argocd" {
   reflector_version                                = var.reflector_version
   percona_version                                  = var.percona_version
   percona_pg_version                               = var.percona_pg_version
-  stateful_resources_pg_app_database               = tostring(local.testkube_sample_database.database_name)
+  stateful_resources_pg_database_name              = var.stateful_resources_pg_database_name
   stateful_resources_pg_app_user                   = var.stateful_resources_pg_app_user
   stateful_resources_pg_app_secret_name            = var.stateful_resources_pg_app_secret_name
   stateful_resources_pg_app_reflection_namespaces  = var.stateful_resources_pg_app_reflection_namespaces
@@ -135,25 +141,24 @@ module "argocd" {
   tempo_query_frontend_replicas                    = var.tempo_query_frontend_replicas
   keycloak_replicas                                = var.keycloak_replicas
   keycloak_operator_replicas                       = var.keycloak_operator_replicas
-
-  resource_env                         = local.resource_env
-  observability_env                    = local.observability_env
-  mimir_version                        = var.mimir_version
-  loki_version                         = var.loki_version
-  tempo_version                        = var.tempo_version
-  prometheus_operator_crds_version     = var.prometheus_operator_crds_version
-  alloy_version                        = var.alloy_version
-  kube_state_metrics_version           = var.kube_state_metrics_version
-  grafana_exploretraces_plugin_version = var.grafana_exploretraces_plugin_version
-  grafana_operator_version             = var.grafana_operator_version
-  opentelemetry_operator_version       = var.opentelemetry_operator_version
-  keycloak_operator_version            = var.keycloak_operator_version
+  resource_env                                     = local.resource_env
+  observability_env                                = local.observability_env
+  testkube_sample_env                              = local.testkube_sample_env
+  mimir_version                                    = var.mimir_version
+  loki_version                                     = var.loki_version
+  tempo_version                                    = var.tempo_version
+  prometheus_operator_crds_version                 = var.prometheus_operator_crds_version
+  alloy_version                                    = var.alloy_version
+  kube_state_metrics_version                       = var.kube_state_metrics_version
+  grafana_exploretraces_plugin_version             = var.grafana_exploretraces_plugin_version
+  grafana_operator_version                         = var.grafana_operator_version
+  opentelemetry_operator_version                   = var.opentelemetry_operator_version
+  keycloak_operator_version                        = var.keycloak_operator_version
   depends_on = [
-    null_resource.artifacts_dir
+    null_resource.artifacts_dir,
+    module.kind
   ]
 }
-
-
 
 module "bootstrap_ansible" {
   source                               = "../../modules/bootstrap_ansible"
@@ -186,4 +191,7 @@ module "bootstrap_ansible" {
   bootstrap_sources_sha256             = local.bootstrap_sources_sha256
   bootstrap_artifacts_sha256           = local.bootstrap_artifacts_sha256
   working_directory                    = local.repo_root
+  depends_on = [
+    module.kind
+  ]
 }

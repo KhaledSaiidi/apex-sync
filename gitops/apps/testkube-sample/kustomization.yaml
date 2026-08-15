@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ${ARGOCD_ENV_testkube_sample_namespace}
+resources:
+  - namespace.yaml
+helmCharts:
+  - name: testkube-samples
+    repo: https://khaledsaiidi.github.io/testkube-samples
+    version: ${ARGOCD_ENV_testkube_sample_version}
+    releaseName: testkube-samples
+    namespace: ${ARGOCD_ENV_testkube_sample_namespace}
+    valuesFile: values.yaml

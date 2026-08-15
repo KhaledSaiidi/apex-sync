@@ -6,7 +6,7 @@ gitops_root_app_target_revision: "main" # Git branch, tag, or commit Argo CD tra
 gitops_root_app_path: "gitops/argo-apps" # Repository path containing the root app-of-apps manifests.
 external_dns_txt_owner_id: "apex-sync" # Owner ID external-dns writes into TXT registry records.
 base_domain: "kube-forge.com"
-public_gateway_dns_target: "44.192.127.127" # Public IP external-dns publishes for HTTPRoute hostnames.
+public_gateway_dns_target: "_Replace_me" # Public IP external-dns publishes for HTTPRoute hostnames.
 cert_manager_acme_email: "khaled.saiidi@outlook.com"
 cert_manager_acme_server: "https://acme-staging-v02.api.letsencrypt.org/directory" 
 # For production use "https://acme-v02.api.letsencrypt.org/directory"
@@ -23,9 +23,6 @@ openebs_version: "4.4.0"
 reflector_version: "10.0.45"
 percona_version: "1.19.1"
 percona_pg_version: "3.0.0"
-stateful_resources_pg_app_user: "api-user"
-stateful_resources_pg_app_secret_name: "api-db-credentials"
-stateful_resources_pg_app_reflection_namespaces: "testkube-sample"
 stateful_resources_pg_backup_bucket: "percona-pg-backups"
 stateful_resources_pg_backup_key_name: "pg-cluster-backup-key"
 stateful_resources_pg_backup_secret_name: "pg-cluster-pgbackrest-garage-s3"

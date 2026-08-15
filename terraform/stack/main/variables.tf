@@ -36,6 +36,10 @@ variable "kubeconfig_path" {
   type = string
 }
 
+variable "cluster_name" {
+  type    = string
+  default = "apex-sync"
+}
 
 variable "github_app_id" {
   type = string
@@ -187,6 +191,10 @@ variable "percona_version" {
 }
 
 variable "percona_pg_version" {
+  type = string
+}
+
+variable "stateful_resources_pg_database_name" {
   type = string
 }
 
