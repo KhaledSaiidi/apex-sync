@@ -8,6 +8,7 @@ prometheus:
     enabled: true
     interval: ${ARGOCD_ENV_observability_kube_state_metrics_scrape_interval}
     scrapeTimeout: ${ARGOCD_ENV_observability_kube_state_metrics_scrape_timeout}
+    honorLabels: true
 
 resources:
   requests:

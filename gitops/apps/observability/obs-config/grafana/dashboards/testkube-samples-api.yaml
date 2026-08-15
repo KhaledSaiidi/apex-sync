@@ -97,7 +97,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum(kube_pod_container_status_ready{namespace=\"testkube-sample\",pod=~\"testkube-samples-api-.+\",container=\"api\",condition=\"true\"}) or vector(0)",
+              "expr": "sum(kube_pod_container_status_ready{namespace=\"testkube-sample\",pod=~\"testkube-samples-api-.+\",container=\"api\"}) or vector(0)",
               "legendFormat": "ready",
               "refId": "A"
             }
@@ -597,7 +597,7 @@ spec:
                 "type": "prometheus",
                 "uid": "Mimir"
               },
-              "expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\"testkube-sample\",pod=~\"testkube-samples-api-.+\",container=\"api\"}[5m]))",
+              "expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\"testkube-sample\",pod=~\"testkube-samples-api-.+\",container=\"api\"}[5m])) or on() vector(0)",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
@@ -654,7 +654,7 @@ spec:
                 "type": "loki",
                 "uid": "Loki"
               },
-              "expr": "sum(count_over_time({namespace=\"testkube-sample\",pod=~\"testkube-samples-api-.+\",container=\"api\"} |~ \"GET /(readyz|api/hello-pg) failed\" [5m]))",
+              "expr": "sum(count_over_time({namespace=\"testkube-sample\",pod=~\"testkube-samples-api-.+\",container=\"api\"} |~ \"GET /(readyz|api/hello-pg) failed\" [5m])) or vector(0)",
               "legendFormat": "failures",
               "queryType": "range",
               "refId": "A"
