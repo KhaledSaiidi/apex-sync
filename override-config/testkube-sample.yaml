@@ -26,13 +26,13 @@ stateful_resources_pg_app_reflection_namespaces: "testkube-sample"
 testkube_sample_database_secret_key: "uri"
 
 ## API workload
-testkube_sample_api_replicas: "1"
+testkube_sample_api_replicas: "3"
 testkube_sample_api_image_pull_policy: "IfNotPresent"
 testkube_sample_api_pdb_enabled: "false"
 testkube_sample_api_pdb_max_unavailable: "1"
 
 ## Web workload
-testkube_sample_web_replicas: "1"
+testkube_sample_web_replicas: "3"
 testkube_sample_web_image_pull_policy: "IfNotPresent"
 testkube_sample_web_pdb_enabled: "false"
 testkube_sample_web_pdb_max_unavailable: "1"
