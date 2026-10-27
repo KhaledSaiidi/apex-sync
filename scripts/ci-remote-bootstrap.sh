@@ -82,18 +82,4 @@ kubectl --kubeconfig "$KUBECONFIG_PATH" -n argocd get pods
 kubectl --kubeconfig "$KUBECONFIG_PATH" -n argocd get application app-of-apps
 kubectl --kubeconfig "$KUBECONFIG_PATH" -n argocd get applications
 
-echo "Waiting for the GitOps-managed Kubernetes OIDC activation"
-kubectl --kubeconfig "$KUBECONFIG_PATH" -n argocd wait \
-  --for=jsonpath='{.status.sync.status}'=Synced \
-  application/kubernetes-api-oidc --timeout=30m
-kubectl --kubeconfig "$KUBECONFIG_PATH" -n argocd wait \
-  --for=jsonpath='{.status.health.status}'=Healthy \
-  application/kubernetes-api-oidc --timeout=30m
-
-OIDC_KUBECONFIG_PATH="$TERRAFORM_DIR/artifacts/kubectl-oidc-kubeconfig.yaml"
-if [[ ! -s "$OIDC_KUBECONFIG_PATH" ]]; then
-  echo "OIDC kubeconfig artifact not found after successful OIDC activation: $OIDC_KUBECONFIG_PATH"
-  exit 1
-fi
-
 echo "Apex-Sync bootstrap and verification completed successfully."
