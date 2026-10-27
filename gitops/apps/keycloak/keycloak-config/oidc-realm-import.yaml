@@ -2249,7 +2249,7 @@ spec:
         "cibaInterval" : "5",
         "realmReusableOtpCode" : "false"
       },
-      "keycloakVersion" : "26.8.1",
+      "keycloakVersion" : "${ARGOCD_ENV_keycloak_operator_version}",
       "userManagedAccessAllowed" : false,
       "organizationsEnabled" : false,
       "verifiableCredentialsEnabled" : false,

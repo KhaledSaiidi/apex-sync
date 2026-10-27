@@ -1,6 +1,3 @@
-x-all-tolerations: &allTolerations
-  - operator: Exists
-
 deploymentMode: SimpleScalable
 
 global:
@@ -81,6 +78,8 @@ loki:
 
 singleBinary:
   replicas: ${ARGOCD_ENV_loki_single_binary_replicas}
+  tolerations: &allTolerations
+    - operator: Exists
 
 read:
   replicas: ${ARGOCD_ENV_loki_read_replicas}
