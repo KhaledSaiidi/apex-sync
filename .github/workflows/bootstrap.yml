@@ -209,6 +209,35 @@ jobs:
           } | ssh "${ssh_options[@]}" "$SSH_USER@$SERVER" \
             "bash '$REMOTE_REPO/scripts/ci-remote-bootstrap.sh' '$COMMIT_SHA'"
 
+      - name: Retrieve OIDC kubeconfig artifact
+        shell: bash
+        env:
+          SERVER: ${{ steps.target.outputs.server }}
+        run: |
+          set -euo pipefail
+
+          scp_options=(
+            -i "$RUNNER_TEMP/apex-sync-ssh-key"
+            -o BatchMode=yes
+            -o ConnectTimeout=15
+            -o StrictHostKeyChecking=no
+            -o UserKnownHostsFile=/dev/null
+          )
+
+          scp "${scp_options[@]}" \
+            "$SSH_USER@$SERVER:$REMOTE_REPO/terraform/stack/main/artifacts/kubectl-oidc-kubeconfig.yaml" \
+            "$RUNNER_TEMP/kubectl-oidc-kubeconfig.yaml"
+
+          test -s "$RUNNER_TEMP/kubectl-oidc-kubeconfig.yaml"
+
+      - name: Upload OIDC kubeconfig artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kubectl-oidc-kubeconfig-${{ github.sha }}
+          path: ${{ runner.temp }}/kubectl-oidc-kubeconfig.yaml
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Remove temporary SSH key
         if: always()
         shell: bash
