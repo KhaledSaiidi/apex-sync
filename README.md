@@ -473,6 +473,11 @@ The hook has no Kubernetes API credentials; its privileged host-path mount is
 limited to the kubeadm static-pod manifest directory, and its script only
 modifies the kube-apiserver manifest. The Job is removed after success.
 
+The same application binds the Keycloak Kubernetes groups to cluster-wide RBAC:
+`KubernetesReadOnly` uses the built-in `view` role (which excludes Secrets),
+`KubernetesDeveloper` adds secret-read and selected workload-edit permissions,
+and `KubernetesAdmin` uses `cluster-admin`.
+
 ```bash
 kubectl --kubeconfig kind-api-kubeconfig.yaml get nodes
 ```

@@ -1,0 +1,112 @@
+# The Keycloak `groups` scope is configured with `full.path: false`, so its
+# `Kubernetes*` groups are authenticated by the API server as `oidc:Kubernetes*`.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oidc-kubernetes-readonly-view
+  labels:
+    app.kubernetes.io/part-of: kubernetes-api-oidc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: oidc:KubernetesReadOnly
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oidc-kubernetes-developer-view
+  labels:
+    app.kubernetes.io/part-of: kubernetes-api-oidc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: oidc:KubernetesDeveloper
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: oidc-kubernetes-developer
+  labels:
+    app.kubernetes.io/part-of: kubernetes-api-oidc
+rules:
+  # `view` intentionally omits Secrets. Developers are explicitly permitted to
+  # read them cluster-wide, but cannot alter or delete them.
+  - apiGroups: [""]
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  # Do not grant pods/exec. Developers can delete Pods but not deletecollections.
+  - apiGroups: [""]
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - statefulsets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/scale
+      - statefulsets/scale
+    verbs:
+      - get
+      - update
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oidc-kubernetes-developer
+  labels:
+    app.kubernetes.io/part-of: kubernetes-api-oidc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: oidc-kubernetes-developer
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: oidc:KubernetesDeveloper
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oidc-kubernetes-admin
+  labels:
+    app.kubernetes.io/part-of: kubernetes-api-oidc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: oidc:KubernetesAdmin

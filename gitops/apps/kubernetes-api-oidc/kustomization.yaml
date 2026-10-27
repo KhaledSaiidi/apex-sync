@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: kubernetes-api-oidc
 resources:
   - namespace.yaml
+  - rbac.yaml
   - oidc-enable-hook.yaml
 configMapGenerator:
   - name: kubernetes-api-oidc-enable-script
