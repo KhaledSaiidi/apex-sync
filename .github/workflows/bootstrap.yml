@@ -24,6 +24,9 @@ env:
 jobs:
   bootstrap:
     name: Bootstrap on Apex-Sync server
+    # Temporarily disabled: retain the workflow definition without allowing
+    # automatic or manual bootstrap execution.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     environment: apex-sync

@@ -25,11 +25,21 @@ variable "project_name" {
   type = string
 }
 
+variable "cluster_name" {
+  type = string
+}
+
 variable "ansible_python_interpreter" {
   type = string
 }
 
 variable "kubeconfig_path" {
+  type = string
+}
+variable "kubernetes_api_dns_name" {
+  type = string
+}
+variable "kubernetes_api_kubeconfig_path" {
   type = string
 }
 variable "gitops_root_app_repo_url" {

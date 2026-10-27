@@ -167,6 +167,7 @@ The main values to review before bootstrapping are:
 - `metallb_addresses_start`
 - `metallb_addresses_end`
 - `base_domain`
+- `kubernetes_api_subdomain` (combined with `base_domain` for the direct Kubernetes API endpoint)
 - `cert_manager_acme_email`
 - `cert_manager_route53_region`
 - `cert_manager_route53_hosted_zone_id`
@@ -443,6 +444,26 @@ kubectl --kubeconfig kind-kubeconfig.yaml -n argocd get pods
 The commands above use the default repository-root path produced by
 `kubeconfig_path: "../../../kind-kubeconfig.yaml"` in
 `override-config/ansible.yaml`. Use the configured path if you change it.
+
+## Remote Kubernetes API Access
+
+Bootstrap derives the API hostname from `kubernetes_api_subdomain` and
+`base_domain`; the default is `api.kube-forge.com`. Kind includes this hostname
+in the API server certificate, and the bootstrap configures HAProxy to pass TCP
+port `6443` through to the Kind control plane. It also writes a remote-client
+kubeconfig next to the local bootstrap kubeconfig, by default
+`kind-api-kubeconfig.yaml`.
+
+Ensure the derived API hostname resolves to the VM public IP (the existing
+wildcard DNS record for `base_domain` may already do so) and allow inbound
+TCP/6443 in the VM/cloud firewall before using the remote kubeconfig. HAProxy
+is TCP passthrough: it does not add authentication. Treat the generated
+kubeconfig as a cluster-admin credential and transfer it only by a secure
+channel.
+
+```bash
+kubectl --kubeconfig kind-api-kubeconfig.yaml get nodes
+```
 
 ## Generated Files
 

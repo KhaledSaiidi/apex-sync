@@ -2,6 +2,13 @@ cluster:
   kubeconfig:
     local_path: "${kubeconfig_local_path}"
 
+kubernetes_api:
+  dns_name: "${kubernetes_api_dns_name}"
+  port: 6443
+  kubeconfig_local_path: "${kubeconfig_local_path}"
+  kubeconfig_remote_path: "${kubernetes_api_kubeconfig_path}"
+  cluster_name: "${cluster_name}"
+
 artifacts:
   argocd_values_local_path: "${argocd_values_local_path}"
   gitops_root_app_manifest_local_path: "${gitops_root_app_manifest_path}"

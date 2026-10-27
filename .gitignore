@@ -28,6 +28,7 @@ __pycache__/
 .codex
 .codex/
 .agents/
+.serena/
 
 # Kubernetes / GitOps / Talos local credentials and generated configs
 kubeconfig
@@ -68,3 +69,4 @@ Thumbs.db
 .idea/
 .vscode/
 kind-kubeconfig.yaml
+kind-api-kubeconfig.yaml

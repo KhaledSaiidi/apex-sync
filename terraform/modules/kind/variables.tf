@@ -5,3 +5,7 @@ variable "cluster_name" {
 variable "kubeconfig_path" {
   type = string
 }
+
+variable "kubernetes_api_dns_name" {
+  type = string
+}

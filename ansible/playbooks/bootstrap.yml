@@ -12,6 +12,9 @@
         that:
           - cluster is defined
           - cluster.kubeconfig is defined
+          - kubernetes_api is defined
+          - kubernetes_api.dns_name is defined
+          - kubernetes_api.kubeconfig_remote_path is defined
           - artifacts is defined
           - artifacts.argocd_values_local_path is defined
           - artifacts.gitops_root_app_manifest_local_path is defined
@@ -40,6 +43,9 @@
     - name: Prepare local bootstrap tooling
       ansible.builtin.import_role:
         name: bootstrap_tooling
+    - name: Configure remote Kubernetes API access
+      ansible.builtin.import_role:
+        name: kubernetes_api_proxy
     - name: Install Cilium
       ansible.builtin.import_role:
         name: cilium_install

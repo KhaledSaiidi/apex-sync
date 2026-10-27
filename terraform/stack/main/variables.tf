@@ -142,6 +142,15 @@ variable "base_domain" {
   type = string
 }
 
+variable "kubernetes_api_subdomain" {
+  type = string
+
+  validation {
+    condition     = can(regex("^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", var.kubernetes_api_subdomain))
+    error_message = "kubernetes_api_subdomain must be a lowercase DNS label."
+  }
+}
+
 variable "public_gateway_dns_target" {
   type = string
 }

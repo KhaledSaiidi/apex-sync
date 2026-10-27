@@ -21,6 +21,9 @@ resource "local_file" "ansible_vars" {
 
   content = templatefile("${path.module}/templates/ansible_vars.tpl", {
     kubeconfig_local_path                = var.kubeconfig_path
+    kubernetes_api_dns_name              = var.kubernetes_api_dns_name
+    kubernetes_api_kubeconfig_path       = var.kubernetes_api_kubeconfig_path
+    cluster_name                         = var.cluster_name
     argocd_values_local_path             = var.argocd_values_path
     gitops_root_app_manifest_path        = var.argocd_root_app_path
     gitops_root_app_repo_url             = var.gitops_root_app_repo_url

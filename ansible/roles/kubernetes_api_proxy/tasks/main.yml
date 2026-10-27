@@ -1,0 +1,96 @@
+---
+- name: Assert Kubernetes API proxy inputs are set
+  ansible.builtin.assert:
+    that:
+      - kubernetes_api_proxy_dns_name | length > 0
+      - kubernetes_api_proxy_port | string | regex_search('^[0-9]+$')
+      - kubernetes_api_proxy_source_kubeconfig | length > 0
+      - kubernetes_api_proxy_remote_kubeconfig | length > 0
+
+- name: Read Kind control-plane Docker IP
+  ansible.builtin.command:
+    argv:
+      - docker
+      - inspect
+      - --format
+      - "{% raw %}{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}{% endraw %}"
+      - "{{ kubernetes_api_proxy_control_plane_container }}"
+  register: kubernetes_api_proxy_control_plane_ip
+  changed_when: false
+
+- name: Assert Kind control-plane Docker IP is available
+  ansible.builtin.assert:
+    that:
+      - kubernetes_api_proxy_control_plane_ip.stdout | trim | regex_search('^[0-9]{1,3}(\.[0-9]{1,3}){3}$')
+    fail_msg: >-
+      Could not determine a valid Docker IP for
+      {{ kubernetes_api_proxy_control_plane_container }}.
+
+- name: Add Kubernetes API TCP passthrough to HAProxy
+  become: true
+  ansible.builtin.blockinfile:
+    path: "{{ kubernetes_api_proxy_haproxy_config }}"
+    marker: "# {mark} APEX-SYNC KUBERNETES API"
+    block: |
+      frontend kubernetes_api
+        bind *:{{ kubernetes_api_proxy_port }}
+        mode tcp
+        default_backend kubernetes_api
+
+      backend kubernetes_api
+        mode tcp
+        option tcp-check
+        server control_plane {{ kubernetes_api_proxy_control_plane_ip.stdout | trim }}:6443 check
+  register: kubernetes_api_proxy_haproxy_config_result
+
+- name: Validate HAProxy configuration
+  become: true
+  ansible.builtin.command:
+    argv:
+      - haproxy
+      - -c
+      - -f
+      - "{{ kubernetes_api_proxy_haproxy_config }}"
+  changed_when: false
+
+- name: Reload HAProxy with Kubernetes API TCP passthrough
+  become: true
+  ansible.builtin.service:
+    name: haproxy
+    state: reloaded
+  when: kubernetes_api_proxy_haproxy_config_result.changed
+
+- name: Read the local bootstrap kubeconfig
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - --kubeconfig
+      - "{{ kubernetes_api_proxy_source_kubeconfig }}"
+      - config
+      - view
+      - --raw
+      - --flatten
+      - --minify
+  register: kubernetes_api_proxy_kubeconfig
+  changed_when: false
+  no_log: true
+
+- name: Write the remote Kubernetes API kubeconfig
+  ansible.builtin.copy:
+    content: "{{ kubernetes_api_proxy_kubeconfig.stdout }}\n"
+    dest: "{{ kubernetes_api_proxy_remote_kubeconfig }}"
+    mode: "0600"
+  no_log: true
+
+- name: Point the remote kubeconfig at the HAProxy API endpoint
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - --kubeconfig
+      - "{{ kubernetes_api_proxy_remote_kubeconfig }}"
+      - config
+      - set-cluster
+      - "kind-{{ kubernetes_api_proxy_cluster_name }}"
+      - "--server=https://{{ kubernetes_api_proxy_dns_name }}:{{ kubernetes_api_proxy_port }}"
+  changed_when: false
+  no_log: true
