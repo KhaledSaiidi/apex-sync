@@ -8,7 +8,7 @@ resources:
 helmCharts:
   - name: pxc-db
     repo: https://percona.github.io/percona-helm-charts
-    version: ${ARGOCD_ENV_percona_version}
+    version: ${ARGOCD_ENV_percona_pxc_version}
     releaseName: mysql-cluster
     namespace: stateful-resources
     valuesFile: values.yaml

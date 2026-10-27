@@ -65,7 +65,8 @@ resource "local_file" "argocd_root_app" {
     metallb_version                                  = var.metallb_version
     openebs_version                                  = var.openebs_version
     reflector_version                                = var.reflector_version
-    percona_version                                  = var.percona_version
+    percona_pxc_operator_version                     = var.percona_pxc_operator_version
+    percona_pxc_version                              = var.percona_pxc_version
     percona_pg_version                               = var.percona_pg_version
     stateful_resources_pg_database_name              = var.stateful_resources_pg_database_name
     stateful_resources_pg_app_user                   = var.stateful_resources_pg_app_user

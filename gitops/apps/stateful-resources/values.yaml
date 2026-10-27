@@ -3,7 +3,7 @@ fullnameOverride: mysql-cluster
 finalizers:
   - percona.com/delete-pxc-pods-in-order
 
-crVersion: ${ARGOCD_ENV_percona_version}
+crVersion: ${ARGOCD_ENV_percona_pxc_version}
 
 tls:
   enabled: true

@@ -158,6 +158,7 @@ The main values to review before bootstrapping are:
 
 - `cluster_name` (optional; defaults to `apex-sync`)
 - `kubeconfig_path`
+- `kubernetes_node_image` (Kind node image; pin this to select the Kubernetes version)
 - `gitops_root_app_repo_url`
 - `gitops_root_app_target_revision`
 - `gitops_root_app_path`

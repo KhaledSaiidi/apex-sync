@@ -1,5 +1,6 @@
 ## Bootstrap inputs used by Ansible before Argo CD takes over.
 kubeconfig_path: "../../../kind-kubeconfig.yaml" # Local kubeconfig used by bootstrap and destroy scripts.
+kubernetes_node_image: "kindest/node:v1.36.4@sha256:099e049362a1526b2db71494e1947aae99bd16290d7c895f2b7ea312e3cbfaed" # Kubernetes v1.36.4, pinned to the official Kind image digest.
 gitops_root_app_repo_url: "https://github.com/KhaledSaiidi/apex-sync.git"
-argocd_chart_version: "9.5.21"
+argocd_chart_version: "10.11.6"
 ansible_python_interpreter: "/usr/bin/python3"

@@ -155,7 +155,11 @@ variable "reflector_version" {
   type = string
 }
 
-variable "percona_version" {
+variable "percona_pxc_operator_version" {
+  type = string
+}
+
+variable "percona_pxc_version" {
   type = string
 }
 

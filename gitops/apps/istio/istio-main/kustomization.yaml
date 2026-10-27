@@ -5,12 +5,12 @@ resources:
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/${ARGOCD_ENV_gateway_api_version}/standard-install.yaml
 helmCharts:
   - name: base
-    repo: https://istio-release.storage.googleapis.com/charts
+    repo: https://blob.istio.io/istio-release/charts
     version: ${ARGOCD_ENV_istio_main_version}
     releaseName: istio-base
     namespace: istio-system
   - name: istiod
-    repo: https://istio-release.storage.googleapis.com/charts
+    repo: https://blob.istio.io/istio-release/charts
     version: ${ARGOCD_ENV_istio_main_version}
     releaseName: istiod
     namespace: istio-system

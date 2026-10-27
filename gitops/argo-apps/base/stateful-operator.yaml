@@ -19,8 +19,8 @@ spec:
     plugin:
       name: envsubst
       env:
-        - name: percona_version
-          value: "${ARGOCD_ENV_percona_version}"
+        - name: percona_pxc_operator_version
+          value: "${ARGOCD_ENV_percona_pxc_operator_version}"
         - name: percona_pg_version
           value: "${ARGOCD_ENV_percona_pg_version}"
         - name: stateful_operator_replicas

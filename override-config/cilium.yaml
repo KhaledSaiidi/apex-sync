@@ -1,5 +1,5 @@
 ## Cilium settings used by Ansible for first bootstrap and by GitOps afterwards.
-cilium_chart_version: "1.19.2"
+cilium_chart_version: "1.20.4"
 cilium_image_pull_policy: "IfNotPresent"
 cilium_ipam_mode: "kubernetes"
 cilium_k8s_service_host: "apex-sync-control-plane"

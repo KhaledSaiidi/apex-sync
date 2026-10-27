@@ -89,8 +89,10 @@ spec:
           value: "${openebs_version}"
         - name: reflector_version
           value: "${reflector_version}"
-        - name: percona_version
-          value: "${percona_version}"
+        - name: percona_pxc_operator_version
+          value: "${percona_pxc_operator_version}"
+        - name: percona_pxc_version
+          value: "${percona_pxc_version}"
         - name: percona_pg_version
           value: "${percona_pg_version}"
         - name: stateful_resources_pg_database_name

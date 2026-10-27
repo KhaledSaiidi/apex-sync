@@ -9,3 +9,7 @@ variable "kubeconfig_path" {
 variable "kubernetes_api_dns_name" {
   type = string
 }
+
+variable "node_image" {
+  type = string
+}

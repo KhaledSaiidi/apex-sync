@@ -36,6 +36,10 @@ variable "kubeconfig_path" {
   type = string
 }
 
+variable "kubernetes_node_image" {
+  type = string
+}
+
 variable "cluster_name" {
   type    = string
   default = "apex-sync"
@@ -195,7 +199,11 @@ variable "reflector_version" {
   type = string
 }
 
-variable "percona_version" {
+variable "percona_pxc_operator_version" {
+  type = string
+}
+
+variable "percona_pxc_version" {
   type = string
 }
 

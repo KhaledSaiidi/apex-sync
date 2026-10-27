@@ -1,5 +1,6 @@
 resource "kind_cluster" "default" {
   name            = var.cluster_name
+  node_image      = var.node_image
   wait_for_ready  = false
   kubeconfig_path = var.kubeconfig_path
 

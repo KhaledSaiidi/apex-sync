@@ -27,6 +27,7 @@ module "kind" {
   cluster_name            = var.cluster_name
   kubeconfig_path         = local.kubeconfig_path
   kubernetes_api_dns_name = local.kubernetes_api_dns_name
+  node_image              = var.kubernetes_node_image
 }
 
 module "argocd" {
@@ -72,7 +73,8 @@ module "argocd" {
   metallb_version                                  = var.metallb_version
   openebs_version                                  = var.openebs_version
   reflector_version                                = var.reflector_version
-  percona_version                                  = var.percona_version
+  percona_pxc_operator_version                     = var.percona_pxc_operator_version
+  percona_pxc_version                              = var.percona_pxc_version
   percona_pg_version                               = var.percona_pg_version
   stateful_resources_pg_database_name              = var.stateful_resources_pg_database_name
   stateful_resources_pg_app_user                   = var.stateful_resources_pg_app_user
