@@ -1,0 +1,67 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kubernetes-api-oidc-enable
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    argocd.argoproj.io/sync-wave: "30"
+  labels:
+    app.kubernetes.io/name: kubernetes-api-oidc-enable
+    app.kubernetes.io/part-of: kubernetes-api-oidc
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 1800
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      annotations:
+        # This hook manipulates the host static-pod manifest and must not get
+        # an Istio sidecar or init container.
+        sidecar.istio.io/inject: "false"
+      labels:
+        app.kubernetes.io/name: kubernetes-api-oidc-enable
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      hostPID: true
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: enable-oidc
+          image: alpine:3.22.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              apk add --no-cache curl jq util-linux
+              exec /scripts/configure-oidc.sh
+          env:
+            - name: OIDC_ISSUER_URL
+              value: "https://keycloak.${ARGOCD_ENV_base_domain}/realms/oidc"
+            - name: OIDC_CLIENT_ID
+              value: kubectl
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            readOnlyRootFilesystem: false
+          volumeMounts:
+            - name: kube-apiserver-manifests
+              mountPath: /host/etc/kubernetes/manifests
+            - name: configure-oidc-script
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: kube-apiserver-manifests
+          hostPath:
+            path: /etc/kubernetes/manifests
+            type: Directory
+        - name: configure-oidc-script
+          configMap:
+            name: kubernetes-api-oidc-enable-script
+            defaultMode: 0555

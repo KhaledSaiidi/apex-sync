@@ -462,6 +462,17 @@ is TCP passthrough: it does not add authentication. Treat the generated
 kubeconfig as a cluster-admin credential and transfer it only by a secure
 channel.
 
+## Kubernetes OIDC Activation
+
+After Argo CD has deployed Keycloak and its public HTTPS route, the
+`kubernetes-api-oidc` Argo CD application runs a short-lived sync hook on the
+Kind control-plane node. The hook verifies Keycloak OIDC discovery from the
+node network, then atomically adds the Kubernetes API server OIDC arguments.
+This preserves the required bootstrap order without a post-Argo Ansible phase.
+The hook has no Kubernetes API credentials; its privileged host-path mount is
+limited to the kubeadm static-pod manifest directory, and its script only
+modifies the kube-apiserver manifest. The Job is removed after success.
+
 ```bash
 kubectl --kubeconfig kind-api-kubeconfig.yaml get nodes
 ```
