@@ -7,6 +7,8 @@ kubernetes_api:
   port: 6443
   kubeconfig_local_path: "${kubeconfig_local_path}"
   kubeconfig_remote_path: "${kubernetes_api_kubeconfig_path}"
+  kubeconfig_oidc_artifact_path: "${kubernetes_api_oidc_kubeconfig_path}"
+  oidc_issuer_url: "${kubernetes_api_oidc_issuer_url}"
   cluster_name: "${cluster_name}"
 
 artifacts:

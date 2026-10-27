@@ -42,6 +42,14 @@ variable "kubernetes_api_dns_name" {
 variable "kubernetes_api_kubeconfig_path" {
   type = string
 }
+
+variable "kubernetes_api_oidc_kubeconfig_path" {
+  type = string
+}
+
+variable "kubernetes_api_oidc_issuer_url" {
+  type = string
+}
 variable "gitops_root_app_repo_url" {
   type = string
 }

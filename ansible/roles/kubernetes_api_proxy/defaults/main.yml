@@ -4,5 +4,7 @@ kubernetes_api_proxy_port: "{{ kubernetes_api.port | default(6443) }}"
 kubernetes_api_proxy_cluster_name: "{{ kubernetes_api.cluster_name }}"
 kubernetes_api_proxy_source_kubeconfig: "{{ kubernetes_api.kubeconfig_local_path }}"
 kubernetes_api_proxy_remote_kubeconfig: "{{ kubernetes_api.kubeconfig_remote_path }}"
+kubernetes_api_proxy_oidc_kubeconfig: "{{ kubernetes_api.kubeconfig_oidc_artifact_path }}"
+kubernetes_api_proxy_oidc_issuer_url: "{{ kubernetes_api.oidc_issuer_url }}"
 kubernetes_api_proxy_haproxy_config: /etc/haproxy/haproxy.cfg
 kubernetes_api_proxy_control_plane_container: "{{ kubernetes_api_proxy_cluster_name }}-control-plane"

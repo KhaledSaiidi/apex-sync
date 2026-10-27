@@ -1,16 +1,18 @@
 locals {
-  artifacts_dir                  = abspath("${path.root}/artifacts")
-  repo_root                      = abspath("${path.root}/../../../")
-  custom_config_files            = sort(fileset(local.repo_root, "override-config/*.y*ml"))
-  custom_config                  = merge([for file in local.custom_config_files : yamldecode(file("${local.repo_root}/${file}"))]...)
-  resource_env                   = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "resource_") }
-  observability_env              = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "observability_") }
-  testkube_sample_env            = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "testkube_sample_") }
-  kubeconfig_path                = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
-  kubernetes_api_dns_name        = "${var.kubernetes_api_subdomain}.${var.base_domain}"
-  kubernetes_api_kubeconfig_path = "${dirname(local.kubeconfig_path)}/kind-api-kubeconfig.yaml"
-  bootstrap_sources_files        = sort(concat(["ansible.cfg"], tolist(fileset(local.repo_root, "ansible/**/*.yml")), tolist(fileset(local.repo_root, "ansible/**/*.yaml"))))
-  bootstrap_sources_sha256       = sha256(join("", [for file in local.bootstrap_sources_files : filesha256("${local.repo_root}/${file}")]))
+  artifacts_dir                       = abspath("${path.root}/artifacts")
+  repo_root                           = abspath("${path.root}/../../../")
+  custom_config_files                 = sort(fileset(local.repo_root, "override-config/*.y*ml"))
+  custom_config                       = merge([for file in local.custom_config_files : yamldecode(file("${local.repo_root}/${file}"))]...)
+  resource_env                        = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "resource_") }
+  observability_env                   = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "observability_") }
+  testkube_sample_env                 = { for key, value in local.custom_config : key => tostring(value) if startswith(key, "testkube_sample_") }
+  kubeconfig_path                     = startswith(pathexpand(var.kubeconfig_path), "/") ? pathexpand(var.kubeconfig_path) : abspath("${path.root}/${pathexpand(var.kubeconfig_path)}")
+  kubernetes_api_dns_name             = "${var.kubernetes_api_subdomain}.${var.base_domain}"
+  kubernetes_api_kubeconfig_path      = "${dirname(local.kubeconfig_path)}/kind-api-kubeconfig.yaml"
+  kubernetes_api_oidc_kubeconfig_path = "${local.artifacts_dir}/kubectl-oidc-kubeconfig.yaml"
+  kubernetes_api_oidc_issuer_url      = "https://keycloak.${var.base_domain}/realms/oidc"
+  bootstrap_sources_files             = sort(concat(["ansible.cfg"], tolist(fileset(local.repo_root, "ansible/**/*.yml")), tolist(fileset(local.repo_root, "ansible/**/*.yaml"))))
+  bootstrap_sources_sha256            = sha256(join("", [for file in local.bootstrap_sources_files : filesha256("${local.repo_root}/${file}")]))
   bootstrap_artifacts_sha256 = sha256(join("", [
     module.argocd.argocd_values_sha256,
     module.argocd.argocd_root_app_sha256
@@ -173,6 +175,8 @@ module "bootstrap_ansible" {
   kubeconfig_path                      = local.kubeconfig_path
   kubernetes_api_dns_name              = local.kubernetes_api_dns_name
   kubernetes_api_kubeconfig_path       = local.kubernetes_api_kubeconfig_path
+  kubernetes_api_oidc_kubeconfig_path  = local.kubernetes_api_oidc_kubeconfig_path
+  kubernetes_api_oidc_issuer_url       = local.kubernetes_api_oidc_issuer_url
   ansible_python_interpreter           = var.ansible_python_interpreter
   project_name                         = var.project_name
   cluster_name                         = var.cluster_name

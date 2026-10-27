@@ -478,6 +478,18 @@ The same application binds the Keycloak Kubernetes groups to cluster-wide RBAC:
 `KubernetesDeveloper` adds secret-read and selected workload-edit permissions,
 and `KubernetesAdmin` uses `cluster-admin`.
 
+When the bootstrap GitHub Actions workflow is enabled, it waits for this OIDC
+activation before publishing the `kubectl-oidc-kubeconfig-<commit>` artifact.
+The artifact contains no user credential. Install the `kubelogin` plugin once
+(the Krew plugin name is `oidc-login`), then use the downloaded file:
+
+```bash
+KUBECONFIG=kubectl-oidc-kubeconfig.yaml kubectl get pods -A
+```
+
+The first command opens the Keycloak login flow; later commands reuse and
+refresh the locally cached token.
+
 ```bash
 kubectl --kubeconfig kind-api-kubeconfig.yaml get nodes
 ```

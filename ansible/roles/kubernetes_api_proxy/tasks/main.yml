@@ -6,6 +6,8 @@
       - kubernetes_api_proxy_port | string | regex_search('^[0-9]+$')
       - kubernetes_api_proxy_source_kubeconfig | length > 0
       - kubernetes_api_proxy_remote_kubeconfig | length > 0
+      - kubernetes_api_proxy_oidc_kubeconfig | length > 0
+      - kubernetes_api_proxy_oidc_issuer_url | length > 0
 
 - name: Read Kind control-plane Docker IP
   ansible.builtin.command:
@@ -94,3 +96,59 @@
       - "--server=https://{{ kubernetes_api_proxy_dns_name }}:{{ kubernetes_api_proxy_port }}"
   changed_when: false
   no_log: true
+
+- name: Read the Kubernetes API certificate authority data
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - --kubeconfig
+      - "{{ kubernetes_api_proxy_source_kubeconfig }}"
+      - config
+      - view
+      - --raw
+      - --flatten
+      - --minify
+      - -o
+      - jsonpath={.clusters[0].cluster.certificate-authority-data}
+  register: kubernetes_api_proxy_ca_data
+  changed_when: false
+  no_log: true
+
+- name: Assert Kubernetes API certificate authority data is available
+  ansible.builtin.assert:
+    that:
+      - kubernetes_api_proxy_ca_data.stdout | trim | length > 0
+    fail_msg: Could not read certificate authority data from the bootstrap kubeconfig.
+
+- name: Write the credential-free OIDC kubeconfig artifact
+  ansible.builtin.copy:
+    dest: "{{ kubernetes_api_proxy_oidc_kubeconfig }}"
+    mode: "0644"
+    content: |
+      apiVersion: v1
+      kind: Config
+      clusters:
+        - name: kind-{{ kubernetes_api_proxy_cluster_name }}
+          cluster:
+            server: https://{{ kubernetes_api_proxy_dns_name }}:{{ kubernetes_api_proxy_port }}
+            certificate-authority-data: {{ kubernetes_api_proxy_ca_data.stdout | trim }}
+      users:
+        - name: oidc
+          user:
+            exec:
+              apiVersion: client.authentication.k8s.io/v1
+              interactiveMode: IfAvailable
+              command: kubectl
+              args:
+                - oidc-login
+                - get-token
+                - --oidc-issuer-url={{ kubernetes_api_proxy_oidc_issuer_url }}
+                - --oidc-client-id=kubectl
+                - --oidc-extra-scope=groups
+                - --token-cache-storage=keyring
+      contexts:
+        - name: oidc@kind-{{ kubernetes_api_proxy_cluster_name }}
+          context:
+            cluster: kind-{{ kubernetes_api_proxy_cluster_name }}
+            user: oidc
+      current-context: oidc@kind-{{ kubernetes_api_proxy_cluster_name }}
